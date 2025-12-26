@@ -1,0 +1,45 @@
+# ============================================================================
+# EJEMPLO DE CONFIGURACIÓN PARA PRODUCCIÓN
+# ============================================================================
+
+# Configuración del proyecto
+project_id = "mi-proyecto-prod-123456"
+workspace  = "platform"
+env        = "prod"
+
+# Artifact Registry
+registry_name     = "docker-images"
+registry_location = "us-central1"
+
+# Organización
+organization_id = "123456789012"
+
+# Dominios permitidos
+allowed_domains = [
+  "miempresa.com",
+  "miempresa.io"
+]
+
+# Grupos de administradores (usar grupos de Google Workspace/Cloud Identity)
+admin_groups = {
+  network_admins  = "network-admins@miempresa.com"
+  network_viewers = "network-ops@miempresa.com"
+  security_admins = "security-admins@miempresa.com"
+  auditors        = "auditors@miempresa.com"
+}
+
+# Habilitar cuenta de desarrolladores (deshabilitado en prod)
+enable_dev_reader = false
+
+# VPC Service Controls (OBLIGATORIO en producción)
+enable_vpc_service_controls = true
+
+# Canales de notificación para alertas
+# Primero crear los canales en GCP Console o vía Terraform
+alert_notification_channels = [
+  "projects/mi-proyecto-prod-123456/notificationChannels/1234567890",
+  "projects/mi-proyecto-prod-123456/notificationChannels/0987654321"
+]
+
+# Duración máxima de sesión para break-glass (1 hora)
+break_glass_max_session_duration = 3600

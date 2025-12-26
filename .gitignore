@@ -1,0 +1,82 @@
+# ###########################
+# ## Terraform
+# ###########################
+
+# Ignorar directorios locales de Terraform que contienen los plugins de proveedores y módulos.
+# Se regeneran automáticamente al ejecutar `terraform init`.
+.terraform/
+.terraform.lock*
+terraform.tfstate*
+
+# Ignorar archivos de estado locales. ¡MUY IMPORTANTE!
+# Estos archivos contienen el estado de tu infraestructura y pueden incluir datos sensibles.
+# Se recomienda encarecidamente usar un backend remoto (como S3, Azure Blob Storage, etc.).
+*.tfstate
+*.tfstate.backup
+
+# Ignorar archivos de plan.
+# Pueden contener valores de variables y datos sensibles en texto plano.
+# Son archivos temporales generados por `terraform plan -out=...`.
+*.tfplan
+*tfplan
+
+# Ignorar archivos de variables que a menudo contienen secretos o configuraciones específicas del entorno.
+# Es una buena práctica tener un archivo de ejemplo (ej: terraform.tfvars.example) en el repositorio,
+# pero el archivo real con los valores debe ser ignorado.
+*.tfvars
+*.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+
+# Ignorar archivos de log de errores (crash logs).
+crash.log
+crash.*.log
+
+# Ignorar archivos de override.
+# Estos se usan para sobreescribir temporalmente configuraciones y no deben ser compartidos.
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignorar el archivo de lock de dependencias si estás usando Terragrunt.
+# Para Terraform puro, el archivo .terraform.lock.hcl SÍ debe ser versionado.
+.terragrunt-cache/
+.terragrunt-cache.lock
+
+# ###########################
+# ## Archivos de Sistema Operativo y Editores
+# ###########################
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editores de código (ej: VSCode, JetBrains)
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ###########################
+# ## Otros
+# ###########################
+
+# Archivos de logs genéricos
+*.log
+
+# Archivos comprimidos que puedan contener builds o artefactos locales
+*.zip
+*.tar
+*.gz
+
+# Llaves de acceso
+keys/

@@ -1,0 +1,47 @@
+project_id  = ""   # ID del proyecto en Google Cloud
+workspace   = ""                   # Nombre del workspace de Terraform
+region      = "us-central1"            # Región principal donde se crean los recursos
+env         = "dev"                    # Ambiente lógico (dev, stg, prod)
+
+registry_name     = "docker-images-dev"      # Nombre del Artifact Registry
+enable_dev_reader = true                     # Habilita una Service Account de solo lectura para developers
+
+# Habilita VPC Service Controls para proteger recursos administrados
+enable_vpc_service_controls = false
+
+# Duración máxima de la sesión (en segundos) para la cuenta break-glass
+break_glass_max_session_duration = 7200
+
+# ID de la organización de Google Cloud
+organization_id = ""
+
+# Rango CIDR de la subnet para máquinas virtuales tradicionales
+vm_subnet_cidr = "10.0.0.0/24"
+
+# Permite acceso HTTP/HTTPS
+enable_public_http = true
+
+# Habilita acceso HTTP/HTTPS restringido (IAP, allowlists, etc.)
+enable_restricted_http = false
+
+# Habilita la creación de recursos relacionados con GKE
+enable_gke = false
+
+# Habilita VPC Peering con otras redes
+enable_vpc_peering = false
+
+# Grupos administrativos por rol
+admin_groups = {
+  network_admins  = "network-admins@miempresa.com"   # Administración de red
+  network_viewers = "developers@miempresa.com"       # Lectura de red
+  security_admins = "security-admins@miempresa.com"  # Seguridad e IAM
+  auditors        = "auditors@miempresa.com"         # Auditoría
+}
+
+# Dominios permitidos para miembros IAM
+allowed_domains = [
+  "miempresa.com"
+]
+
+# Canales de notificación para alertas
+alert_notification_channels = []
