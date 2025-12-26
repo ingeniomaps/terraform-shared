@@ -1,0 +1,38 @@
+image: hashicorp/terraform:latest
+
+pipelines:
+  branches:
+    main:
+      - step:
+          name: Terraform Apply Production
+          deployment: production
+          script:
+            # Autenticar con GCP usando la service account
+            - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > gcp-key.json
+            - export GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json
+
+            # Verificar autenticación
+            - gcloud auth activate-service-account --key-file=gcp-key.json
+            - gcloud config set project $GCP_PROJECT_ID
+
+            # Terraform
+            - cd terraform/environments/prod
+            - terraform init
+            - terraform plan -var-file="terraform.tfvars" -out=tfplan
+            - terraform apply -auto-approve tfplan
+
+    develop:
+      - step:
+          name: Terraform Apply Staging
+          deployment: staging
+          script:
+            - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > gcp-key.json
+            - export GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json
+
+            - cd terraform/environments/staging
+            - terraform init
+            - terraform plan -var-file="terraform.tfvars" -out=tfplan
+            - terraform apply -auto-approve tfplan
+
+Variable name: GCP_PROJECT_ID
+Value: tu-proyecto-gcp
