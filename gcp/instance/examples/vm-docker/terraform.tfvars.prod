@@ -1,0 +1,88 @@
+# ============================================================================
+# CONFIGURACIÓN PARA AMBIENTE: PRODUCTION
+# ============================================================================
+
+# ============================================================================
+# CONFIGURACIÓN DEL PROYECTO
+# ============================================================================
+project_id  = "tu-proyecto-dev-123456"
+region      = "us-central1"
+zone        = "us-central1-a"
+
+# Opcional: Nombre del archivo JSON de credenciales (debe estar en ../keys/)
+# Si no se especifica, se usa GOOGLE_APPLICATION_CREDENTIALS o gcloud auth
+# credentials_file = "account_service_dev.json"
+
+# ============================================================================
+# ESTADO DE LA INFRAESTRUCTURA COMPARTIDA
+# ============================================================================
+# Bucket donde está el estado de shared-infra
+# Ajusta este valor según tu configuración de terraform-state
+shared_infra_state_bucket = "terraform-state-prod"
+
+# Prefijo del estado (debe coincidir con el backend de shared-infra)
+shared_infra_state_prefix = "shared/terraform"
+
+# ============================================================================
+# CONFIGURACIÓN DE LA VM
+# ============================================================================
+instance_name = "vm-docker-prod"
+machine_type  = "e2-medium"
+
+# Disco
+boot_disk_size = 20
+boot_disk_type = "pd-standard"
+
+# Red
+enable_public_ip = false  # Usar Cloud NAT de la infraestructura compartida
+
+# Opcional: IP estática pública (solo si enable_public_ip = true)
+# static_public_ip = "vm-docker-prod-static-ip"  # Nombre del recurso de IP estática
+
+# Opcional: IP interna estática (debe estar en el rango de la subnet)
+# static_internal_ip = "10.0.0.10"  # IP del rango de vm_subnet_cidr
+
+# Tags y Labels
+# Tag "allow-iap-ssh" es necesario para permitir SSH vía IAP
+tags = ["allow-iap-ssh"]
+labels = {
+  environment = "prod"
+  team        = "mi-equipo"
+}
+
+# ============================================================================
+# CONFIGURACIÓN DE DOCKER Y HERRAMIENTAS
+# ============================================================================
+# Instalar Docker Compose
+install_docker_compose = true
+
+# Instalar Certbot para certificados SSL (recomendado para producción)
+install_certbot = true
+
+# Usar imagen Ubuntu (recomendado para producción también)
+use_ubuntu_image = true
+
+# ============================================================================
+# DESPLIEGUE DE MICROSERVICIOS
+# ============================================================================
+# Ambiente de despliegue (debe coincidir con el ambiente de shared-infra)
+environment = "prod"
+
+# Opcional: Ruta local a scripts personalizados a copiar a la VM
+# Ejemplo: "../custom-scripts" copia la carpeta custom-scripts completa
+# deployment_scripts = "../custom-scripts"
+
+# Opcional: Microservicios a desplegar automáticamente
+# microservices = [
+#   {
+#     name     = "backend-auth"
+#     repo_url = "https://github.com/usuario/backend-auth"
+#     branch   = "main"
+#     # Opción 1: Ruta a archivo .env (recomendado para archivos grandes o secretos)
+#     env_file = "envs/[file].env"
+#     # Opción 2: Contenido directo (para archivos pequeños)
+#     # env_file = <<-EOF
+#     #   ALLOWED_HOSTS=
+#     # EOF
+#   }
+# ]
