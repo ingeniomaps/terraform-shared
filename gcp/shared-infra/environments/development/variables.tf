@@ -6,6 +6,13 @@ variable "project_id" {
   type        = string
 }
 
+variable "credentials_file" {
+  description = "Ruta al archivo JSON de credenciales de Service Account (opcional). Ruta relativa desde la raíz del proyecto (ej: 'keys/account_service_dev.json'). Si no se especifica, se usa GOOGLE_APPLICATION_CREDENTIALS o gcloud auth."
+  type        = string
+  default     = null
+  sensitive   = true
+}
+
 variable "region" {
   description = "Región donde se desplegará la infraestructura"
   type        = string
@@ -91,13 +98,13 @@ variable "vm_subnet_cidr" {
 }
 
 variable "enable_public_http" {
-  description = "Habilitar acceso HTTP/HTTPS público (para load balancers)"
+  description = "Habilitar acceso HTTP/HTTPS público (para load balancers). Mutuamente excluyente con enable_restricted_http"
   type        = bool
   default     = true
 }
 
 variable "enable_restricted_http" {
-  description = "Habilitar acceso HTTP/HTTPS solo desde IPs corporativas (mutuamente excluyente con enable_public_http)"
+  description = "Habilitar acceso HTTP/HTTPS solo desde IPs corporativas. Mutuamente excluyente con enable_public_http"
   type        = bool
   default     = false
 }
@@ -106,6 +113,14 @@ variable "corporate_ip_ranges" {
   description = "Rangos IP corporativos (requerido si enable_restricted_http = true)"
   type        = list(string)
   default     = []
+
+  validation {
+    condition = (
+      var.enable_restricted_http == false ||
+      (var.enable_restricted_http == true && length(var.corporate_ip_ranges) > 0)
+    )
+    error_message = "corporate_ip_ranges es requerido y no puede estar vacío cuando enable_restricted_http = true"
+  }
 }
 
 # #########################################################
@@ -121,12 +136,28 @@ variable "peer_project_id" {
   description = "ID del proyecto peer (requerido si enable_vpc_peering = true)"
   type        = string
   default     = null
+
+  validation {
+    condition = (
+      var.enable_vpc_peering == false ||
+      (var.enable_vpc_peering == true && var.peer_project_id != null && var.peer_project_id != "")
+    )
+    error_message = "peer_project_id es requerido cuando enable_vpc_peering = true"
+  }
 }
 
 variable "peer_vpc_name" {
   description = "Nombre de la VPC peer (requerido si enable_vpc_peering = true)"
   type        = string
   default     = null
+
+  validation {
+    condition = (
+      var.enable_vpc_peering == false ||
+      (var.enable_vpc_peering == true && var.peer_vpc_name != null && var.peer_vpc_name != "")
+    )
+    error_message = "peer_vpc_name es requerido cuando enable_vpc_peering = true"
+  }
 }
 
 # #########################################################

@@ -1,14 +1,22 @@
-# ============================================================================
-# VARIABLES
-# ============================================================================
+# #########################################################
+# Context
+# #########################################################
 variable "project_id" {
-  description = "ID del proyecto GCP"
+  description = "ID del proyecto en GCP"
   type        = string
 }
 
-variable "workspace" {
-  description = "Nombre del workspace (ej: platform)"
+variable "credentials_file" {
+  description = "Ruta al archivo JSON de credenciales de Service Account (opcional). Si no se especifica, se usa GOOGLE_APPLICATION_CREDENTIALS o gcloud auth. Ruta relativa desde la raíz del proyecto o absoluta."
   type        = string
+  default     = null
+  sensitive   = true
+}
+
+variable "region" {
+  description = "Región donde se desplegará la infraestructura"
+  type        = string
+  default     = "us-central1"
 }
 
 variable "env" {
@@ -20,20 +28,73 @@ variable "env" {
   }
 }
 
-variable "region" {
-  description = "Región principal"
+variable "workspace" {
+  description = "Nombre del espacio de trabajo"
   type        = string
 }
 
+# #########################################################
+# Security
+# #########################################################
+variable "registry_name" {
+  description = "Nombre del Artifact Registry"
+  type        = string
+}
+
+variable "enable_dev_reader" {
+  description = "Si es true, crea la cuenta de desarrollador"
+  type        = bool
+  default     = false
+}
+
+variable "enable_vpc_service_controls" {
+  description = "Habilita VPC Service Controls (recomendado para prod)"
+  type        = bool
+  default     = false
+}
+
+variable "organization_id" {
+  description = "ID de la organización de GCP"
+  type        = string
+}
+
+variable "allowed_domains" {
+  description = "Dominios permitidos para miembros IAM"
+  type        = list(string)
+}
+
+variable "admin_groups" {
+  description = "Grupos de administradores por rol"
+  type = object({
+    network_admins  = string
+    network_viewers = string
+    security_admins = string
+    auditors        = string
+  })
+}
+
+variable "break_glass_max_session_duration" {
+  description = "Duración máxima de sesión para break-glass (en segundos)"
+  type        = number
+  default     = 3600
+}
+
+# #########################################################
+# Alerting
+# #########################################################
+variable "alert_notification_channels" {
+  description = "IDs de canales de notificación para alertas"
+  type        = list(string)
+  default     = []
+}
+
+# #########################################################
+# Network
+# #########################################################
 variable "vm_subnet_cidr" {
   description = "CIDR de la subred para VMs"
   type        = string
-  default     = "10.0.0.0/24" # 256 IPs
-}
-
-variable "vm_service_account_email" {
-  description = "Service Account usado por las VMs"
-  type        = string
+  default     = "10.0.0.0/24"
 }
 
 variable "enable_public_http" {
@@ -44,12 +105,6 @@ variable "enable_public_http" {
 
 variable "enable_restricted_http" {
   description = "Habilitar acceso HTTP/HTTPS solo desde IPs corporativas. Mutuamente excluyente con enable_public_http"
-  type        = bool
-  default     = false
-}
-
-variable "enable_vpc_peering" {
-  description = "Habilitar VPC peering"
   type        = bool
   default     = false
 }
@@ -66,6 +121,15 @@ variable "corporate_ip_ranges" {
     )
     error_message = "corporate_ip_ranges es requerido y no puede estar vacío cuando enable_restricted_http = true"
   }
+}
+
+# #########################################################
+# Peering
+# #########################################################
+variable "enable_vpc_peering" {
+  description = "Habilitar VPC peering"
+  type        = bool
+  default     = false
 }
 
 variable "peer_project_id" {
@@ -96,9 +160,9 @@ variable "peer_vpc_name" {
   }
 }
 
-# ============================================================================
-# VARIABLES PARA GKE
-# ============================================================================
+# #########################################################
+# GKE
+# #########################################################
 variable "enable_gke" {
   description = "Habilitar subnet y firewall rules para GKE"
   type        = bool

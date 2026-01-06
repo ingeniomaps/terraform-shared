@@ -6,13 +6,13 @@
 # ============================================================================
 
 resource "google_access_context_manager_service_perimeter" "network_perimeter" {
-  count  = var.enable_vpc_service_controls ? 1 : 0
+  count = var.enable_vpc_service_controls ? 1 : 0
 
   # Política de la organización a la que pertenece este perímetro
   parent = "accessPolicies/${var.organization_id}"
 
-  name   = "accessPolicies/${var.organization_id}/servicePerimeters/${local.account_name}_perimeter"
-  title  = "Network Security Perimeter - ${var.workspace} ${var.env}"
+  name  = "accessPolicies/${var.organization_id}/servicePerimeters/${local.account_name}_perimeter"
+  title = "Network Security Perimeter - ${var.workspace} ${var.env}"
 
   status {
     # Servicios restringidos dentro del perímetro
@@ -54,7 +54,7 @@ resource "google_access_context_manager_service_perimeter" "network_perimeter" {
         operations {
           service_name = "compute.googleapis.com"
           method_selectors {
-            method = "*"  # Permite todos los métodos
+            method = "*" # Permite todos los métodos
           }
         }
       }
@@ -70,7 +70,7 @@ resource "google_access_context_manager_service_perimeter" "network_perimeter" {
         operations {
           service_name = "storage.googleapis.com"
           method_selectors {
-            method = "*"  # Permite todos los métodos
+            method = "*" # Permite todos los métodos
           }
         }
       }

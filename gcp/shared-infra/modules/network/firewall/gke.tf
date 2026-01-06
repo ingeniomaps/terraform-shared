@@ -2,7 +2,7 @@
 # FIREWALL GKE: MASTER → NODES
 # ============================================================================
 resource "google_compute_firewall" "gke_master_to_nodes" {
-  count   = var.enable_gke ? 1 : 0
+  count = var.enable_gke ? 1 : 0
 
   name    = "${local.network_name}-gke-master-to-nodes"
   network = google_compute_network.vpc.name
@@ -22,7 +22,7 @@ resource "google_compute_firewall" "gke_master_to_nodes" {
 # FIREWALL GKE: NODES → MASTER
 # ============================================================================
 resource "google_compute_firewall" "gke_nodes_to_master" {
-  count   = var.enable_gke ? 1 : 0
+  count = var.enable_gke ? 1 : 0
 
   name    = "${local.network_name}-gke-nodes-to-master"
   network = google_compute_network.vpc.name
@@ -42,7 +42,7 @@ resource "google_compute_firewall" "gke_nodes_to_master" {
 # FIREWALL GKE: TRÁFICO INTERNO ENTRE PODS/NODES
 # ============================================================================
 resource "google_compute_firewall" "gke_internal" {
-  count   = var.enable_gke ? 1 : 0
+  count = var.enable_gke ? 1 : 0
 
   name    = "${local.network_name}-gke-internal"
   network = google_compute_network.vpc.name
@@ -51,21 +51,21 @@ resource "google_compute_firewall" "gke_internal" {
   allow {
     protocol = "tcp"
     ports = [
-      "443",        # HTTPS
-      "8443",       # Webhooks
-      "9443",       # Admission controllers
-      "10250",      # Kubelet
-      "10255",      # Read-only kubelet
-      "4443",       # Calico/network plugin
-      "5473",       # Calico
+      "443",   # HTTPS
+      "8443",  # Webhooks
+      "9443",  # Admission controllers
+      "10250", # Kubelet
+      "10255", # Read-only kubelet
+      "4443",  # Calico/network plugin
+      "5473",  # Calico
     ]
   }
 
   allow {
     protocol = "udp"
     ports = [
-      "53",         # DNS
-      "4789",       # VXLAN
+      "53",   # DNS
+      "4789", # VXLAN
     ]
   }
 
@@ -89,7 +89,7 @@ resource "google_compute_firewall" "gke_internal" {
 # FIREWALL GKE: HEALTH CHECKS
 # ============================================================================
 resource "google_compute_firewall" "gke_health_checks" {
-  count   = var.enable_gke ? 1 : 0
+  count = var.enable_gke ? 1 : 0
 
   name    = "${local.network_name}-gke-health-checks"
   network = google_compute_network.vpc.name
@@ -112,7 +112,7 @@ resource "google_compute_firewall" "gke_health_checks" {
 # FIREWALL GKE: SSH VÍA IAP PARA TROUBLESHOOTING
 # ============================================================================
 resource "google_compute_firewall" "gke_allow_iap_ssh" {
-  count   = var.enable_gke ? 1 : 0
+  count = var.enable_gke ? 1 : 0
 
   name    = "${local.network_name}-gke-allow-iap-ssh"
   network = google_compute_network.vpc.name

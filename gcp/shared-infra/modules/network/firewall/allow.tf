@@ -32,7 +32,7 @@ resource "google_compute_firewall" "allow_internal_vms" {
 # FIREWALL: HTTP/HTTPS PÚBLICO (mutuamente excluyente con restringido)
 # ============================================================================
 resource "google_compute_firewall" "allow_http_https_public" {
-  count   = var.enable_public_http ? 1 : 0
+  count = var.enable_public_http ? 1 : 0
 
   name    = "${local.network_name}-allow-http-https-public"
   network = google_compute_network.vpc.name

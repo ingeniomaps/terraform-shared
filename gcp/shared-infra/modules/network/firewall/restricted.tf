@@ -2,7 +2,7 @@
 # FIREWALL: HTTP/HTTPS RESTRINGIDO (mutuamente excluyente con público)
 # ============================================================================
 resource "google_compute_firewall" "allow_http_https_restricted" {
-  count   = var.enable_restricted_http ? 1 : 0
+  count = var.enable_restricted_http ? 1 : 0
 
   name    = "${local.network_name}-allow-http-https-restricted"
   network = google_compute_network.vpc.name

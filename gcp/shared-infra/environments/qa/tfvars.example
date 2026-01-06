@@ -4,16 +4,12 @@
 project_id  = ""
 workspace   = ""
 region      = "us-central1"
-env         = "dev"
-
-# Opcional: Ruta al archivo JSON de credenciales (relativa desde la raíz del proyecto)
-# Si no se especifica, se usa GOOGLE_APPLICATION_CREDENTIALS o gcloud auth
-# credentials_file = "keys/account_service_dev.json"
+env         = "qa"
 
 # ============================================================================
 # ARTIFACT REGISTRY
 # ============================================================================
-registry_name     = "docker-images-dev"
+registry_name     = "docker-images-qa"
 enable_dev_reader = true
 
 # ============================================================================
@@ -26,10 +22,10 @@ organization_id                   = ""
 # ============================================================================
 # RED Y CONECTIVIDAD
 # ============================================================================
-vm_subnet_cidr        = "10.0.0.0/24"
-enable_public_http    = true
+vm_subnet_cidr         = "10.0.0.0/24"
+enable_public_http     = true
 enable_restricted_http = false
-enable_vpc_peering    = false
+enable_vpc_peering     = false
 
 # ============================================================================
 # GKE (KUBERNETES)

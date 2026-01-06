@@ -8,9 +8,9 @@
 
 # Sink para capturar cambios en IAM y políticas de Compute
 resource "google_logging_project_sink" "iam_changes_sink" {
-  name        = "iam-changes-sink-${var.env}"
-  destination = "logging.googleapis.com/projects/${var.project_id}/locations/global/buckets/${google_logging_project_bucket_config.iam_audit_logs.bucket_id}"
-  filter = <<-EOT
+  name                   = "iam-changes-sink-${var.env}"
+  destination            = "logging.googleapis.com/projects/${var.project_id}/locations/global/buckets/${google_logging_project_bucket_config.iam_audit_logs.bucket_id}"
+  filter                 = <<-EOT
     protoPayload.serviceName="iam.googleapis.com"
     OR (protoPayload.serviceName="compute.googleapis.com"
         AND protoPayload.methodName=~".*setIamPolicy.*")
@@ -20,17 +20,17 @@ resource "google_logging_project_sink" "iam_changes_sink" {
 
 # Sink para registrar el uso de la cuenta Break Glass
 resource "google_logging_project_sink" "break_glass_usage" {
-  name        = "break-glass-usage-${var.env}"
-  destination = "logging.googleapis.com/projects/${var.project_id}/locations/global/buckets/${google_logging_project_bucket_config.security_alerts.bucket_id}"
-  filter      = "protoPayload.authenticationInfo.principalEmail=\"${google_service_account.break_glass.email}\""
+  name                   = "break-glass-usage-${var.env}"
+  destination            = "logging.googleapis.com/projects/${var.project_id}/locations/global/buckets/${google_logging_project_bucket_config.security_alerts.bucket_id}"
+  filter                 = "protoPayload.authenticationInfo.principalEmail=\"${google_service_account.break_glass.email}\""
   unique_writer_identity = true
 }
 
 # Sink para capturar cambios de red (firewalls, rutas, redes)
 resource "google_logging_project_sink" "network_changes_sink" {
-  name        = "network-changes-sink-${var.env}"
-  destination = "logging.googleapis.com/projects/${var.project_id}/locations/global/buckets/${google_logging_project_bucket_config.network_logs.bucket_id}"
-  filter = <<-EOT
+  name                   = "network-changes-sink-${var.env}"
+  destination            = "logging.googleapis.com/projects/${var.project_id}/locations/global/buckets/${google_logging_project_bucket_config.network_logs.bucket_id}"
+  filter                 = <<-EOT
     protoPayload.serviceName="compute.googleapis.com"
     AND (protoPayload.methodName=~".*firewall.*"
          OR protoPayload.methodName=~".*route.*"
@@ -41,9 +41,9 @@ resource "google_logging_project_sink" "network_changes_sink" {
 
 # Sink para capturar cambios críticos en Artifact Registry
 resource "google_logging_project_sink" "artifact_registry_changes" {
-  name        = "artifact-registry-changes-${var.env}"
-  destination = "logging.googleapis.com/projects/${var.project_id}/locations/global/buckets/${google_logging_project_bucket_config.security_alerts.bucket_id}"
-  filter = <<-EOT
+  name                   = "artifact-registry-changes-${var.env}"
+  destination            = "logging.googleapis.com/projects/${var.project_id}/locations/global/buckets/${google_logging_project_bucket_config.security_alerts.bucket_id}"
+  filter                 = <<-EOT
     protoPayload.serviceName="artifactregistry.googleapis.com"
     AND (protoPayload.methodName=~".*Delete.*"
          OR protoPayload.methodName=~".*setIamPolicy.*")
