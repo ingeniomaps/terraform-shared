@@ -89,9 +89,9 @@ resource "google_compute_firewall" "allow_iap_ssh" {
 
   source_ranges = ["35.235.240.0/20"]
 
-  target_service_accounts = [
-    var.vm_service_account_email
-  ]
+  # Usar tags en lugar de service accounts para mayor flexibilidad
+  # Las VMs deben tener el tag "allow-iap-ssh" para permitir SSH vía IAP
+  target_tags = ["allow-iap-ssh"]
 
-  description = "SSH solo mediante Identity-Aware Proxy"
+  description = "SSH solo mediante Identity-Aware Proxy (rango IAP: 35.235.240.0/20)"
 }
