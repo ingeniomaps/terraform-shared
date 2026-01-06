@@ -1,0 +1,47 @@
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Credenciales y secretos
+keys/
+*.json
+!**/tfvars.example
+*.pem
+*.key
+
+# Plan files (generados por terraform plan -out=...)
+# Estos archivos contienen información sensible y son temporales
+*.tfplan
+plan.out
+plan.json
+
+# Scripts (mantener en repo, pero ignorar outputs/logs si se generan)
+# Nota: Esto se refiere a outputs de scripts (logs), NO a outputs.tf de Terraform
+scripts/*.log
+scripts/*.tmp
+
+# Archivo de configuración del proyecto
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
