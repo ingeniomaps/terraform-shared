@@ -1,38 +1,186 @@
 image: hashicorp/terraform:latest
 
+# Variables requeridas en Bitbucket (Settings > Pipelines > Repository variables):
+# - GCP_SERVICE_ACCOUNT_KEY: Service Account Key codificada en base64
+# - GCP_PROJECT_ID: ID del proyecto GCP
+
 pipelines:
   branches:
-    main:
+    # ======================================================================
+    # DEVELOPMENT - Aplicación automática completa
+    # ======================================================================
+    develop:
       - step:
-          name: Terraform Apply Production
-          deployment: production
+          name: Terraform Apply Development
           script:
-            # Autenticar con GCP usando la service account
+            # Autenticar con GCP
             - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > gcp-key.json
             - export GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json
-
-            # Verificar autenticación
             - gcloud auth activate-service-account --key-file=gcp-key.json
             - gcloud config set project $GCP_PROJECT_ID
 
-            # Terraform
-            - cd terraform/environments/prod
+            # Validación y Plan
+            - cd terraform-state/environments/development
             - terraform init
-            - terraform plan -var-file="terraform.tfvars" -out=tfplan
+            - terraform fmt -check || (echo "❌ Error: Código sin formatear. Ejecuta 'terraform fmt'" && exit 1)
+            - terraform validate
+            - terraform plan -out=tfplan
+
+            # Apply automático
             - terraform apply -auto-approve tfplan
 
-    develop:
+    # ======================================================================
+    # QA - Aplicación automática completa
+    # ======================================================================
+    qa:
+      - step:
+          name: Terraform Apply QA
+          script:
+            # Autenticar con GCP
+            - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > gcp-key.json
+            - export GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json
+            - gcloud auth activate-service-account --key-file=gcp-key.json
+            - gcloud config set project $GCP_PROJECT_ID
+
+            # Validación y Plan
+            - cd terraform-state/environments/qa
+            - terraform init
+            - terraform fmt -check || (echo "❌ Error: Código sin formatear. Ejecuta 'terraform fmt'" && exit 1)
+            - terraform validate
+            - terraform plan -out=tfplan
+
+            # Apply automático
+            - terraform apply -auto-approve tfplan
+
+    # ======================================================================
+    # STAGING - Plan automático, Apply manual (requiere aprobación)
+    # ======================================================================
+    staging:
+      - step:
+          name: Terraform Plan Staging
+          script:
+            # Autenticar con GCP
+            - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > gcp-key.json
+            - export GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json
+            - gcloud auth activate-service-account --key-file=gcp-key.json
+            - gcloud config set project $GCP_PROJECT_ID
+
+            # Validación y Plan
+            - cd terraform-state/environments/staging
+            - terraform init
+            - terraform fmt -check || (echo "❌ Error: Código sin formatear. Ejecuta 'terraform fmt'" && exit 1)
+            - terraform validate
+            - terraform plan -out=tfplan
+          artifacts:
+            - terraform-state/environments/staging/tfplan
+
       - step:
           name: Terraform Apply Staging
           deployment: staging
           script:
+            # Autenticar con GCP
             - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > gcp-key.json
             - export GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json
+            - gcloud auth activate-service-account --key-file=gcp-key.json
+            - gcloud config set project $GCP_PROJECT_ID
 
-            - cd terraform/environments/staging
+            # Apply (requiere aprobación manual)
+            - cd terraform-state/environments/staging
             - terraform init
-            - terraform plan -var-file="terraform.tfvars" -out=tfplan
-            - terraform apply -auto-approve tfplan
+            - terraform apply tfplan
 
-Variable name: GCP_PROJECT_ID
-Value: tu-proyecto-gcp
+    # ======================================================================
+    # PRODUCTION - Plan automático, Apply manual (requiere aprobación)
+    # ======================================================================
+    main:
+      - step:
+          name: Terraform Plan Production
+          script:
+            # Autenticar con GCP
+            - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > gcp-key.json
+            - export GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json
+            - gcloud auth activate-service-account --key-file=gcp-key.json
+            - gcloud config set project $GCP_PROJECT_ID
+
+            # Validación y Plan
+            - cd terraform-state/environments/production
+            - terraform init
+            - terraform fmt -check || (echo "❌ Error: Código sin formatear. Ejecuta 'terraform fmt'" && exit 1)
+            - terraform validate
+            - terraform plan -out=tfplan
+          artifacts:
+            - terraform-state/environments/production/tfplan
+
+      - step:
+          name: Terraform Apply Production
+          deployment: production
+          script:
+            # Autenticar con GCP
+            - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > gcp-key.json
+            - export GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json
+            - gcloud auth activate-service-account --key-file=gcp-key.json
+            - gcloud config set project $GCP_PROJECT_ID
+
+            # Apply (requiere aprobación manual)
+            - cd terraform-state/environments/production
+            - terraform init
+            - terraform apply tfplan
+
+  # ======================================================================
+  # Pull Requests - Solo validación (no aplica cambios)
+  # ======================================================================
+  pull-requests:
+    '**':
+      - step:
+          name: Validar Terraform en Pull Request
+          script:
+            # Autenticar con GCP
+            - echo $GCP_SERVICE_ACCOUNT_KEY | base64 -d > gcp-key.json
+            - export GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json
+            - gcloud auth activate-service-account --key-file=gcp-key.json
+            - gcloud config set project $GCP_PROJECT_ID
+
+            # Detectar ambientes modificados y validar
+            - |
+              CHANGED_ENVS=$(git diff --name-only origin/${BITBUCKET_PR_DESTINATION_BRANCH:-main}...HEAD 2>/dev/null | \
+                grep -o 'terraform-state/environments/[^/]*' | \
+                sort -u | \
+                sed 's|terraform-state/environments/||' || echo "")
+
+              if [ -z "$CHANGED_ENVS" ]; then
+                echo "⚠️ No se detectaron cambios en ambientes específicos."
+                echo "Validando todos los ambientes..."
+                CHANGED_ENVS="development qa staging production"
+              fi
+
+              for env in $CHANGED_ENVS; do
+                if [ -d "terraform-state/environments/$env" ]; then
+                  echo "=========================================="
+                  echo "🔍 Validando ambiente: $env"
+                  echo "=========================================="
+                  cd "terraform-state/environments/$env"
+
+                  # Validar formato
+                  if ! terraform fmt -check > /dev/null 2>&1; then
+                    echo "❌ $env: Código sin formatear"
+                    terraform fmt -check
+                    exit 1
+                  fi
+
+                  # Validar sintaxis
+                  terraform init -backend=false
+                  if ! terraform validate; then
+                    echo "❌ $env: Validación falló"
+                    exit 1
+                  fi
+
+                  echo "✅ $env: Validación exitosa"
+                  cd - > /dev/null
+                else
+                  echo "⚠️ Ambiente $env no existe, omitiendo..."
+                fi
+              done
+
+              echo "=========================================="
+              echo "✅ Todas las validaciones pasaron"
+              echo "=========================================="
