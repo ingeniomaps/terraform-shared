@@ -28,7 +28,7 @@ resource "google_project_iam_member" "break_glass" {
 
   project = var.project_id
   role    = each.key
-  member  = "serviceAccount:${google_service_account.break_glass.email}"
+  member  = "serviceAccount:${var.break_glass_email}"
 
   # Condición IAM para limitar el acceso en el tiempo
   condition {

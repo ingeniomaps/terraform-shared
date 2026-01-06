@@ -11,7 +11,7 @@ resource "google_access_context_manager_service_perimeter" "network_perimeter" {
   # Política de la organización a la que pertenece este perímetro
   parent = "accessPolicies/${var.organization_id}"
 
-  name  = "accessPolicies/${var.organization_id}/servicePerimeters/${local.account_name}_perimeter"
+  name  = "accessPolicies/${var.organization_id}/servicePerimeters/${var.account_name}_perimeter"
   title = "Network Security Perimeter - ${var.workspace} ${var.env}"
 
   status {
@@ -25,7 +25,7 @@ resource "google_access_context_manager_service_perimeter" "network_perimeter" {
 
     # Recursos incluidos en el perímetro (el proyecto actual)
     resources = [
-      "projects/${data.google_project.current.number}"
+      "projects/${var.project_number}"
     ]
 
     # Servicios accesibles desde dentro del perímetro
@@ -45,7 +45,7 @@ resource "google_access_context_manager_service_perimeter" "network_perimeter" {
     ingress_policies {
       ingress_from {
         sources {
-          resource = "projects/${data.google_project.current.number}" # Permite tráfico desde el proyecto
+          resource = "projects/${var.project_number}" # Permite tráfico desde el proyecto
         }
         identity_type = "ANY_IDENTITY"
       }

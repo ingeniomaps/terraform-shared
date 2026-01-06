@@ -25,7 +25,15 @@ organization_id                   = ""
 vm_subnet_cidr         = "10.0.0.0/24"
 enable_public_http     = true
 enable_restricted_http = false
+
+# Requerido si enable_restricted_http = true
+# corporate_ip_ranges = ["203.0.113.0/24", "198.51.100.0/24"]
+
 enable_vpc_peering     = false
+
+# Requerido si enable_vpc_peering = true
+# peer_project_id = "proyecto-peer-id"
+# peer_vpc_name   = "vpc-peer-name"
 
 # ============================================================================
 # GKE (KUBERNETES)

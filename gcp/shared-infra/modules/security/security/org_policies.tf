@@ -65,7 +65,7 @@ resource "google_org_policy_policy" "require_os_login" {
 # Obliga a usar Shielded VM para mayor seguridad
 # Solo se aplica en ambientes de producción
 resource "google_org_policy_policy" "require_shielded_vm" {
-  count  = local.is_production ? 1 : 0
+  count  = var.is_production ? 1 : 0
   name   = "projects/${var.project_id}/policies/compute.requireShieldedVm"
   parent = "projects/${var.project_id}"
   spec {

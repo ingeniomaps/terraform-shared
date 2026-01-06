@@ -4,8 +4,8 @@
 resource "google_compute_firewall" "allow_http_https_restricted" {
   count = var.enable_restricted_http ? 1 : 0
 
-  name    = "${local.network_name}-allow-http-https-restricted"
-  network = google_compute_network.vpc.name
+  name    = "${var.network_name}-allow-http-https-restricted"
+  network = var.vpc_name
 
   allow {
     protocol = "tcp"

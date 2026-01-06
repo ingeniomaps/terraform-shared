@@ -22,7 +22,7 @@ resource "google_logging_project_sink" "iam_changes_sink" {
 resource "google_logging_project_sink" "break_glass_usage" {
   name                   = "break-glass-usage-${var.env}"
   destination            = "logging.googleapis.com/projects/${var.project_id}/locations/global/buckets/${google_logging_project_bucket_config.security_alerts.bucket_id}"
-  filter                 = "protoPayload.authenticationInfo.principalEmail=\"${google_service_account.break_glass.email}\""
+  filter                 = "protoPayload.authenticationInfo.principalEmail=\"${var.break_glass_email}\""
   unique_writer_identity = true
 }
 

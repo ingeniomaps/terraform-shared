@@ -15,7 +15,7 @@ resource "google_monitoring_alert_policy" "break_glass_usage_alert" {
   conditions {
     display_name = "Break Glass account is being used"
     condition_matched_log {
-      filter = "protoPayload.authenticationInfo.principalEmail=\"${google_service_account.break_glass.email}\""
+      filter = "protoPayload.authenticationInfo.principalEmail=\"${var.break_glass_email}\""
     }
   }
 
@@ -35,7 +35,7 @@ resource "google_monitoring_alert_policy" "break_glass_usage_alert" {
 resource "google_monitoring_alert_policy" "iam_policy_changes" {
   display_name = "IAM Policy Changes - ${upper(var.env)}"
   combiner     = "OR"
-  enabled      = local.is_production # Solo activo en producción
+  enabled      = var.is_production # Solo activo en producción
 
   conditions {
     display_name = "IAM policy has been modified"
@@ -63,7 +63,7 @@ resource "google_monitoring_alert_policy" "iam_policy_changes" {
 resource "google_monitoring_alert_policy" "firewall_rule_changes" {
   display_name = "Firewall Rule Changes - ${upper(var.env)}"
   combiner     = "OR"
-  enabled      = local.is_production # Solo activo en producción
+  enabled      = var.is_production # Solo activo en producción
 
   conditions {
     display_name = "Firewall rules modified"
