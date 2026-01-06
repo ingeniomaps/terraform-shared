@@ -9,8 +9,8 @@ terraform {
   }
 
   backend "gcs" {
-    bucket = "roax-terraform-state-stg"
-    prefix = "prod/shared/terraform"
+    bucket = "roax-terraform-state-prod"
+    prefix = "shared/terraform"
   }
 }
 

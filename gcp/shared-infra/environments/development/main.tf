@@ -9,14 +9,14 @@ terraform {
   }
 
   backend "gcs" {
-    bucket = "roax-terraform-state-stg"
-    prefix = "dev/shared/terraform"
+    bucket = "roax-terraform-state-dev"
+    prefix = "shared/terraform"
   }
 }
 
 provider "google" {
-  project     = var.project_id
-  region      = var.region
+  project = var.project_id
+  region  = var.region
   # Si credentials_file está definido, usar ruta relativa desde la raíz del proyecto
   # path.root apunta al directorio del módulo, así que usamos ../../../ para llegar a la raíz
   credentials = var.credentials_file != null ? file("${path.root}/../../../${var.credentials_file}") : null
