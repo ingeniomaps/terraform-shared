@@ -19,7 +19,7 @@ module "terraform_state_bucket" {
   source                = "../../modules/gcs_bucket"
   bucket_name           = "${var.bucket_prefix}-${var.env}"
   region                = var.region
-  prevent_destroy       = false # Staging puede ser destruido si es necesario
-  retention_period_days = 30    # 30 días de retención para staging
-  retention_locked      = false # No bloquear en staging
+  prevent_destroy       = false # QA puede ser destruido si es necesario
+  retention_period_days = 7     # 7 días de retención para QA (similar a dev)
+  retention_locked      = false # No bloquear en QA
 }
