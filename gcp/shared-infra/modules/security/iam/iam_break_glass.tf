@@ -21,6 +21,19 @@ locals {
   }
 }
 
+# Timestamp estático para la condición IAM de break-glass
+# Se genera una vez y persiste hasta que se fuerza su rotación con terraform taint
+# Esto evita que la condición cambie en cada terraform plan/apply
+resource "time_static" "break_glass_expiry" {
+  # El timestamp se genera una vez y solo cambia si se fuerza con terraform taint
+  # o si se destruye y recrea el recurso
+}
+
+# Calcula la fecha de expiración sumando la duración máxima de sesión al timestamp estático
+locals {
+  break_glass_expiry_timestamp = timeadd(time_static.break_glass_expiry.rfc3339, "${var.break_glass_max_session_duration}s")
+}
+
 # Recurso IAM para asignar los roles de break-glass a la cuenta de servicio.
 # Se usa for_each para iterar sobre el mapa local, evitando duplicación de código.
 resource "google_project_iam_member" "break_glass" {
@@ -31,9 +44,10 @@ resource "google_project_iam_member" "break_glass" {
   member  = "serviceAccount:${var.break_glass_email}"
 
   # Condición IAM para limitar el acceso en el tiempo
+  # Usa el timestamp estático para evitar cambios constantes en terraform plan
   condition {
     title       = "break_glass_time_limited"
     description = each.value
-    expression  = "request.time < timestamp('${timeadd(timestamp(), "${var.break_glass_max_session_duration}s")}')"
+    expression  = "request.time < timestamp('${local.break_glass_expiry_timestamp}')"
   }
 }
