@@ -197,3 +197,18 @@ variable "gke_master_cidr" {
     error_message = "gke_master_cidr debe ser un CIDR válido con máscara /28"
   }
 }
+
+# #########################################################
+# Security Options
+# #########################################################
+variable "enable_group_iam" {
+  description = "Habilitar asignación de roles IAM a grupos de Google Workspace (requiere que los grupos existan)"
+  type        = bool
+  default     = false
+}
+
+variable "enable_org_policies" {
+  description = "Habilitar Organization Policies (requiere que orgpolicy.googleapis.com esté habilitado y configurado)"
+  type        = bool
+  default     = false
+}

@@ -24,6 +24,7 @@ module "iam" {
   vm_reader_email                 = google_service_account.vm_reader.email
   break_glass_email               = google_service_account.break_glass.email
   break_glass_max_session_duration = var.break_glass_max_session_duration
+  enable_group_iam                = var.enable_group_iam
 }
 
 # ============================================================================
@@ -55,6 +56,7 @@ module "security" {
   env                         = var.env
   project_number              = data.google_project.current.number
   is_production               = local.is_production
+  enable_org_policies          = var.enable_org_policies
 }
 
 # ============================================================================

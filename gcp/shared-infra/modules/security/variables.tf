@@ -76,3 +76,15 @@ variable "create_admin_sa" {
   type        = bool
   default     = false
 }
+
+variable "enable_group_iam" {
+  description = "Habilitar asignación de roles IAM a grupos de Google Workspace (requiere que los grupos existan)"
+  type        = bool
+  default     = false
+}
+
+variable "enable_org_policies" {
+  description = "Habilitar Organization Policies (requiere que orgpolicy.googleapis.com esté habilitado y configurado)"
+  type        = bool
+  default     = false
+}

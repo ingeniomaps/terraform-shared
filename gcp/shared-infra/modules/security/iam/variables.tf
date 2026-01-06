@@ -36,3 +36,9 @@ variable "break_glass_max_session_duration" {
   type        = number
   default     = 3600
 }
+
+variable "enable_group_iam" {
+  description = "Habilitar asignación de roles IAM a grupos (requiere que los grupos existan en Google Workspace)"
+  type        = bool
+  default     = true
+}

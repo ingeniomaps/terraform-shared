@@ -46,3 +46,9 @@ variable "is_production" {
   description = "Indica si es ambiente de producción"
   type        = bool
 }
+
+variable "enable_org_policies" {
+  description = "Habilitar Organization Policies (requiere que orgpolicy.googleapis.com esté habilitado y configurado)"
+  type        = bool
+  default     = false
+}

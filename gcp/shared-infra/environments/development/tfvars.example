@@ -66,3 +66,14 @@ allowed_domains = [
 # ALERTAS Y MONITOREO
 # ============================================================================
 alert_notification_channels = []
+
+# ============================================================================
+# OPCIONES DE SEGURIDAD
+# ============================================================================
+# Habilitar asignación de roles IAM a grupos de Google Workspace
+# Requiere que los grupos existan en Google Workspace
+# enable_group_iam = false
+
+# Habilitar Organization Policies
+# Requiere que orgpolicy.googleapis.com esté habilitado y configurado
+# enable_org_policies = false

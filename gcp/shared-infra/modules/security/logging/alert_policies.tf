@@ -23,6 +23,9 @@ resource "google_monitoring_alert_policy" "break_glass_usage_alert" {
 
   alert_strategy {
     auto_close = "1800s" # Cierra automáticamente la alerta después de 30 minutos si no hay nuevos eventos
+    notification_rate_limit {
+      period = "300s" # Limita notificaciones a 1 por cada 5 minutos
+    }
   }
 
   documentation {
@@ -51,6 +54,9 @@ resource "google_monitoring_alert_policy" "iam_policy_changes" {
 
   alert_strategy {
     auto_close = "3600s" # Cierra la alerta después de 1 hora
+    notification_rate_limit {
+      period = "300s" # Limita notificaciones a 1 por cada 5 minutos
+    }
   }
 
   documentation {
@@ -83,6 +89,9 @@ resource "google_monitoring_alert_policy" "firewall_rule_changes" {
 
   alert_strategy {
     auto_close = "3600s"
+    notification_rate_limit {
+      period = "300s" # Limita notificaciones a 1 por cada 5 minutos
+    }
   }
 
   documentation {
@@ -111,6 +120,9 @@ resource "google_monitoring_alert_policy" "service_account_key_created" {
 
   alert_strategy {
     auto_close = "1800s"
+    notification_rate_limit {
+      period = "300s" # Limita notificaciones a 1 por cada 5 minutos
+    }
   }
 
   documentation {
