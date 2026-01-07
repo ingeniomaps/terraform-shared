@@ -77,3 +77,8 @@ alert_notification_channels = []
 # Habilitar Organization Policies
 # Requiere que orgpolicy.googleapis.com esté habilitado y configurado
 # enable_org_policies = false
+
+# Sufijo opcional para personalizar los nombres de los buckets de logging
+# Se agrega después del nombre del ambiente (ej: '-custom' resultaría en 'iam-audit-logs-dev-custom')
+# Si está vacío, no se agrega sufijo
+# log_bucket_suffix = ""
