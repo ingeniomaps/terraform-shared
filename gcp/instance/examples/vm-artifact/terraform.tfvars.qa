@@ -1,0 +1,92 @@
+# ============================================================================
+# CONFIGURACIÓN PARA AMBIENTE: QA
+# ============================================================================
+
+# ============================================================================
+# CONFIGURACIÓN DEL PROYECTO
+# ============================================================================
+project_id  = "core-plate-443813-d1"
+region      = "us-central1"
+zone        = "us-central1-a"
+
+# Opcional: Nombre del archivo JSON de credenciales (debe estar en ../keys/)
+# Si no se especifica, se usa GOOGLE_APPLICATION_CREDENTIALS o gcloud auth
+# credentials_file = "account_service_qa.json"
+
+# ============================================================================
+# ESTADO DE LA INFRAESTRUCTURA COMPARTIDA
+# ============================================================================
+# Bucket donde está el estado de shared-infra
+shared_infra_state_bucket = "roax-terraform-state-qa"
+
+# Prefijo del estado (debe coincidir con el backend de shared-infra)
+shared_infra_state_prefix = "shared/terraform"
+
+# ============================================================================
+# CONFIGURACIÓN DE LA VM
+# ============================================================================
+instance_name = "roax-artifact-qa"
+machine_type  = "e2-medium"
+
+# Disco
+boot_disk_size = 20
+boot_disk_type = "pd-standard"
+
+# Red
+enable_public_ip = false  # Usar Cloud NAT de la infraestructura compartida
+
+# Opcional: IP estática pública (solo si enable_public_ip = true)
+# static_public_ip = "roax-artifact-qa-static-ip"  # Nombre del recurso de IP estática
+
+# Opcional: IP interna estática (debe estar en el rango de la subnet)
+# static_internal_ip = "10.0.0.10"  # IP del rango de vm_subnet_cidr
+
+# Tags y Labels
+# Tag "allow-iap-ssh" es necesario para permitir SSH vía IAP
+tags = ["allow-iap-ssh"]
+labels = {
+  environment = "qa"
+  team        = "mi-equipo"
+}
+
+# ============================================================================
+# CONFIGURACIÓN DE DOCKER Y ARTIFACT REGISTRY
+# ============================================================================
+# Imagen Docker a ejecutar (formato: nombre-imagen:tag)
+# La imagen debe estar en el Artifact Registry configurado en shared-infra
+# IMPORTANTE: Usa versiones específicas para QA, no "latest"
+docker_image = "hello-world:1.0.0"
+
+# Puertos
+container_port = 8080  # Puerto interno del contenedor
+host_port      = 8080  # Puerto del host (mismo que container_port por defecto)
+
+# Variables de entorno para el contenedor
+docker_env_vars = {
+  ENV          = "qa"
+  LOG_LEVEL     = "info"
+  DATABASE_URL = "postgresql://user:pass@db-qa.internal:5432/dbname"
+}
+
+# Opcional: Comando personalizado para ejecutar el contenedor
+# docker_command = ""
+
+# Política de reinicio (always, unless-stopped, on-failure, no)
+restart_policy = "always"
+
+# Usar imagen Ubuntu (recomendado para QA, permite más control)
+# Si es false, usa Container-Optimized OS (más seguro pero menos flexible)
+use_ubuntu_image = true
+
+# Familia de imagen Ubuntu (opcional, default: "ubuntu-2204-lts")
+# Solo aplica si use_ubuntu_image = true
+# ubuntu_image_family = "ubuntu-2204-lts"
+
+# ============================================================================
+# HEALTH CHECKS
+# ============================================================================
+# Opcional: Ruta para health check HTTP
+# health_check_path = "/health"
+
+# Opcional: Puerto para health check (usa container_port si es 0)
+# health_check_port = 8080
