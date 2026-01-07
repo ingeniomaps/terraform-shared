@@ -1,0 +1,89 @@
+# ============================================================================
+# CONFIGURACIÓN PARA AMBIENTE: STAGING
+# ============================================================================
+
+# ============================================================================
+# CONFIGURACIÓN DEL PROYECTO
+# ============================================================================
+project_id  = "tu-proyecto-dev-123456"
+region      = "us-central1"
+
+# Opcional: Nombre del archivo JSON de credenciales (debe estar en ../keys/)
+# Si no se especifica, se usa GOOGLE_APPLICATION_CREDENTIALS o gcloud auth
+# credentials_file = "account_service_stg.json"
+
+# ============================================================================
+# ESTADO DE LA INFRAESTRUCTURA COMPARTIDA
+# ============================================================================
+# Bucket donde está el estado de shared-infra
+shared_infra_state_bucket = "terraform-state-stg"
+
+# Prefijo del estado (debe coincidir con el backend de shared-infra)
+shared_infra_state_prefix = "shared/terraform"
+
+# ============================================================================
+# CONFIGURACIÓN DEL CLUSTER
+# ============================================================================
+cluster_name = "gke-stg"
+
+# CIDR del control plane (debe coincidir con shared-infra)
+gke_master_cidr = "172.16.0.0/28"
+
+# ============================================================================
+# CONFIGURACIÓN DE NODOS
+# ============================================================================
+node_pool_name    = "default-pool"
+node_machine_type = "e2-standard-2"  # Máquina más potente para staging
+node_disk_size    = 100
+node_disk_type    = "pd-ssd"  # SSD para mejor rendimiento en staging
+
+# Auto-scaling
+min_node_count     = 2
+max_node_count     = 5
+initial_node_count = 2
+enable_autoscaling = true
+
+# Mantenimiento
+enable_autorepair  = true
+enable_autoupgrade = true
+
+# Versión de Kubernetes (vacío para última estable)
+kubernetes_version = ""
+
+# ============================================================================
+# SEGURIDAD Y RED
+# ============================================================================
+# Nodos privados (sin IP pública)
+enable_private_nodes = true
+
+# Endpoint privado del control plane (requiere VPN/VPC Peering para acceso)
+enable_private_endpoint = false
+
+# Redes autorizadas para acceder al control plane (opcional)
+# master_authorized_networks = {
+#   "10.0.0.0/8" = "Red corporativa"
+# }
+
+# ============================================================================
+# FEATURES
+# ============================================================================
+enable_http_load_balancing        = true
+enable_horizontal_pod_autoscaling = true
+enable_network_policy             = true  # Habilitado para staging
+
+# ============================================================================
+# MANTENIMIENTO
+# ============================================================================
+maintenance_window_start_time = "02:00"
+maintenance_window_day        = "SUNDAY"
+
+# ============================================================================
+# LABELS Y TAGS
+# ============================================================================
+labels = {
+  environment = "stg"
+  team        = "mi-equipo"
+  managed_by  = "terraform"
+}
+
+network_tags = []
