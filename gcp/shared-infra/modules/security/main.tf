@@ -39,6 +39,7 @@ module "logging" {
   break_glass_email          = google_service_account.break_glass.email
   registry_name              = var.registry_name
   alert_notification_channels = var.alert_notification_channels
+  log_bucket_suffix          = var.log_bucket_suffix
 }
 
 # ============================================================================

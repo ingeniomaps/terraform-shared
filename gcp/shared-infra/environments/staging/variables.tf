@@ -197,3 +197,9 @@ variable "gke_master_cidr" {
     error_message = "gke_master_cidr debe ser un CIDR válido con máscara /28"
   }
 }
+
+variable "log_bucket_suffix" {
+  description = "Sufijo opcional para personalizar los nombres de los buckets de logging. Se agrega después del nombre del ambiente (ej: '-custom' resultaría en 'iam-audit-logs-stg-custom'). Si está vacío, no se agrega sufijo."
+  type        = string
+  default     = ""
+}

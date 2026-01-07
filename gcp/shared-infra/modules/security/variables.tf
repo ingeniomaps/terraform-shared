@@ -88,3 +88,9 @@ variable "enable_org_policies" {
   type        = bool
   default     = false
 }
+
+variable "log_bucket_suffix" {
+  description = "Sufijo opcional para personalizar los nombres de los buckets de logging. Se agrega después del nombre del ambiente (ej: '-custom' resultaría en 'iam-audit-logs-dev-custom'). Si está vacío, no se agrega sufijo."
+  type        = string
+  default     = ""
+}
