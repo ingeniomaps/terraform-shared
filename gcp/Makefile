@@ -3,7 +3,8 @@
       plan apply \
       deploy-dev deploy-qa deploy-stg deploy-prod \
       output-dev output-qa output-stg output-prod \
-      recover-global
+      recover-global \
+      test test-verbose test-format test-validate test-lint test-security
 
 # Variables
 SCRIPT_DIR := scripts
@@ -75,6 +76,53 @@ validate: ## Validar sintaxis de Terraform (requiere terraform init y setup)
 
 lint: fmt-check validate ## Ejecutar todas las verificaciones de linting
 	@echo "✓ Linting completado"
+
+# ============================================================================
+# Testing
+# ============================================================================
+
+test: ## Ejecutar todos los tests (formato, validación, linting, seguridad)
+	@echo "Ejecutando suite completa de tests..."
+	@$(SCRIPT_DIR)/test.sh
+
+test-verbose: ## Ejecutar tests con output detallado
+	@echo "Ejecutando suite completa de tests (verbose)..."
+	@$(SCRIPT_DIR)/test.sh --verbose
+
+test-format: ## Ejecutar solo test de formato
+	@echo "Verificando formato..."
+	@terraform fmt -check -recursive . || \
+		(echo "Error: Algunos archivos necesitan formateo. Ejecuta 'make fmt' para corregirlos." && exit 1)
+
+test-validate: validate ## Ejecutar solo test de validación (alias de validate)
+
+test-lint: ## Ejecutar solo test de linting (requiere tflint)
+	@if ! command -v tflint >/dev/null 2>&1; then \
+		echo "⚠️  tflint no está instalado. Instala con: brew install tflint"; \
+		exit 1; \
+	fi
+	@echo "Ejecutando tflint..."
+	@for dir in shared-infra/environments/* terraform-state/environments/* terraform-state/global; do \
+		if [ -d "$$dir" ] && [ -f "$$dir/main.tf" ]; then \
+			echo "Linting $$dir..."; \
+			(cd "$$dir" && tflint --init >/dev/null 2>&1 && tflint --format compact) || exit 1; \
+		fi; \
+	done
+
+test-security: ## Ejecutar solo tests de seguridad (requiere checkov o tfsec)
+	@echo "Ejecutando tests de seguridad..."
+	@if command -v checkov >/dev/null 2>&1; then \
+		echo "Ejecutando checkov..."; \
+		checkov -d . --framework terraform --quiet --compact || exit 1; \
+	else \
+		echo "⚠️  checkov no está instalado. Instala con: pip install checkov"; \
+	fi
+	@if command -v tfsec >/dev/null 2>&1; then \
+		echo "Ejecutando tfsec..."; \
+		tfsec . --format compact --no-color || true; \
+	else \
+		echo "⚠️  tfsec no está instalado. Instala con: brew install tfsec"; \
+	fi
 
 # ============================================================================
 # Limpieza e Inicialización
