@@ -255,11 +255,14 @@ process_directory() {
         return 0
     fi
 
-    # Extraer el ambiente del path
+    # Extraer el ambiente del path (para logging)
     local env_name
     env_name=$(get_environment_from_path "$dir")
+
+    # Obtener el sufijo del bucket desde el valor de env en tfvars.example
+    # Esto asegura que usemos el valor correcto (dev, qa, stg, prod) en lugar del nombre del directorio
     local bucket_suffix
-    bucket_suffix=$(get_bucket_suffix "$env_name")
+    bucket_suffix=$(get_env_from_tfvars "$dir")
 
     if [ "$verbose" = "true" ]; then
         echo -e "${BLUE}Procesando:${NC} $dir (ambiente: $env_name, sufijo: $bucket_suffix)"
