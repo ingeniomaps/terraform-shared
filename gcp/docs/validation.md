@@ -56,8 +56,8 @@ make apply
 - [ ] Recursos se crean correctamente en GCP
 - [ ] Outputs son correctos
 
-## Mejoras Futuras
+## ✅ Mejoras Implementadas
 
-- [ ] Configurar pre-commit hooks para validación automática
-- [ ] Integrar validación en CI/CD pipeline
-- [ ] Agregar tests automatizados con Terratest o similar
+- [x] Pre-commit hooks configurados (ver [pre-commit.md](pre-commit.md))
+- [x] Tests automatizados implementados (ver [testing.md](testing.md))
+- [ ] Integrar validación en CI/CD pipeline (mejora opcional)

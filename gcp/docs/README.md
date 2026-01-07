@@ -64,9 +64,20 @@ Esta carpeta contiene la documentación técnica del proyecto Terraform GCP.
 - [**state-recovery.md**](state-recovery.md) - Recuperación del estado de Terraform
 
   - Recuperación automática con backend configurado
-  - Recuperación manual del módulo global
-  - Diferencia entre módulos con/sin backend
-  - Ejemplos prácticos y mejores prácticas
+
+- [**testing.md**](testing.md) - Testing y validación automatizada
+
+  - Suite completa de tests (formato, validación, linting, seguridad)
+  - Comandos `make test*` disponibles
+  - Integración en CI/CD
+  - Troubleshooting
+
+- [**pre-commit.md**](pre-commit.md) - Pre-commit hooks para calidad de código
+
+  - Configuración de hooks automáticos
+  - Prevención de commits de archivos sensibles
+  - Formato y validación automática
+  - Detección de secretos
 
 ## Documentación Principal
 

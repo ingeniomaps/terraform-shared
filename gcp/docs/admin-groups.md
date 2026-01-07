@@ -13,12 +13,12 @@ Los `admin_groups` son **grupos de Google Workspace o Cloud Identity** que deben
 
 ## 🎯 Grupos Requeridos
 
-Según la configuración en `shared-infra/environments/*/terraform.tfvars`, necesitas crear estos 4 grupos:
+Según la configuración en `shared-infra/environments/*/terraform.tfvars`, necesitas crear estos 4 grupos (reemplaza `@example.com` con tu dominio):
 
-1. **`network-admins@roaxai.com`** - Administradores de red (control total sobre redes, subredes, firewalls)
-2. **`developers@roaxai.com`** - Desarrolladores (acceso de solo lectura a recursos de red)
-3. **`security-admins@roaxai.com`** - Administradores de seguridad (gestión de políticas de seguridad y IAM)
-4. **`auditors@roaxai.com`** - Auditores (acceso de solo lectura para auditoría y compliance)
+1. **`network-admins@example.com`** - Administradores de red (control total sobre redes, subredes, firewalls)
+2. **`network-viewers@example.com`** - Visualizadores de red (acceso de solo lectura a recursos de red)
+3. **`security-admins@example.com`** - Administradores de seguridad (gestión de políticas de seguridad y IAM)
+4. **`auditors@example.com`** - Auditores (acceso de solo lectura para auditoría y compliance)
 
 ## 🚀 Opción 1: Google Workspace Admin Console (Recomendado)
 
@@ -41,7 +41,7 @@ Para cada grupo necesario:
 1. Haz clic en **"Crear grupo"** o **"Add group"**
 2. Completa la información:
    - **Nombre del grupo**: `network-admins` (o el nombre correspondiente)
-   - **Email del grupo**: `network-admins@roaxai.com` (debe usar tu dominio)
+   - **Email del grupo**: `network-admins@example.com` (debe usar tu dominio)
    - **Descripción**: Opcional (ej: "Administradores de red")
    - **Tipo de grupo**:
      - **"Grupo de correo"** - Si quieres que reciba emails
@@ -77,7 +77,7 @@ Si solo usas Cloud Identity (sin Google Workspace):
 2. Haz clic en **"Create Group"**
 3. Completa la información:
    - **Group name**: `network-admins`
-   - **Group email**: `network-admins@roaxai.com`
+   - **Group email**: `network-admins@example.com`
    - **Description**: Opcional
 4. Haz clic en **"Create"**
 
@@ -95,27 +95,29 @@ Si prefieres usar la línea de comandos:
 ### Crear Grupo
 
 ```bash
+# Reemplaza TU-ORGANIZATION-ID y TU-DOMINIO con tus valores reales
+
 # Crear grupo network-admins
-gcloud identity groups create network-admins@roaxai.com \
-  --organization=391074161229 \
+gcloud identity groups create network-admins@TU-DOMINIO.com \
+  --organization=TU-ORGANIZATION-ID \
   --display-name="Network Admins" \
   --description="Administradores de red"
 
-# Crear grupo developers
-gcloud identity groups create developers@roaxai.com \
-  --organization=391074161229 \
-  --display-name="Developers" \
-  --description="Desarrolladores - acceso de solo lectura"
+# Crear grupo network-viewers
+gcloud identity groups create network-viewers@TU-DOMINIO.com \
+  --organization=TU-ORGANIZATION-ID \
+  --display-name="Network Viewers" \
+  --description="Visualizadores de red - acceso de solo lectura"
 
 # Crear grupo security-admins
-gcloud identity groups create security-admins@roaxai.com \
-  --organization=391074161229 \
+gcloud identity groups create security-admins@TU-DOMINIO.com \
+  --organization=TU-ORGANIZATION-ID \
   --display-name="Security Admins" \
   --description="Administradores de seguridad"
 
 # Crear grupo auditors
-gcloud identity groups create auditors@roaxai.com \
-  --organization=391074161229 \
+gcloud identity groups create auditors@TU-DOMINIO.com \
+  --organization=TU-ORGANIZATION-ID \
   --display-name="Auditors" \
   --description="Auditores - acceso de solo lectura para auditoría"
 ```
@@ -123,19 +125,21 @@ gcloud identity groups create auditors@roaxai.com \
 ### Agregar Miembros
 
 ```bash
+# Reemplaza TU-DOMINIO con tu dominio real
+
 # Agregar usuario a network-admins
 gcloud identity groups memberships add \
-  --group-email=network-admins@roaxai.com \
-  --member-email=usuario1@roaxai.com
+  --group-email=network-admins@TU-DOMINIO.com \
+  --member-email=usuario1@TU-DOMINIO.com
 
 # Agregar múltiples usuarios
 gcloud identity groups memberships add \
-  --group-email=developers@roaxai.com \
-  --member-email=dev1@roaxai.com
+  --group-email=network-viewers@TU-DOMINIO.com \
+  --member-email=dev1@TU-DOMINIO.com
 
 gcloud identity groups memberships add \
-  --group-email=developers@roaxai.com \
-  --member-email=dev2@roaxai.com
+  --group-email=network-viewers@TU-DOMINIO.com \
+  --member-email=dev2@TU-DOMINIO.com
 ```
 
 ## ✅ Verificación
@@ -145,12 +149,14 @@ Después de crear los grupos, verifica que existan:
 ### Desde gcloud CLI
 
 ```bash
+# Reemplaza TU-ORGANIZATION-ID y TU-DOMINIO con tus valores reales
+
 # Listar todos los grupos
-gcloud identity groups list --organization=391074161229
+gcloud identity groups list --organization=TU-ORGANIZATION-ID
 
 # Ver miembros de un grupo específico
 gcloud identity groups memberships list \
-  --group-email=network-admins@roaxai.com
+  --group-email=network-admins@TU-DOMINIO.com
 ```
 
 ### Desde la Consola
@@ -168,7 +174,7 @@ gcloud identity groups memberships list \
 
 ### Dominio
 
-- El email del grupo **debe usar tu dominio** (`@roaxai.com` en tu caso)
+- El email del grupo **debe usar tu dominio** (ej: `@example.com`)
 - No puedes crear grupos con dominios que no controlas
 
 ### Tiempo de Propagación
@@ -181,7 +187,7 @@ gcloud identity groups memberships list \
 **IMPORTANTE**: Antes de aplicar Terraform, verifica que los grupos existan. Si Terraform intenta asignar roles a grupos que no existen, fallará con un error como:
 
 ```
-Error: Error creating IAM member: group:network-admins@roaxai.com not found
+Error: Error creating IAM member: group:network-admins@example.com not found
 ```
 
 ## 📝 Orden de Ejecución Recomendado
@@ -217,7 +223,7 @@ Error: Error creating IAM member: group:network-admins@roaxai.com not found
 
 **Solución**:
 1. Espera 5-10 minutos después de crear el grupo
-2. Verifica con: `gcloud identity groups describe network-admins@roaxai.com`
+2. Verifica con: `gcloud identity groups describe network-admins@TU-DOMINIO.com`
 3. Intenta aplicar Terraform nuevamente
 
 ## 📚 Referencias

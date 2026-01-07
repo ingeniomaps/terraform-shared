@@ -378,22 +378,9 @@ make setup
 
 Ver [Guía de Reutilización](docs/reutilizacion.md) para más detalles.
 
-### 🎯 Aplicar Casos de Uso y Calcular Costos
+### 🎯 Casos de Uso
 
-Para aplicar un caso de uso, generar plan y calcular costos:
-
-```bash
-# Menú interactivo para seleccionar caso de uso
-make use-case
-
-# O directamente por número
-make use-case-1  # Producción Completa
-make use-case-2  # Desarrollo con GKE Restringido
-make use-case-3  # Producción con GKE
-make use-case-4  # Desarrollo Básico
-```
-
-Ver [Casos de Uso](docs/casos-de-uso.md) para más detalles sobre cada caso.
+El proyecto soporta múltiples casos de uso documentados. Ver [Casos de Uso](docs/casos-de-uso.md) para ejemplos completos de configuración para diferentes escenarios (VMs, GKE, seguridad, conectividad).
 
 ## 🐛 Troubleshooting
 
@@ -440,6 +427,7 @@ Ver [Recuperación de Estado](docs/state-recovery.md) para más detalles.
 - [Configuración de Backends](docs/backends.md) - Detalles sobre backends de Terraform
 - [Gestión de Versiones](docs/versions.md) - Verificación y actualización de versiones
 - [Validación y Testing](docs/validation.md) - Comandos y checklist de validación
+- [Testing Automatizado](docs/testing.md) - Suite completa de tests (formato, validación, linting, seguridad)
 - [Gestión de Entornos](docs/environments.md) - Crear y gestionar entornos adicionales
 - [Guía de Reutilización](docs/reutilizacion.md) - Cómo reutilizar el proyecto para diferentes proyectos/workspaces
 - [Casos de Uso](docs/casos-de-uso.md) - Todos los casos de uso posibles del proyecto con ejemplos
@@ -451,12 +439,57 @@ Ver [Recuperación de Estado](docs/state-recovery.md) para más detalles.
 - [Terraform Google Provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs)
 - [Google Cloud Platform](https://cloud.google.com/docs)
 
+## 🧪 Testing
+
+El proyecto incluye una suite completa de tests automatizados:
+
+```bash
+# Ejecutar todos los tests
+make test
+
+# Tests individuales
+make test-format      # Verificar formato
+make test-validate    # Validar sintaxis
+make test-lint        # Linting (requiere tflint)
+make test-security    # Seguridad (requiere checkov/tfsec)
+
+# Tests con output detallado
+make test-verbose
+```
+
+Ver [docs/testing.md](docs/testing.md) para más detalles sobre los tests disponibles y cómo instalarlos.
+
+## 🔒 Pre-commit Hooks
+
+El proyecto incluye pre-commit hooks para asegurar la calidad del código:
+
+```bash
+# Instalar pre-commit
+pip install pre-commit
+
+# Instalar hooks en el repositorio
+pre-commit install
+
+# Ejecutar manualmente
+pre-commit run --all-files
+```
+
+Los hooks incluyen:
+- Formato automático de Terraform
+- Validación de sintaxis
+- Prevención de commits de archivos sensibles
+- Detección de secretos
+- Verificación de archivos de estado
+
+Ver [docs/pre-commit.md](docs/pre-commit.md) para más detalles.
+
 ## 🤝 Contribución
 
 1. Crea una rama para tu cambio
 2. Realiza tus modificaciones
-3. Verifica con `terraform fmt` y `terraform validate`
-4. Crea un Pull Request
+3. Ejecuta los tests: `make test`
+4. Verifica con `terraform fmt` y `terraform validate`
+5. Crea un Pull Request
 
 ## 📄 Licencia
 

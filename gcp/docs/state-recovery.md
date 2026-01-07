@@ -31,16 +31,18 @@ terraform init
 
 ### Módulos con Backend en este Proyecto
 
-| Módulo | Bucket | Prefijo | Recuperación |
-|--------|--------|---------|--------------|
-| `shared-infra/environments/development` | `roax-terraform-state-stg` | `dev/shared/terraform` | ✅ Automática |
-| `shared-infra/environments/qa` | `roax-terraform-state` | `qa/shared/terraform` | ✅ Automática |
-| `shared-infra/environments/staging` | `roax-terraform-state` | `stg/shared/terraform` | ✅ Automática |
-| `shared-infra/environments/production` | `roax-terraform-state` | `prod/shared/terraform` | ✅ Automática |
-| `terraform-state/environments/development` | `roax-terraform-state` | `dev` | ✅ Automática |
-| `terraform-state/environments/qa` | `roax-terraform-state` | `qa` | ✅ Automática |
-| `terraform-state/environments/staging` | `roax-terraform-state` | `stg` | ✅ Automática |
-| `terraform-state/environments/production` | `roax-terraform-state` | `prod` | ✅ Automática |
+| Módulo | Backend Configurado | Recuperación |
+|--------|---------------------|--------------|
+| `shared-infra/environments/development` | ✅ Sí | ✅ Automática |
+| `shared-infra/environments/qa` | ✅ Sí | ✅ Automática |
+| `shared-infra/environments/staging` | ✅ Sí | ✅ Automática |
+| `shared-infra/environments/production` | ✅ Sí | ✅ Automática |
+| `terraform-state/environments/development` | ✅ Sí | ✅ Automática |
+| `terraform-state/environments/qa` | ✅ Sí | ✅ Automática |
+| `terraform-state/environments/staging` | ✅ Sí | ✅ Automática |
+| `terraform-state/environments/production` | ✅ Sí | ✅ Automática |
+
+**Nota**: Los buckets y prefijos específicos están configurados en el `main.tf` o `backend.tf` de cada módulo. Revisa esos archivos para ver la configuración exacta.
 
 **Todos estos módulos recuperan automáticamente el estado al hacer `terraform init`.**
 
@@ -82,17 +84,17 @@ Si prefieres hacerlo manualmente:
 ```bash
 cd terraform-state/global
 
-# 1. Verificar que el bucket existe
-gcloud storage buckets describe gs://roax-terraform-state \
-  --project=tu-proyecto-id
+# 1. Verificar que el bucket existe (reemplaza BUCKET-NAME con el nombre real)
+gcloud storage buckets describe gs://BUCKET-NAME \
+  --project=TU-PROYECTO-ID
 
 # 2. Inicializar Terraform (sin backend)
 terraform init -backend=false
 
-# 3. Importar el recurso existente
+# 3. Importar el recurso existente (reemplaza BUCKET-NAME con el nombre real)
 terraform import \
   'module.terraform_state_bucket.google_storage_bucket.bucket_protected[0]' \
-  roax-terraform-state
+  BUCKET-NAME
 
 # 4. Verificar el estado
 terraform state list
@@ -117,15 +119,14 @@ terraform plan
 ### Caso 1: Recuperar Estado con Backend
 
 ```bash
-# Escenario: Perdiste el .tfstate local de staging
+# Escenario: Perdiste el .tfstate local
 
-cd terraform-state/environments/staging
+cd shared-infra/environments/development
 
 # 1. Simplemente ejecuta terraform init
 terraform init
 
-# ✅ Terraform automáticamente descarga el estado desde:
-# gs://roax-terraform-state/stg/default.tfstate
+# ✅ Terraform automáticamente descarga el estado desde el bucket GCS configurado
 
 # 2. Verifica que el estado se recuperó
 terraform state list
@@ -148,12 +149,12 @@ terraform init  # Esto solo inicializa, no descarga estado
 cd ../..
 make recover-global
 
-# O manualmente:
+# O manualmente (reemplaza BUCKET-NAME con el nombre real):
 cd terraform-state/global
 terraform init -backend=false
 terraform import \
   'module.terraform_state_bucket.google_storage_bucket.bucket_protected[0]' \
-  roax-terraform-state
+  BUCKET-NAME
 ```
 
 ---
@@ -167,8 +168,8 @@ Aunque `global` es la raíz, **recomendamos configurar un backend** para evitar 
 Crea un bucket manualmente en GCP para el estado de `global`:
 
 ```bash
-# Crear bucket manualmente
-gsutil mb -p tu-proyecto-id -l us-central1 gs://tu-proyecto-terraform-state-global
+# Crear bucket manualmente (reemplaza con tus valores)
+gsutil mb -p TU-PROYECTO-ID -l us-central1 gs://TU-PROYECTO-terraform-state-global
 ```
 
 Luego configura el backend en `terraform-state/global/backend.tf`:
@@ -176,7 +177,7 @@ Luego configura el backend en `terraform-state/global/backend.tf`:
 ```hcl
 terraform {
   backend "gcs" {
-    bucket = "tu-proyecto-terraform-state-global"
+    bucket = "TU-PROYECTO-terraform-state-global"
     prefix = "global"
   }
 }
@@ -184,13 +185,13 @@ terraform {
 
 ### Opción 2: Usar el Mismo Bucket con Prefijo Diferente
 
-Si ya tienes el bucket `roax-terraform-state`, puedes usarlo con un prefijo:
+Si ya tienes un bucket de estado, puedes usarlo con un prefijo diferente:
 
 ```hcl
 terraform {
   backend "gcs" {
-    bucket = "roax-terraform-state"
-    prefix = "global-state"  # Prefijo diferente a stg/prod
+    bucket = "TU-PROYECTO-terraform-state"
+    prefix = "global-state"  # Prefijo diferente a otros ambientes
   }
 }
 ```

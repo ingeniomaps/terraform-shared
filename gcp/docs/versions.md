@@ -6,13 +6,11 @@
 
 - **Versión actual**: `>= 1.14.2`
 - **Estado**: ✅ Versión reciente y estable
-- **Última verificación**: 2024
 
 ### Google Provider
 
 - **Versión actual**: `>= 7.0`
 - **Estado**: ✅ Versión reciente y estable
-- **Última verificación**: 2024
 
 ## Verificación Periódica
 

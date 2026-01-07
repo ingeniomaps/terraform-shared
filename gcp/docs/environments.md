@@ -6,7 +6,7 @@
 
 - **`shared-infra/environments/development/`**
   - ✅ Configurado y funcional
-  - Backend: `roax-terraform-state-stg` con prefix `dev/shared/terraform`
+  - Backend configurado en `main.tf` (revisa el archivo para ver bucket y prefix específicos)
 
 ### Terraform State Buckets
 
@@ -44,8 +44,8 @@ shared-infra/environments/
 
 2. **Ajustar backends**
 
-   - Staging: `bucket = "roax-terraform-state"`, `prefix = "stg/shared/terraform"`
-   - Production: `bucket = "roax-terraform-state"`, `prefix = "prod/shared/terraform"`
+   - Edita el `main.tf` de cada ambiente para configurar el bucket y prefix apropiados
+   - Ejemplo: `bucket = "TU-PROYECTO-terraform-state"`, `prefix = "stg/shared/terraform"`
 
 3. **Ajustar variables por ambiente**
    - Modificar `terraform.tfvars` con valores apropiados
