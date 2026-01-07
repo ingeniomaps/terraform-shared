@@ -10,9 +10,9 @@ locals {
 
   certbot_install_script = (
     var.install_certbot && var.use_ubuntu_image
-  ) ? trimspace(templatefile(
-    "${path.module}/scripts/certbot_install.sh",
-    {}
+    ) ? trimspace(templatefile(
+      "${path.module}/scripts/certbot_install.sh",
+      {}
   )) : ""
 
   # Procesar microservicios: si env_file es una ruta a archivo, leer su contenido

@@ -18,13 +18,13 @@
 module "iam" {
   source = "./iam"
 
-  project_id                      = var.project_id
-  admin_groups                    = var.admin_groups
-  ci_cd_writer_email              = google_service_account.ci_cd_writer.email
-  vm_reader_email                 = google_service_account.vm_reader.email
-  break_glass_email               = google_service_account.break_glass.email
+  project_id                       = var.project_id
+  admin_groups                     = var.admin_groups
+  ci_cd_writer_email               = google_service_account.ci_cd_writer.email
+  vm_reader_email                  = google_service_account.vm_reader.email
+  break_glass_email                = google_service_account.break_glass.email
   break_glass_max_session_duration = var.break_glass_max_session_duration
-  enable_group_iam                = var.enable_group_iam
+  enable_group_iam                 = var.enable_group_iam
 }
 
 # ============================================================================
@@ -33,13 +33,13 @@ module "iam" {
 module "logging" {
   source = "./logging"
 
-  project_id                 = var.project_id
-  env                        = var.env
-  is_production              = local.is_production
-  break_glass_email          = google_service_account.break_glass.email
-  registry_name              = var.registry_name
+  project_id                  = var.project_id
+  env                         = var.env
+  is_production               = local.is_production
+  break_glass_email           = google_service_account.break_glass.email
+  registry_name               = var.registry_name
   alert_notification_channels = var.alert_notification_channels
-  log_bucket_suffix          = var.log_bucket_suffix
+  log_bucket_suffix           = var.log_bucket_suffix
 }
 
 # ============================================================================
@@ -50,14 +50,14 @@ module "security" {
 
   project_id                  = var.project_id
   organization_id             = var.organization_id
-  allowed_domains              = var.allowed_domains
-  enable_vpc_service_controls  = var.enable_vpc_service_controls
+  allowed_domains             = var.allowed_domains
+  enable_vpc_service_controls = var.enable_vpc_service_controls
   account_name                = local.account_name
   workspace                   = var.workspace
   env                         = var.env
   project_number              = data.google_project.current.number
   is_production               = local.is_production
-  enable_org_policies          = var.enable_org_policies
+  enable_org_policies         = var.enable_org_policies
 }
 
 # ============================================================================
@@ -66,9 +66,9 @@ module "security" {
 module "gke" {
   source = "./gke"
 
-  project_id       = var.project_id
+  project_id        = var.project_id
   account_name      = local.account_name
-  create_admin_sa  = var.create_admin_sa
+  create_admin_sa   = var.create_admin_sa
   registry_location = var.registry_location
   registry_name     = var.registry_name
 }

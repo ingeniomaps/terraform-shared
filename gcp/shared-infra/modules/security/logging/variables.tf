@@ -19,6 +19,11 @@ variable "is_production" {
 variable "break_glass_email" {
   description = "Email de la Service Account Break Glass"
   type        = string
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", var.break_glass_email))
+    error_message = "break_glass_email debe ser un email válido (ej: sa@project.iam.gserviceaccount.com)"
+  }
 }
 
 variable "registry_name" {

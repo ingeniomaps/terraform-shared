@@ -189,6 +189,11 @@ variable "env" {
 variable "artifact_registry_url" {
   description = "URL completa del Artifact Registry (ej: us-central1-docker.pkg.dev/project-id/repo-name)"
   type        = string
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]+\\.docker\\.pkg\\.dev/[a-z0-9-]+/[a-z0-9-]+$", var.artifact_registry_url))
+    error_message = "artifact_registry_url debe tener formato: REGION-docker.pkg.dev/PROJECT_ID/REPO_NAME"
+  }
 }
 
 variable "app_name" {
@@ -224,12 +229,22 @@ variable "app_container_port" {
   description = "Puerto del contenedor donde escucha la aplicación"
   type        = number
   default     = 80
+
+  validation {
+    condition     = var.app_container_port > 0 && var.app_container_port <= 65535
+    error_message = "app_container_port debe estar entre 1 y 65535"
+  }
 }
 
 variable "app_service_port" {
   description = "Puerto del Service de Kubernetes"
   type        = number
   default     = 80
+
+  validation {
+    condition     = var.app_service_port > 0 && var.app_service_port <= 65535
+    error_message = "app_service_port debe estar entre 1 y 65535"
+  }
 }
 
 variable "app_liveness_path" {

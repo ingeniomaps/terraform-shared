@@ -21,7 +21,7 @@ resource "null_resource" "copy_deployment_scripts" {
   # Usar local-exec con gcloud para copiar archivos vía IAP
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
-    command = <<-EOT
+    command     = <<-EOT
       set -euo pipefail
 
       INSTANCE_NAME="${module.vm_base.instance_name}"

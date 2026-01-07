@@ -37,5 +37,5 @@ locals {
   maintenance_window_start_min  = tonumber(split(":", var.maintenance_window_start_time)[1])
   maintenance_window_end_hour   = local.maintenance_window_start_hour + 4
   # Si la hora de fin excede 23, ajustar al día siguiente (formato RFC3339 maneja esto automáticamente)
-  maintenance_window_end_time   = format("2023-01-01T%02d:%02d:00Z", local.maintenance_window_end_hour, local.maintenance_window_start_min)
+  maintenance_window_end_time = format("2023-01-01T%02d:%02d:00Z", local.maintenance_window_end_hour, local.maintenance_window_start_min)
 }

@@ -49,7 +49,7 @@ module "security" {
   alert_notification_channels = var.alert_notification_channels
 
   break_glass_max_session_duration = var.break_glass_max_session_duration
-  log_bucket_suffix               = var.log_bucket_suffix
+  log_bucket_suffix                = var.log_bucket_suffix
 }
 
 module "artifact_registry" {

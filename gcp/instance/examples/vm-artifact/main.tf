@@ -49,7 +49,7 @@ module "vm_artifact" {
   machine_type          = var.machine_type
   vm_subnet_name        = data.terraform_remote_state.shared_infra.outputs.vm_subnet_name
   service_account_email = data.terraform_remote_state.shared_infra.outputs.vm_reader_email
-  artifact_registry_url  = data.terraform_remote_state.shared_infra.outputs.repository_url
+  artifact_registry_url = data.terraform_remote_state.shared_infra.outputs.repository_url
   docker_image          = var.docker_image
   container_port        = var.container_port
   host_port             = var.host_port
@@ -61,9 +61,9 @@ module "vm_artifact" {
   boot_disk_size        = var.boot_disk_size
   boot_disk_type        = var.boot_disk_type
   enable_public_ip      = var.enable_public_ip
-  static_public_ip       = var.static_public_ip
-  static_internal_ip     = var.static_internal_ip
-  use_ubuntu_image       = var.use_ubuntu_image
-  health_check_path      = var.health_check_path
-  health_check_port      = var.health_check_port
+  static_public_ip      = var.static_public_ip
+  static_internal_ip    = var.static_internal_ip
+  use_ubuntu_image      = var.use_ubuntu_image
+  health_check_path     = var.health_check_path
+  health_check_port     = var.health_check_port
 }

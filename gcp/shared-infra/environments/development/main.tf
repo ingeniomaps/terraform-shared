@@ -55,9 +55,9 @@ module "security" {
   alert_notification_channels = var.alert_notification_channels
 
   break_glass_max_session_duration = var.break_glass_max_session_duration
-  enable_group_iam                = var.enable_group_iam
-  enable_org_policies             = var.enable_org_policies
-  log_bucket_suffix               = var.log_bucket_suffix
+  enable_group_iam                 = var.enable_group_iam
+  enable_org_policies              = var.enable_org_policies
+  log_bucket_suffix                = var.log_bucket_suffix
 }
 
 module "artifact_registry" {

@@ -42,8 +42,8 @@ locals {
     "${path.module}/scripts/health_check.sh",
     {
       health_check_port = var.health_check_port > 0 ? var.health_check_port : var.container_port
-      health_check_path  = var.health_check_path
-      image_full_path    = local.image_full_path
+      health_check_path = var.health_check_path
+      image_full_path   = local.image_full_path
     }
   )) : ""
 

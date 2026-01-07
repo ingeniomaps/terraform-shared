@@ -7,7 +7,7 @@ terraform {
       version = ">= 7.0"
     }
     kubernetes = {
-      source  = "hashicorp/kubernetes"
+      source = "hashicorp/kubernetes"
       # 3.0.x ha mostrado errores tipo "Unexpected Identity Change" durante refresh/destroy
       # (provider devuelve identidad nula y luego identidad real en la misma lectura).
       # Para estabilidad, mantenemos la serie 2.x.
@@ -179,8 +179,8 @@ resource "kubernetes_deployment_v1" "app" {
     name      = var.app_name
     namespace = local.app_namespace_name
     labels = {
-      app     = var.app_name
-      version = var.app_image_tag
+      app        = var.app_name
+      version    = var.app_image_tag
       managed_by = "terraform"
     }
   }
@@ -228,7 +228,7 @@ resource "kubernetes_deployment_v1" "app" {
 
           port {
             container_port = var.app_container_port
-            name          = "http"
+            name           = "http"
           }
 
           resources {
@@ -317,9 +317,9 @@ resource "kubernetes_ingress_v1" "app" {
     name      = "${var.app_name}-ingress"
     namespace = local.app_namespace_name
     annotations = {
-      "kubernetes.io/ingress.class"                = "gce"
+      "kubernetes.io/ingress.class"                 = "gce"
       "kubernetes.io/ingress.global-static-ip-name" = var.app_static_ip_name != "" ? var.app_static_ip_name : null
-      "kubernetes.io/ingress.allow-http"           = "true"
+      "kubernetes.io/ingress.allow-http"            = "true"
     }
     labels = {
       app = var.app_name

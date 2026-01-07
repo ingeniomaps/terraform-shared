@@ -14,6 +14,13 @@ variable "organization_id" {
 variable "allowed_domains" {
   description = "Dominios permitidos para miembros IAM"
   type        = list(string)
+
+  validation {
+    condition = alltrue([
+      for domain in var.allowed_domains : can(regex("^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$", domain))
+    ])
+    error_message = "Todos los dominios en allowed_domains deben tener formato válido (ej: example.com)"
+  }
 }
 
 variable "enable_vpc_service_controls" {

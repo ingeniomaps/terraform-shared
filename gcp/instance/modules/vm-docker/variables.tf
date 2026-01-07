@@ -18,6 +18,11 @@ variable "zone" {
 variable "instance_name" {
   description = "Nombre de la instancia VM"
   type        = string
+
+  validation {
+    condition     = length(var.instance_name) >= 1 && length(var.instance_name) <= 63 && can(regex("^[a-z]([-a-z0-9]*[a-z0-9])?$", var.instance_name))
+    error_message = "instance_name debe tener entre 1 y 63 caracteres, empezar con letra minúscula, y contener solo letras minúsculas, números y guiones"
+  }
 }
 
 variable "machine_type" {
@@ -34,6 +39,11 @@ variable "vm_subnet_name" {
 variable "service_account_email" {
   description = "Email de la Service Account para la VM (obtenido de shared-infra)"
   type        = string
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", var.service_account_email))
+    error_message = "service_account_email debe ser un email válido (ej: sa@project.iam.gserviceaccount.com)"
+  }
 }
 
 variable "tags" {
@@ -52,6 +62,11 @@ variable "boot_disk_size" {
   description = "Tamaño del disco de arranque en GB"
   type        = number
   default     = 20
+
+  validation {
+    condition     = var.boot_disk_size >= 10 && var.boot_disk_size <= 65536
+    error_message = "boot_disk_size debe estar entre 10 GB y 65536 GB (64 TB)"
+  }
 }
 
 variable "boot_disk_type" {

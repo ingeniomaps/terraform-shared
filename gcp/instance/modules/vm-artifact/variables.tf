@@ -18,6 +18,11 @@ variable "zone" {
 variable "instance_name" {
   description = "Nombre de la instancia VM"
   type        = string
+
+  validation {
+    condition     = length(var.instance_name) >= 1 && length(var.instance_name) <= 63 && can(regex("^[a-z]([-a-z0-9]*[a-z0-9])?$", var.instance_name))
+    error_message = "instance_name debe tener entre 1 y 63 caracteres, empezar con letra minúscula, y contener solo letras minúsculas, números y guiones"
+  }
 }
 
 variable "machine_type" {
@@ -34,11 +39,21 @@ variable "vm_subnet_name" {
 variable "service_account_email" {
   description = "Email de la Service Account para la VM (obtenido de shared-infra)"
   type        = string
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", var.service_account_email))
+    error_message = "service_account_email debe ser un email válido (ej: sa@project.iam.gserviceaccount.com)"
+  }
 }
 
 variable "artifact_registry_url" {
-  description = "URL completa del Artifact Registry (obtenido de shared-infra)"
+  description = "URL completa del Artifact Registry (obtenido de shared-infra). Formato: REGION-docker.pkg.dev/PROJECT_ID/REPO_NAME"
   type        = string
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]+\\.docker\\.pkg\\.dev/[a-z0-9-]+/[a-z0-9-]+$", var.artifact_registry_url))
+    error_message = "artifact_registry_url debe tener formato: REGION-docker.pkg.dev/PROJECT_ID/REPO_NAME"
+  }
 }
 
 variable "docker_image" {
@@ -56,12 +71,22 @@ variable "container_port" {
   description = "Puerto del contenedor"
   type        = number
   default     = 8080
+
+  validation {
+    condition     = var.container_port > 0 && var.container_port <= 65535
+    error_message = "container_port debe estar entre 1 y 65535"
+  }
 }
 
 variable "host_port" {
   description = "Puerto del host (mismo que container_port por defecto)"
   type        = number
   default     = 8080
+
+  validation {
+    condition     = var.host_port > 0 && var.host_port <= 65535
+    error_message = "host_port debe estar entre 1 y 65535"
+  }
 }
 
 variable "docker_env_vars" {
@@ -102,6 +127,11 @@ variable "boot_disk_size" {
   description = "Tamaño del disco de arranque en GB"
   type        = number
   default     = 20
+
+  validation {
+    condition     = var.boot_disk_size >= 10 && var.boot_disk_size <= 65536
+    error_message = "boot_disk_size debe estar entre 10 GB y 65536 GB (64 TB)"
+  }
 }
 
 variable "boot_disk_type" {
