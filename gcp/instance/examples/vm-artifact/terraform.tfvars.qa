@@ -5,7 +5,7 @@
 # ============================================================================
 # CONFIGURACIÓN DEL PROYECTO
 # ============================================================================
-project_id  = "core-plate-443813-d1"
+project_id  = "tu-proyecto-dev-123456"
 region      = "us-central1"
 zone        = "us-central1-a"
 
@@ -17,7 +17,7 @@ zone        = "us-central1-a"
 # ESTADO DE LA INFRAESTRUCTURA COMPARTIDA
 # ============================================================================
 # Bucket donde está el estado de shared-infra
-shared_infra_state_bucket = "roax-terraform-state-qa"
+shared_infra_state_bucket = "terraform-state-qa"
 
 # Prefijo del estado (debe coincidir con el backend de shared-infra)
 shared_infra_state_prefix = "shared/terraform"
@@ -25,7 +25,7 @@ shared_infra_state_prefix = "shared/terraform"
 # ============================================================================
 # CONFIGURACIÓN DE LA VM
 # ============================================================================
-instance_name = "roax-artifact-qa"
+instance_name = "vm-artifact-qa"
 machine_type  = "e2-medium"
 
 # Disco
@@ -36,7 +36,7 @@ boot_disk_type = "pd-standard"
 enable_public_ip = false  # Usar Cloud NAT de la infraestructura compartida
 
 # Opcional: IP estática pública (solo si enable_public_ip = true)
-# static_public_ip = "roax-artifact-qa-static-ip"  # Nombre del recurso de IP estática
+# static_public_ip = "vm-artifact-qa-static-ip"  # Nombre del recurso de IP estática
 
 # Opcional: IP interna estática (debe estar en el rango de la subnet)
 # static_internal_ip = "10.0.0.10"  # IP del rango de vm_subnet_cidr
