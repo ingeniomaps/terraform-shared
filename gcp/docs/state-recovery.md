@@ -26,21 +26,21 @@ cd terraform-state/environments/staging
 terraform init
 
 # ✅ Terraform automáticamente descarga el estado desde:
-# gs://roax-terraform-state/stg/default.tfstate
+# gs://[bucket_name]/stg/default.tfstate
 ```
 
 ### Módulos con Backend en este Proyecto
 
-| Módulo | Backend Configurado | Recuperación |
-|--------|---------------------|--------------|
-| `shared-infra/environments/development` | ✅ Sí | ✅ Automática |
-| `shared-infra/environments/qa` | ✅ Sí | ✅ Automática |
-| `shared-infra/environments/staging` | ✅ Sí | ✅ Automática |
-| `shared-infra/environments/production` | ✅ Sí | ✅ Automática |
-| `terraform-state/environments/development` | ✅ Sí | ✅ Automática |
-| `terraform-state/environments/qa` | ✅ Sí | ✅ Automática |
-| `terraform-state/environments/staging` | ✅ Sí | ✅ Automática |
-| `terraform-state/environments/production` | ✅ Sí | ✅ Automática |
+| Módulo                                     | Backend Configurado | Recuperación  |
+| ------------------------------------------ | ------------------- | ------------- |
+| `shared-infra/environments/development`    | ✅ Sí               | ✅ Automática |
+| `shared-infra/environments/qa`             | ✅ Sí               | ✅ Automática |
+| `shared-infra/environments/staging`        | ✅ Sí               | ✅ Automática |
+| `shared-infra/environments/production`     | ✅ Sí               | ✅ Automática |
+| `terraform-state/environments/development` | ✅ Sí               | ✅ Automática |
+| `terraform-state/environments/qa`          | ✅ Sí               | ✅ Automática |
+| `terraform-state/environments/staging`     | ✅ Sí               | ✅ Automática |
+| `terraform-state/environments/production`  | ✅ Sí               | ✅ Automática |
 
 **Nota**: Los buckets y prefijos específicos están configurados en el `main.tf` o `backend.tf` de cada módulo. Revisa esos archivos para ver la configuración exacta.
 
@@ -72,6 +72,7 @@ make recover-global
 ```
 
 Este comando:
+
 1. ✅ Carga las variables del archivo `.env`
 2. ✅ Verifica si el bucket existe en GCP
 3. ✅ Si existe, importa el recurso al estado
@@ -105,12 +106,12 @@ terraform plan
 
 ## 🔍 Comparación
 
-| Aspecto | Con Backend | Sin Backend (global) |
-|---------|-------------|----------------------|
-| **Recuperación automática** | ✅ Sí (`terraform init`) | ❌ No |
-| **Dónde está el estado** | Bucket GCS remoto | Solo local (`.tfstate`) |
+| Aspecto                      | Con Backend                      | Sin Backend (global)            |
+| ---------------------------- | -------------------------------- | ------------------------------- |
+| **Recuperación automática**  | ✅ Sí (`terraform init`)         | ❌ No                           |
+| **Dónde está el estado**     | Bucket GCS remoto                | Solo local (`.tfstate`)         |
 | **Si pierdes el `.tfstate`** | Se recupera con `terraform init` | Necesitas `make recover-global` |
-| **Comando de recuperación** | `terraform init` | `make recover-global` |
+| **Comando de recuperación**  | `terraform init`                 | `make recover-global`           |
 
 ---
 
@@ -203,11 +204,13 @@ terraform {
 ## 🎯 Mejores Prácticas
 
 1. **Usa backend siempre que sea posible**
+
    - ✅ Protege contra pérdida de estado
    - ✅ Permite trabajo en equipo
    - ✅ Historial de cambios
 
 2. **Para el módulo `global`:**
+
    - ✅ **Corto plazo**: Usa `make recover-global` si pierdes el estado
    - ✅ **Largo plazo**: Configura un backend usando un bucket separado
 

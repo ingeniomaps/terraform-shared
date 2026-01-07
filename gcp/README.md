@@ -223,7 +223,7 @@ Crea un repositorio Docker en Artifact Registry.
 ### Variables de Contexto
 
 - `project_id`: ID del proyecto en GCP
-- `workspace`: Nombre del workspace (ej: "roax")
+- `workspace`: Nombre del workspace (ej: "workspace1")
 - `region`: Región principal (default: "us-central1")
 - `env`: Ambiente (dev, stg, pre, prod)
 
@@ -475,6 +475,7 @@ pre-commit run --all-files
 ```
 
 Los hooks incluyen:
+
 - Formato automático de Terraform
 - Validación de sintaxis
 - Prevención de commits de archivos sensibles

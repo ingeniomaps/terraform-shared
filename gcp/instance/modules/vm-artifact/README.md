@@ -14,43 +14,43 @@ El módulo `vm-artifact` extiende `vm-base` y agrega:
 
 ## 🔧 Variables Principales
 
-| Variable | Tipo | Descripción | Default | Requerido |
-|----------|------|-------------|---------|-----------|
-| `project_id` | `string` | ID del proyecto GCP | - | ✅ |
-| `region` | `string` | Región donde se creará la VM | `"us-central1"` | ❌ |
-| `zone` | `string` | Zona donde se creará la VM | `"us-central1-a"` | ❌ |
-| `instance_name` | `string` | Nombre de la instancia VM | - | ✅ |
-| `machine_type` | `string` | Tipo de máquina | `"e2-medium"` | ❌ |
-| `vm_subnet_name` | `string` | Nombre de la subnet | - | ✅ |
-| `service_account_email` | `string` | Service Account para la VM | - | ✅ |
-| `artifact_registry_url` | `string` | URL completa del Artifact Registry | - | ✅ |
-| `docker_image` | `string` | Imagen Docker a ejecutar (nombre:tag) | - | ✅ |
-| `container_port` | `number` | Puerto del contenedor | `8080` | ❌ |
-| `host_port` | `number` | Puerto del host | `8080` | ❌ |
-| `docker_env_vars` | `map(string)` | Variables de entorno para el contenedor | `{}` | ❌ |
-| `docker_command` | `string` | Comando personalizado para el contenedor | `""` | ❌ |
-| `restart_policy` | `string` | Política de reinicio (always, unless-stopped, etc.) | `"always"` | ❌ |
-| `boot_disk_size` | `number` | Tamaño del disco (GB) | `20` | ❌ |
-| `enable_public_ip` | `bool` | Habilitar IP pública | `false` | ❌ |
-| `static_public_ip` | `string` | Nombre para IP pública estática | `null` | ❌ |
-| `health_check_path` | `string` | Ruta para health check HTTP | `""` | ❌ |
-| `health_check_port` | `number` | Puerto para health check (0 = usar container_port) | `0` | ❌ |
-| `use_ubuntu_image` | `bool` | Usar imagen Ubuntu | `false` | ❌ |
+| Variable                | Tipo          | Descripción                                         | Default           | Requerido |
+| ----------------------- | ------------- | --------------------------------------------------- | ----------------- | --------- |
+| `project_id`            | `string`      | ID del proyecto GCP                                 | -                 | ✅        |
+| `region`                | `string`      | Región donde se creará la VM                        | `"us-central1"`   | ❌        |
+| `zone`                  | `string`      | Zona donde se creará la VM                          | `"us-central1-a"` | ❌        |
+| `instance_name`         | `string`      | Nombre de la instancia VM                           | -                 | ✅        |
+| `machine_type`          | `string`      | Tipo de máquina                                     | `"e2-medium"`     | ❌        |
+| `vm_subnet_name`        | `string`      | Nombre de la subnet                                 | -                 | ✅        |
+| `service_account_email` | `string`      | Service Account para la VM                          | -                 | ✅        |
+| `artifact_registry_url` | `string`      | URL completa del Artifact Registry                  | -                 | ✅        |
+| `docker_image`          | `string`      | Imagen Docker a ejecutar (nombre:tag)               | -                 | ✅        |
+| `container_port`        | `number`      | Puerto del contenedor                               | `8080`            | ❌        |
+| `host_port`             | `number`      | Puerto del host                                     | `8080`            | ❌        |
+| `docker_env_vars`       | `map(string)` | Variables de entorno para el contenedor             | `{}`              | ❌        |
+| `docker_command`        | `string`      | Comando personalizado para el contenedor            | `""`              | ❌        |
+| `restart_policy`        | `string`      | Política de reinicio (always, unless-stopped, etc.) | `"always"`        | ❌        |
+| `boot_disk_size`        | `number`      | Tamaño del disco (GB)                               | `20`              | ❌        |
+| `enable_public_ip`      | `bool`        | Habilitar IP pública                                | `false`           | ❌        |
+| `static_public_ip`      | `string`      | Nombre para IP pública estática                     | `null`            | ❌        |
+| `health_check_path`     | `string`      | Ruta para health check HTTP                         | `""`              | ❌        |
+| `health_check_port`     | `number`      | Puerto para health check (0 = usar container_port)  | `0`               | ❌        |
+| `use_ubuntu_image`      | `bool`        | Usar imagen Ubuntu                                  | `false`           | ❌        |
 
 ## 📤 Outputs
 
-| Output | Descripción |
-|--------|-------------|
-| `instance_id` | ID de la instancia VM |
-| `instance_name` | Nombre de la instancia |
-| `instance_zone` | Zona de la instancia |
-| `internal_ip` | IP interna de la instancia |
-| `external_ip` | IP externa (null si no tiene IP pública) |
-| `static_public_ip_name` | Nombre del recurso de IP pública estática |
-| `docker_image_path` | Ruta completa de la imagen Docker |
-| `container_url` | URL para acceder al contenedor (si tiene IP pública) |
-| `ssh_command` | Comando SSH para conectarse vía IAP |
-| `self_link` | Self link de la instancia |
+| Output                  | Descripción                                          |
+| ----------------------- | ---------------------------------------------------- |
+| `instance_id`           | ID de la instancia VM                                |
+| `instance_name`         | Nombre de la instancia                               |
+| `instance_zone`         | Zona de la instancia                                 |
+| `internal_ip`           | IP interna de la instancia                           |
+| `external_ip`           | IP externa (null si no tiene IP pública)             |
+| `static_public_ip_name` | Nombre del recurso de IP pública estática            |
+| `docker_image_path`     | Ruta completa de la imagen Docker                    |
+| `container_url`         | URL para acceder al contenedor (si tiene IP pública) |
+| `ssh_command`           | Comando SSH para conectarse vía IAP                  |
+| `self_link`             | Self link de la instancia                            |
 
 ## 📝 Ejemplo de Uso
 
@@ -64,7 +64,7 @@ module "vm_artifact" {
   region               = "us-central1"
   zone                 = "us-central1-a"
   instance_name        = "artifact-vm"
-  vm_subnet_name       = "roax-dev-vpc-vm-subnet"
+  vm_subnet_name       = "workspace-dev-vpc-vm-subnet"
   service_account_email = "vm-reader@my-project.iam.gserviceaccount.com"
 
   artifact_registry_url = "us-central1-docker.pkg.dev/my-project/docker-images"
@@ -87,7 +87,7 @@ module "vm_artifact" {
   region               = "us-central1"
   zone                 = "us-central1-a"
   instance_name        = "artifact-vm"
-  vm_subnet_name       = "roax-dev-vpc-vm-subnet"
+  vm_subnet_name       = "workspace-dev-vpc-vm-subnet"
   service_account_email = "vm-reader@my-project.iam.gserviceaccount.com"
 
   artifact_registry_url = "us-central1-docker.pkg.dev/my-project/docker-images"
@@ -116,7 +116,7 @@ module "vm_artifact" {
   region               = "us-central1"
   zone                 = "us-central1-a"
   instance_name        = "artifact-vm"
-  vm_subnet_name       = "roax-dev-vpc-vm-subnet"
+  vm_subnet_name       = "workspace-dev-vpc-vm-subnet"
   service_account_email = "vm-reader@my-project.iam.gserviceaccount.com"
 
   artifact_registry_url = "us-central1-docker.pkg.dev/my-project/docker-images"
@@ -142,7 +142,7 @@ module "vm_artifact" {
   region               = "us-central1"
   zone                 = "us-central1-a"
   instance_name        = "artifact-vm"
-  vm_subnet_name       = "roax-dev-vpc-vm-subnet"
+  vm_subnet_name       = "workspace-dev-vpc-vm-subnet"
   service_account_email = "vm-reader@my-project.iam.gserviceaccount.com"
 
   artifact_registry_url = "us-central1-docker.pkg.dev/my-project/docker-images"
@@ -193,16 +193,19 @@ El módulo incluye scripts automáticos:
 Para actualizar la imagen Docker:
 
 1. **Cambiar tag en terraform.tfvars**:
+
    ```hcl
    docker_image = "my-app:1.0.1"
    ```
 
 2. **Aplicar cambios**:
+
    ```bash
    terraform apply
    ```
 
 3. **Actualizar contenedor en la VM** (opcional, si no se reinicia automáticamente):
+
    ```bash
    # Conectar vía SSH
    gcloud compute ssh my-vm --zone=us-central1-a --tunnel-through-iap

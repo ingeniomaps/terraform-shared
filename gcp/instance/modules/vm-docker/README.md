@@ -16,27 +16,27 @@ El módulo `vm-docker` extiende `vm-base` y agrega:
 
 ## 🔧 Variables Principales
 
-| Variable | Tipo | Descripción | Default | Requerido |
-|----------|------|-------------|---------|-----------|
-| `project_id` | `string` | ID del proyecto GCP | - | ✅ |
-| `region` | `string` | Región donde se creará la VM | `"us-central1"` | ❌ |
-| `zone` | `string` | Zona donde se creará la VM | `"us-central1-a"` | ❌ |
-| `instance_name` | `string` | Nombre de la instancia VM | - | ✅ |
-| `machine_type` | `string` | Tipo de máquina | `"e2-medium"` | ❌ |
-| `vm_subnet_name` | `string` | Nombre de la subnet | - | ✅ |
-| `service_account_email` | `string` | Service Account para la VM | - | ✅ |
-| `boot_disk_size` | `number` | Tamaño del disco (GB) | `20` | ❌ |
-| `enable_public_ip` | `bool` | Habilitar IP pública | `false` | ❌ |
-| `static_public_ip` | `string` | Nombre para IP pública estática | `null` | ❌ |
-| `use_ubuntu_image` | `bool` | Usar imagen Ubuntu | `false` | ❌ |
-| `install_docker_compose` | `bool` | Instalar Docker Compose | `true` | ❌ |
-| `docker_compose_version` | `string` | Versión de Docker Compose | `"v2.33.0"` | ❌ |
-| `install_certbot` | `bool` | Instalar Certbot | `false` | ❌ |
-| `metadata_startup_script` | `string` | Script de inicio personalizado | `""` | ❌ |
-| `deployment_scripts` | `string` | Ruta local a scripts de despliegue | `""` | ❌ |
-| `deployment_scripts_destination` | `string` | Directorio destino en VM | `"/home/ubuntu/configuration"` | ❌ |
-| `microservices` | `list(object)` | Lista de microservicios a desplegar | `[]` | ❌ |
-| `environment` | `string` | Ambiente de despliegue | `"dev"` | ❌ |
+| Variable                         | Tipo           | Descripción                         | Default                        | Requerido |
+| -------------------------------- | -------------- | ----------------------------------- | ------------------------------ | --------- |
+| `project_id`                     | `string`       | ID del proyecto GCP                 | -                              | ✅        |
+| `region`                         | `string`       | Región donde se creará la VM        | `"us-central1"`                | ❌        |
+| `zone`                           | `string`       | Zona donde se creará la VM          | `"us-central1-a"`              | ❌        |
+| `instance_name`                  | `string`       | Nombre de la instancia VM           | -                              | ✅        |
+| `machine_type`                   | `string`       | Tipo de máquina                     | `"e2-medium"`                  | ❌        |
+| `vm_subnet_name`                 | `string`       | Nombre de la subnet                 | -                              | ✅        |
+| `service_account_email`          | `string`       | Service Account para la VM          | -                              | ✅        |
+| `boot_disk_size`                 | `number`       | Tamaño del disco (GB)               | `20`                           | ❌        |
+| `enable_public_ip`               | `bool`         | Habilitar IP pública                | `false`                        | ❌        |
+| `static_public_ip`               | `string`       | Nombre para IP pública estática     | `null`                         | ❌        |
+| `use_ubuntu_image`               | `bool`         | Usar imagen Ubuntu                  | `false`                        | ❌        |
+| `install_docker_compose`         | `bool`         | Instalar Docker Compose             | `true`                         | ❌        |
+| `docker_compose_version`         | `string`       | Versión de Docker Compose           | `"v2.33.0"`                    | ❌        |
+| `install_certbot`                | `bool`         | Instalar Certbot                    | `false`                        | ❌        |
+| `metadata_startup_script`        | `string`       | Script de inicio personalizado      | `""`                           | ❌        |
+| `deployment_scripts`             | `string`       | Ruta local a scripts de despliegue  | `""`                           | ❌        |
+| `deployment_scripts_destination` | `string`       | Directorio destino en VM            | `"/home/ubuntu/configuration"` | ❌        |
+| `microservices`                  | `list(object)` | Lista de microservicios a desplegar | `[]`                           | ❌        |
+| `environment`                    | `string`       | Ambiente de despliegue              | `"dev"`                        | ❌        |
 
 ### Estructura de `microservices`
 
@@ -53,16 +53,16 @@ microservices = [
 
 ## 📤 Outputs
 
-| Output | Descripción |
-|--------|-------------|
-| `instance_id` | ID de la instancia VM |
-| `instance_name` | Nombre de la instancia |
-| `instance_zone` | Zona de la instancia |
-| `internal_ip` | IP interna de la instancia |
-| `external_ip` | IP externa (null si no tiene IP pública) |
+| Output                  | Descripción                               |
+| ----------------------- | ----------------------------------------- |
+| `instance_id`           | ID de la instancia VM                     |
+| `instance_name`         | Nombre de la instancia                    |
+| `instance_zone`         | Zona de la instancia                      |
+| `internal_ip`           | IP interna de la instancia                |
+| `external_ip`           | IP externa (null si no tiene IP pública)  |
 | `static_public_ip_name` | Nombre del recurso de IP pública estática |
-| `ssh_command` | Comando SSH para conectarse vía IAP |
-| `self_link` | Self link de la instancia |
+| `ssh_command`           | Comando SSH para conectarse vía IAP       |
+| `self_link`             | Self link de la instancia                 |
 
 ## 📝 Ejemplo de Uso
 
@@ -76,7 +76,7 @@ module "vm_docker" {
   region               = "us-central1"
   zone                 = "us-central1-a"
   instance_name        = "docker-vm"
-  vm_subnet_name       = "roax-dev-vpc-vm-subnet"
+  vm_subnet_name       = "workspace-dev-vpc-vm-subnet"
   service_account_email = "vm-reader@my-project.iam.gserviceaccount.com"
 
   enable_public_ip     = true
@@ -94,7 +94,7 @@ module "vm_docker" {
   region               = "us-central1"
   zone                 = "us-central1-a"
   instance_name        = "docker-vm"
-  vm_subnet_name       = "roax-dev-vpc-vm-subnet"
+  vm_subnet_name       = "workspace-dev-vpc-vm-subnet"
   service_account_email = "vm-reader@my-project.iam.gserviceaccount.com"
 
   enable_public_ip              = true
@@ -116,7 +116,7 @@ module "vm_docker" {
   region               = "us-central1"
   zone                 = "us-central1-a"
   instance_name        = "docker-vm"
-  vm_subnet_name       = "roax-dev-vpc-vm-subnet"
+  vm_subnet_name       = "workspace-dev-vpc-vm-subnet"
   service_account_email = "vm-reader@my-project.iam.gserviceaccount.com"
 
   enable_public_ip = true
@@ -151,7 +151,7 @@ module "vm_docker" {
   region               = "us-central1"
   zone                 = "us-central1-a"
   instance_name        = "docker-vm"
-  vm_subnet_name       = "roax-dev-vpc-vm-subnet"
+  vm_subnet_name       = "workspace-dev-vpc-vm-subnet"
   service_account_email = "vm-reader@my-project.iam.gserviceaccount.com"
 
   enable_public_ip  = true

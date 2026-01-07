@@ -14,39 +14,39 @@ El módulo `vm-base` crea:
 
 ## 🔧 Variables Principales
 
-| Variable | Tipo | Descripción | Default | Requerido |
-|----------|------|-------------|---------|-----------|
-| `project_id` | `string` | ID del proyecto GCP | - | ✅ |
-| `region` | `string` | Región donde se creará la VM | `"us-central1"` | ❌ |
-| `zone` | `string` | Zona donde se creará la VM | `"us-central1-a"` | ❌ |
-| `instance_name` | `string` | Nombre de la instancia VM | - | ✅ |
-| `machine_type` | `string` | Tipo de máquina (ej: e2-medium) | `"e2-medium"` | ❌ |
-| `vm_subnet_name` | `string` | Nombre de la subnet (de shared-infra) | - | ✅ |
-| `service_account_email` | `string` | Service Account para la VM | - | ✅ |
-| `tags` | `list(string)` | Network tags para la VM | `[]` | ❌ |
-| `labels` | `map(string)` | Labels para la VM | `{}` | ❌ |
-| `boot_disk_size` | `number` | Tamaño del disco de arranque (GB) | `20` | ❌ |
-| `boot_disk_type` | `string` | Tipo de disco (pd-standard, pd-ssd) | `"pd-standard"` | ❌ |
-| `enable_public_ip` | `bool` | Habilitar IP pública | `false` | ❌ |
-| `static_public_ip` | `string` | Nombre para IP pública estática | `null` | ❌ |
-| `static_internal_ip` | `string` | IP interna estática | `null` | ❌ |
-| `vm_image` | `string` | Imagen de la VM (formato GCP) | - | ✅ |
-| `startup_script` | `string` | Script de inicio personalizado | `""` | ❌ |
-| `ssh_keys` | `list(string)` | Claves SSH públicas | `[]` | ❌ |
-| `purpose_label` | `string` | Valor del label 'purpose' | `"vm"` | ❌ |
+| Variable                | Tipo           | Descripción                           | Default           | Requerido |
+| ----------------------- | -------------- | ------------------------------------- | ----------------- | --------- |
+| `project_id`            | `string`       | ID del proyecto GCP                   | -                 | ✅        |
+| `region`                | `string`       | Región donde se creará la VM          | `"us-central1"`   | ❌        |
+| `zone`                  | `string`       | Zona donde se creará la VM            | `"us-central1-a"` | ❌        |
+| `instance_name`         | `string`       | Nombre de la instancia VM             | -                 | ✅        |
+| `machine_type`          | `string`       | Tipo de máquina (ej: e2-medium)       | `"e2-medium"`     | ❌        |
+| `vm_subnet_name`        | `string`       | Nombre de la subnet (de shared-infra) | -                 | ✅        |
+| `service_account_email` | `string`       | Service Account para la VM            | -                 | ✅        |
+| `tags`                  | `list(string)` | Network tags para la VM               | `[]`              | ❌        |
+| `labels`                | `map(string)`  | Labels para la VM                     | `{}`              | ❌        |
+| `boot_disk_size`        | `number`       | Tamaño del disco de arranque (GB)     | `20`              | ❌        |
+| `boot_disk_type`        | `string`       | Tipo de disco (pd-standard, pd-ssd)   | `"pd-standard"`   | ❌        |
+| `enable_public_ip`      | `bool`         | Habilitar IP pública                  | `false`           | ❌        |
+| `static_public_ip`      | `string`       | Nombre para IP pública estática       | `null`            | ❌        |
+| `static_internal_ip`    | `string`       | IP interna estática                   | `null`            | ❌        |
+| `vm_image`              | `string`       | Imagen de la VM (formato GCP)         | -                 | ✅        |
+| `startup_script`        | `string`       | Script de inicio personalizado        | `""`              | ❌        |
+| `ssh_keys`              | `list(string)` | Claves SSH públicas                   | `[]`              | ❌        |
+| `purpose_label`         | `string`       | Valor del label 'purpose'             | `"vm"`            | ❌        |
 
 ## 📤 Outputs
 
-| Output | Descripción |
-|--------|-------------|
-| `instance_id` | ID de la instancia |
-| `instance_name` | Nombre de la instancia |
-| `instance_zone` | Zona de la instancia |
-| `internal_ip` | IP interna de la instancia |
-| `external_ip` | IP externa (null si no tiene IP pública) |
+| Output                  | Descripción                               |
+| ----------------------- | ----------------------------------------- |
+| `instance_id`           | ID de la instancia                        |
+| `instance_name`         | Nombre de la instancia                    |
+| `instance_zone`         | Zona de la instancia                      |
+| `internal_ip`           | IP interna de la instancia                |
+| `external_ip`           | IP externa (null si no tiene IP pública)  |
 | `static_public_ip_name` | Nombre del recurso de IP pública estática |
-| `ssh_command` | Comando SSH para conectarse vía IAP |
-| `self_link` | Self link de la instancia |
+| `ssh_command`           | Comando SSH para conectarse vía IAP       |
+| `self_link`             | Self link de la instancia                 |
 
 ## 📝 Ejemplo de Uso
 
@@ -61,7 +61,7 @@ module "vm_base" {
   zone                 = "us-central1-a"
   instance_name        = "my-vm"
   machine_type         = "e2-medium"
-  vm_subnet_name       = "roax-dev-vpc-vm-subnet"
+  vm_subnet_name       = "workspace-dev-vpc-vm-subnet"
   service_account_email = "vm-reader@my-project.iam.gserviceaccount.com"
   vm_image             = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2204-lts"
 
@@ -83,7 +83,7 @@ module "vm_base" {
   zone                 = "us-central1-a"
   instance_name        = "my-vm"
   machine_type         = "e2-medium"
-  vm_subnet_name       = "roax-dev-vpc-vm-subnet"
+  vm_subnet_name       = "workspace-dev-vpc-vm-subnet"
   service_account_email = "vm-reader@my-project.iam.gserviceaccount.com"
   vm_image             = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2204-lts"
 
@@ -105,7 +105,7 @@ module "vm_base" {
   zone                 = "us-central1-a"
   instance_name        = "my-vm"
   machine_type         = "e2-medium"
-  vm_subnet_name       = "roax-dev-vpc-vm-subnet"
+  vm_subnet_name       = "workspace-dev-vpc-vm-subnet"
   service_account_email = "vm-reader@my-project.iam.gserviceaccount.com"
   vm_image             = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2204-lts"
 

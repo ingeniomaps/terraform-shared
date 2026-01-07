@@ -1,7 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "roax-terraform-state"
+    bucket = "workspace-terraform-state"
     prefix = "qa"
   }
 }
-

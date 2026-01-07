@@ -9,7 +9,7 @@ terraform {
   }
 
   backend "gcs" {
-    bucket = "roax-terraform-state-qa"
+    bucket = "workspace-terraform-state-qa"
     prefix = "shared/terraform"
   }
 }

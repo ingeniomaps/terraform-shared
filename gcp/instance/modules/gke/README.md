@@ -15,46 +15,46 @@ El módulo `gke` crea:
 
 ## 🔧 Variables Principales
 
-| Variable | Tipo | Descripción | Default | Requerido |
-|----------|------|-------------|---------|-----------|
-| `project_id` | `string` | ID del proyecto GCP | - | ✅ |
-| `region` | `string` | Región donde se creará el cluster | `"us-central1"` | ❌ |
-| `cluster_name` | `string` | Nombre del cluster GKE | - | ✅ |
-| `gke_subnet_name` | `string` | Nombre de la subnet GKE | - | ✅ |
-| `gke_pods_range_name` | `string` | Nombre del secondary range para pods | - | ✅ |
-| `gke_services_range_name` | `string` | Nombre del secondary range para services | - | ✅ |
-| `gke_master_cidr` | `string` | CIDR para control plane (/28) | - | ✅ |
-| `node_pool_name` | `string` | Nombre del node pool | `"default-pool"` | ❌ |
-| `node_machine_type` | `string` | Tipo de máquina de los nodos | `"e2-medium"` | ❌ |
-| `node_disk_size` | `number` | Tamaño del disco de nodos (GB) | `100` | ❌ |
-| `node_disk_type` | `string` | Tipo de disco (pd-standard, pd-ssd) | `"pd-standard"` | ❌ |
-| `initial_node_count` | `number` | Número inicial de nodos | `1` | ❌ |
-| `enable_autoscaling` | `bool` | Habilitar autoscaling | `true` | ❌ |
-| `min_node_count` | `number` | Número mínimo de nodos | `1` | ❌ |
-| `max_node_count` | `number` | Número máximo de nodos | `3` | ❌ |
-| `enable_network_policy` | `bool` | Habilitar Network Policy | `false` | ❌ |
-| `service_account_email` | `string` | Service Account para nodos | `null` | ❌ |
-| `maintenance_window_start_time` | `string` | Hora de inicio de mantenimiento (HH:MM) | `"02:00"` | ❌ |
-| `maintenance_window_day` | `string` | Día de mantenimiento (SUNDAY-SATURDAY) | `"SUNDAY"` | ❌ |
-| `deletion_protection` | `bool` | Protección contra eliminación | `true` | ❌ |
-| `workload_identity_pool` | `string` | Workload Identity Pool | `""` | ❌ |
+| Variable                        | Tipo     | Descripción                              | Default          | Requerido |
+| ------------------------------- | -------- | ---------------------------------------- | ---------------- | --------- |
+| `project_id`                    | `string` | ID del proyecto GCP                      | -                | ✅        |
+| `region`                        | `string` | Región donde se creará el cluster        | `"us-central1"`  | ❌        |
+| `cluster_name`                  | `string` | Nombre del cluster GKE                   | -                | ✅        |
+| `gke_subnet_name`               | `string` | Nombre de la subnet GKE                  | -                | ✅        |
+| `gke_pods_range_name`           | `string` | Nombre del secondary range para pods     | -                | ✅        |
+| `gke_services_range_name`       | `string` | Nombre del secondary range para services | -                | ✅        |
+| `gke_master_cidr`               | `string` | CIDR para control plane (/28)            | -                | ✅        |
+| `node_pool_name`                | `string` | Nombre del node pool                     | `"default-pool"` | ❌        |
+| `node_machine_type`             | `string` | Tipo de máquina de los nodos             | `"e2-medium"`    | ❌        |
+| `node_disk_size`                | `number` | Tamaño del disco de nodos (GB)           | `100`            | ❌        |
+| `node_disk_type`                | `string` | Tipo de disco (pd-standard, pd-ssd)      | `"pd-standard"`  | ❌        |
+| `initial_node_count`            | `number` | Número inicial de nodos                  | `1`              | ❌        |
+| `enable_autoscaling`            | `bool`   | Habilitar autoscaling                    | `true`           | ❌        |
+| `min_node_count`                | `number` | Número mínimo de nodos                   | `1`              | ❌        |
+| `max_node_count`                | `number` | Número máximo de nodos                   | `3`              | ❌        |
+| `enable_network_policy`         | `bool`   | Habilitar Network Policy                 | `false`          | ❌        |
+| `service_account_email`         | `string` | Service Account para nodos               | `null`           | ❌        |
+| `maintenance_window_start_time` | `string` | Hora de inicio de mantenimiento (HH:MM)  | `"02:00"`        | ❌        |
+| `maintenance_window_day`        | `string` | Día de mantenimiento (SUNDAY-SATURDAY)   | `"SUNDAY"`       | ❌        |
+| `deletion_protection`           | `bool`   | Protección contra eliminación            | `true`           | ❌        |
+| `workload_identity_pool`        | `string` | Workload Identity Pool                   | `""`             | ❌        |
 
 ## 📤 Outputs
 
-| Output | Descripción |
-|--------|-------------|
-| `cluster_id` | ID del cluster GKE |
-| `cluster_name` | Nombre del cluster |
-| `cluster_location` | Ubicación del cluster |
-| `cluster_endpoint` | Endpoint del control plane (sensitive) |
-| `kubectl_command` | Comando para configurar kubectl |
-| `node_pool_id` | ID del node pool |
-| `node_pool_name` | Nombre del node pool |
-| `workload_identity_pool` | Workload Identity Pool configurado |
-| `autoscaling_min_nodes` | Número mínimo de nodos (null si deshabilitado) |
-| `autoscaling_max_nodes` | Número máximo de nodos (null si deshabilitado) |
-| `current_node_count` | Número actual de nodos |
-| `cluster_ca_certificate` | CA certificate del cluster (sensitive) |
+| Output                   | Descripción                                    |
+| ------------------------ | ---------------------------------------------- |
+| `cluster_id`             | ID del cluster GKE                             |
+| `cluster_name`           | Nombre del cluster                             |
+| `cluster_location`       | Ubicación del cluster                          |
+| `cluster_endpoint`       | Endpoint del control plane (sensitive)         |
+| `kubectl_command`        | Comando para configurar kubectl                |
+| `node_pool_id`           | ID del node pool                               |
+| `node_pool_name`         | Nombre del node pool                           |
+| `workload_identity_pool` | Workload Identity Pool configurado             |
+| `autoscaling_min_nodes`  | Número mínimo de nodos (null si deshabilitado) |
+| `autoscaling_max_nodes`  | Número máximo de nodos (null si deshabilitado) |
+| `current_node_count`     | Número actual de nodos                         |
+| `cluster_ca_certificate` | CA certificate del cluster (sensitive)         |
 
 ## 📝 Ejemplo de Uso
 
@@ -67,9 +67,9 @@ module "gke_cluster" {
   project_id              = "my-project-id"
   region                  = "us-central1"
   cluster_name            = "my-gke-cluster"
-  gke_subnet_name         = "roax-prod-vpc-gke-subnet"
-  gke_pods_range_name     = "roax-prod-vpc-pods"
-  gke_services_range_name = "roax-prod-vpc-services"
+  gke_subnet_name         = "workspace-prod-vpc-gke-subnet"
+  gke_pods_range_name     = "workspace-prod-vpc-pods"
+  gke_services_range_name = "workspace-prod-vpc-services"
   gke_master_cidr         = "172.16.0.0/28"
 
   node_machine_type = "e2-medium"
@@ -89,9 +89,9 @@ module "gke_cluster" {
   project_id              = "my-project-id"
   region                  = "us-central1"
   cluster_name            = "prod-gke-cluster"
-  gke_subnet_name         = "roax-prod-vpc-gke-subnet"
-  gke_pods_range_name     = "roax-prod-vpc-pods"
-  gke_services_range_name = "roax-prod-vpc-services"
+  gke_subnet_name         = "workspace-prod-vpc-gke-subnet"
+  gke_pods_range_name     = "workspace-prod-vpc-pods"
+  gke_services_range_name = "workspace-prod-vpc-services"
   gke_master_cidr         = "172.16.0.0/28"
 
   node_machine_type       = "e2-standard-4"
@@ -121,9 +121,9 @@ module "gke_cluster" {
   project_id              = "my-project-id"
   region                  = "us-central1"
   cluster_name            = "my-gke-cluster"
-  gke_subnet_name         = "roax-prod-vpc-gke-subnet"
-  gke_pods_range_name     = "roax-prod-vpc-pods"
-  gke_services_range_name = "roax-prod-vpc-services"
+  gke_subnet_name         = "workspace-prod-vpc-gke-subnet"
+  gke_pods_range_name     = "workspace-prod-vpc-pods"
+  gke_services_range_name = "workspace-prod-vpc-services"
   gke_master_cidr         = "172.16.0.0/28"
 
   workload_identity_pool = "projects/123456789/locations/global/workloadIdentityPools/my-pool"
