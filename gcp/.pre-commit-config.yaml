@@ -1,0 +1,81 @@
+# Pre-commit hooks para Terraform
+# Instalación: pip install pre-commit && pre-commit install
+# Uso: pre-commit run --all-files
+
+repos:
+  # Hook para detectar archivos sensibles
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.md$'
+      - id: end-of-file-fixer
+        exclude: '\.md$'
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+      - id: detect-private-key
+        args: ['--allow-ssh-keys']
+      - id: no-commit-to-branch
+        args: ['--branch', 'main', '--branch', 'master']
+
+  # Hook para prevenir commits de archivos sensibles
+  - repo: local
+    hooks:
+      - id: prevent-sensitive-files
+        name: Prevenir archivos sensibles
+        entry: bash -c 'for file in "$@"; do
+          if [[ "$file" =~ \.(tfstate|tfstate\.|tfplan|plan\.json|\.json)$ ]] && [[ ! "$file" =~ \.(example|tfvars\.example)$ ]]; then
+            echo "Error: No se pueden commitear archivos sensibles: $file"
+            echo "Estos archivos están en .gitignore y no deben estar en el repositorio."
+            exit 1
+          fi
+          if [[ "$file" =~ /(terraform\.tfvars|\.env)$ ]] && [[ ! "$file" =~ \.(example|tfvars\.example|tfvars\.dev|tfvars\.qa|tfvars\.stg|tfvars\.prod)$ ]]; then
+            echo "Error: No se pueden commitear archivos de configuración sensibles: $file"
+            echo "Usa archivos .example o .tfvars.* por ambiente."
+            exit 1
+          fi
+          if [[ "$file" =~ /keys/ ]] || [[ "$file" =~ \.(pem|key)$ ]]; then
+            echo "Error: No se pueden commitear credenciales: $file"
+            exit 1
+          fi
+        done' --
+        language: system
+        pass_filenames: true
+        stages: [commit]
+
+  # Hook para verificar que no hay archivos de estado
+  - repo: local
+    hooks:
+      - id: check-terraform-state
+        name: Verificar archivos de estado
+        entry: bash -c 'if git diff --cached --name-only | grep -E "\.tfstate|\.tfstate\."; then
+          echo "Error: No se pueden commitear archivos de estado de Terraform."
+          echo "Los archivos .tfstate deben estar solo en el backend remoto (GCS)."
+          exit 1
+        fi' --
+        language: system
+        stages: [commit]
+
+  # Hook para formato de Terraform
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.86.0
+    hooks:
+      - id: terraform_fmt
+        args: ['-recursive']
+      - id: terraform_validate
+        args: ['-no-color']
+      - id: terraform_tflint
+        args: ['--args=--only=terraform_deprecated_interpolation']
+      - id: terraform_docs
+        args: ['--hook-config=--path-to-file=README.md', '--hook-config=--add-to-existing-file=true', '--hook-config=--create-file-if-not-exist=true']
+
+  # Hook para detectar secretos
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: package.lock.json

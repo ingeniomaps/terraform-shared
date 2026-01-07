@@ -1,0 +1,75 @@
+# ============================================================================
+# CONFIGURACIÓN DEL PROYECTO
+# ============================================================================
+project_id  = ""
+workspace   = ""
+region      = "us-central1"
+env         = "qa"
+
+# ============================================================================
+# ARTIFACT REGISTRY
+# ============================================================================
+registry_name     = "docker-images-qa"
+enable_dev_reader = true
+
+# ============================================================================
+# SEGURIDAD
+# ============================================================================
+enable_vpc_service_controls      = false
+break_glass_max_session_duration = 7200
+organization_id                   = ""
+
+# ============================================================================
+# RED Y CONECTIVIDAD
+# ============================================================================
+vm_subnet_cidr         = "10.0.0.0/24"
+enable_public_http     = true
+enable_restricted_http = false
+
+# Requerido si enable_restricted_http = true
+# corporate_ip_ranges = ["203.0.113.0/24", "198.51.100.0/24"]
+
+enable_vpc_peering     = false
+
+# Requerido si enable_vpc_peering = true
+# peer_project_id = "proyecto-peer-id"
+# peer_vpc_name   = "vpc-peer-name"
+
+# ============================================================================
+# GKE (KUBERNETES)
+# ============================================================================
+enable_gke        = false
+gke_subnet_cidr   = "10.0.10.0/24"
+gke_pods_cidr     = "10.1.0.0/16"
+gke_services_cidr = "10.2.0.0/16"
+gke_master_cidr   = "172.16.0.0/28"
+
+# ============================================================================
+# IAM Y GRUPOS
+# ============================================================================
+admin_groups = {
+  network_admins  = "network-admins@miempresa.com"
+  network_viewers = "developers@miempresa.com"
+  security_admins = "security-admins@miempresa.com"
+  auditors        = "auditors@miempresa.com"
+}
+
+allowed_domains = [
+  "miempresa.com"
+]
+
+# ============================================================================
+# ALERTAS Y MONITOREO
+# ============================================================================
+alert_notification_channels = []
+
+# ============================================================================
+# OPCIONES DE SEGURIDAD
+# ============================================================================
+# Habilitar asignación de roles IAM a grupos de Google Workspace
+# Requiere que los grupos existan en Google Workspace
+# enable_group_iam = false
+
+# Habilitar Organization Policies
+# Requiere que orgpolicy.googleapis.com esté habilitado y configurado
+# enable_org_policies = false

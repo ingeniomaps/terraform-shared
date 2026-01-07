@@ -1,30 +1,55 @@
+# ============================================================================
+# VALIDACIONES ADICIONALES PARA CALIDAD DE CÓDIGO
+# ============================================================================
+
+# Validación: Verificar que los CIDR ranges no se solapen
 locals {
-  corporate_ip_valid        = !var.enable_restricted_http || length(var.corporate_ip_ranges) > 0
-  vpc_peering_project_valid = !var.enable_vpc_peering || var.peer_project_id != null
-  vpc_peering_name_valid    = !var.enable_vpc_peering || var.peer_vpc_name != null
-}
-
-
-resource "null_resource" "validate_corporate_ip_ranges" {
-  count = local.corporate_ip_valid ? 0 : 1
-
-  provisioner "local-exec" {
-    command = "echo 'ERROR: corporate_ip_ranges es requerido cuando enable_restricted_http = true' && exit 1"
+  # Convertir CIDR a números para comparación
+  cidr_to_number = {
+    vm_subnet    = try(cidrhost(var.vm_subnet_cidr, 0), null)
+    gke_subnet   = var.enable_gke ? try(cidrhost(var.gke_subnet_cidr, 0), null) : null
+    gke_pods     = var.enable_gke ? try(cidrhost(var.gke_pods_cidr, 0), null) : null
+    gke_services = var.enable_gke ? try(cidrhost(var.gke_services_cidr, 0), null) : null
   }
 }
 
-resource "null_resource" "validate_peer_project_id" {
-  count = local.vpc_peering_project_valid ? 0 : 1
+# Validación: CIDR ranges deben tener formato válido
+check "cidr_format_validation" {
+  assert {
+    condition     = can(cidrhost(var.vm_subnet_cidr, 0))
+    error_message = "vm_subnet_cidr debe ser un CIDR válido (ej: 10.0.0.0/24)"
+  }
 
-  provisioner "local-exec" {
-    command = "echo 'ERROR: peer_project_id es requerido cuando enable_vpc_peering = true' && exit 1"
+  assert {
+    condition     = !var.enable_gke || can(cidrhost(var.gke_subnet_cidr, 0))
+    error_message = "gke_subnet_cidr debe ser un CIDR válido cuando enable_gke = true"
+  }
+
+  assert {
+    condition     = !var.enable_gke || can(cidrhost(var.gke_pods_cidr, 0))
+    error_message = "gke_pods_cidr debe ser un CIDR válido cuando enable_gke = true"
+  }
+
+  assert {
+    condition     = !var.enable_gke || can(cidrhost(var.gke_services_cidr, 0))
+    error_message = "gke_services_cidr debe ser un CIDR válido cuando enable_gke = true"
   }
 }
 
-resource "null_resource" "validate_peer_vpc_name" {
-  count = local.vpc_peering_name_valid ? 0 : 1
+# Validación: Service Account email debe tener formato válido
+check "service_account_email_format" {
+  assert {
+    condition     = can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", var.vm_service_account_email))
+    error_message = "vm_service_account_email debe ser un email válido (ej: sa@project.iam.gserviceaccount.com)"
+  }
+}
 
-  provisioner "local-exec" {
-    command = "echo 'ERROR: peer_vpc_name es requerido cuando enable_vpc_peering = true' && exit 1"
+# Validación: Corporate IP ranges deben tener formato CIDR válido
+check "corporate_ip_ranges_format" {
+  assert {
+    condition = length(var.corporate_ip_ranges) == 0 || alltrue([
+      for cidr in var.corporate_ip_ranges : can(cidrhost(cidr, 0))
+    ])
+    error_message = "Todos los valores en corporate_ip_ranges deben ser CIDR válidos"
   }
 }

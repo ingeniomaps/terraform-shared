@@ -2,10 +2,10 @@
 # FIREWALL GKE: MASTER → NODES
 # ============================================================================
 resource "google_compute_firewall" "gke_master_to_nodes" {
-  count   = var.enable_gke ? 1 : 0
+  count = var.enable_gke ? 1 : 0
 
-  name    = "${local.network_name}-gke-master-to-nodes"
-  network = google_compute_network.vpc.name
+  name    = "${var.network_name}-gke-master-to-nodes"
+  network = var.vpc_name
 
   allow {
     protocol = "tcp"
@@ -13,7 +13,7 @@ resource "google_compute_firewall" "gke_master_to_nodes" {
   }
 
   source_ranges = [var.gke_master_cidr]
-  target_tags   = ["gke-${local.network_name}"]
+  target_tags   = ["gke-${var.network_name}"]
 
   description = "Comunicación GKE control plane → nodes"
 }
@@ -22,17 +22,17 @@ resource "google_compute_firewall" "gke_master_to_nodes" {
 # FIREWALL GKE: NODES → MASTER
 # ============================================================================
 resource "google_compute_firewall" "gke_nodes_to_master" {
-  count   = var.enable_gke ? 1 : 0
+  count = var.enable_gke ? 1 : 0
 
-  name    = "${local.network_name}-gke-nodes-to-master"
-  network = google_compute_network.vpc.name
+  name    = "${var.network_name}-gke-nodes-to-master"
+  network = var.vpc_name
 
   allow {
     protocol = "tcp"
     ports    = ["443"]
   }
 
-  source_tags        = ["gke-${local.network_name}"]
+  source_tags        = ["gke-${var.network_name}"]
   destination_ranges = [var.gke_master_cidr]
 
   description = "Comunicación GKE nodes → control plane"
@@ -42,30 +42,30 @@ resource "google_compute_firewall" "gke_nodes_to_master" {
 # FIREWALL GKE: TRÁFICO INTERNO ENTRE PODS/NODES
 # ============================================================================
 resource "google_compute_firewall" "gke_internal" {
-  count   = var.enable_gke ? 1 : 0
+  count = var.enable_gke ? 1 : 0
 
-  name    = "${local.network_name}-gke-internal"
-  network = google_compute_network.vpc.name
+  name    = "${var.network_name}-gke-internal"
+  network = var.vpc_name
 
   # Solo permitir puertos necesarios para Kubernetes
   allow {
     protocol = "tcp"
     ports = [
-      "443",        # HTTPS
-      "8443",       # Webhooks
-      "9443",       # Admission controllers
-      "10250",      # Kubelet
-      "10255",      # Read-only kubelet
-      "4443",       # Calico/network plugin
-      "5473",       # Calico
+      "443",   # HTTPS
+      "8443",  # Webhooks
+      "9443",  # Admission controllers
+      "10250", # Kubelet
+      "10255", # Read-only kubelet
+      "4443",  # Calico/network plugin
+      "5473",  # Calico
     ]
   }
 
   allow {
     protocol = "udp"
     ports = [
-      "53",         # DNS
-      "4789",       # VXLAN
+      "53",   # DNS
+      "4789", # VXLAN
     ]
   }
 
@@ -80,7 +80,7 @@ resource "google_compute_firewall" "gke_internal" {
     var.gke_services_cidr,
   ]
 
-  target_tags = ["gke-${local.network_name}"]
+  target_tags = ["gke-${var.network_name}"]
 
   description = "Tráfico interno GKE - Solo puertos necesarios para Kubernetes"
 }
@@ -89,10 +89,10 @@ resource "google_compute_firewall" "gke_internal" {
 # FIREWALL GKE: HEALTH CHECKS
 # ============================================================================
 resource "google_compute_firewall" "gke_health_checks" {
-  count   = var.enable_gke ? 1 : 0
+  count = var.enable_gke ? 1 : 0
 
-  name    = "${local.network_name}-gke-health-checks"
-  network = google_compute_network.vpc.name
+  name    = "${var.network_name}-gke-health-checks"
+  network = var.vpc_name
 
   allow {
     protocol = "tcp"
@@ -103,7 +103,7 @@ resource "google_compute_firewall" "gke_health_checks" {
     "130.211.0.0/22",
   ]
 
-  target_tags = ["gke-${local.network_name}"]
+  target_tags = ["gke-${var.network_name}"]
 
   description = "Health checks para GKE LoadBalancer Services"
 }
@@ -112,10 +112,10 @@ resource "google_compute_firewall" "gke_health_checks" {
 # FIREWALL GKE: SSH VÍA IAP PARA TROUBLESHOOTING
 # ============================================================================
 resource "google_compute_firewall" "gke_allow_iap_ssh" {
-  count   = var.enable_gke ? 1 : 0
+  count = var.enable_gke ? 1 : 0
 
-  name    = "${local.network_name}-gke-allow-iap-ssh"
-  network = google_compute_network.vpc.name
+  name    = "${var.network_name}-gke-allow-iap-ssh"
+  network = var.vpc_name
 
   allow {
     protocol = "tcp"
@@ -123,7 +123,7 @@ resource "google_compute_firewall" "gke_allow_iap_ssh" {
   }
 
   source_ranges = ["35.235.240.0/20"]
-  target_tags   = ["gke-${local.network_name}"]
+  target_tags   = ["gke-${var.network_name}"]
 
   description = "SSH a nodes GKE solo vía IAP para troubleshooting"
 }

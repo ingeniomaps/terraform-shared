@@ -35,10 +35,10 @@ variable "readers" {
   type        = list(string)
   default     = []
 
-#  validation {
-#    condition     = alltrue([for m in var.readers : can(regex("^(serviceAccount|user|group):", m))])
-#    error_message = "Los readers deben empezar con 'serviceAccount:', 'user:' o 'group:'."
-#  }
+  #  validation {
+  #    condition     = alltrue([for m in var.readers : can(regex("^(serviceAccount|user|group):", m))])
+  #    error_message = "Los readers deben empezar con 'serviceAccount:', 'user:' o 'group:'."
+  #  }
 }
 
 variable "writers" {

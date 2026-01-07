@@ -22,7 +22,7 @@ resource "google_compute_subnetwork" "vm_subnet" {
 # SUBNET PARA GKE (con secondary ranges)
 # ============================================================================
 resource "google_compute_subnetwork" "gke_subnet" {
-  count         = var.enable_gke ? 1 : 0
+  count = var.enable_gke ? 1 : 0
 
   name          = "${local.network_name}-gke-subnet"
   region        = var.region

@@ -12,5 +12,5 @@ locals {
 }
 
 data "google_project" "current" {
-  project_id = var.project_id  # ID del proyecto de GCP a consultar
+  project_id = var.project_id # ID del proyecto de GCP a consultar
 }

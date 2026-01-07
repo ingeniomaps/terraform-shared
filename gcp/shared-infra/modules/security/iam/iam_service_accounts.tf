@@ -9,19 +9,19 @@
 resource "google_project_iam_member" "ci_cd_log_writer" {
   project = var.project_id
   role    = "roles/logging.logWriter"
-  member  = "serviceAccount:${google_service_account.ci_cd_writer.email}"
+  member  = "serviceAccount:${var.ci_cd_writer_email}"
 }
 
 # Permite que las VMs o workloads asociados publiquen métricas personalizadas
 resource "google_project_iam_member" "vm_metric_writer" {
   project = var.project_id
   role    = "roles/monitoring.metricWriter"
-  member  = "serviceAccount:${google_service_account.vm_reader.email}"
+  member  = "serviceAccount:${var.vm_reader_email}"
 }
 
 # Permite que las VMs o workloads escriban logs de aplicación y sistema
 resource "google_project_iam_member" "vm_log_writer" {
   project = var.project_id
   role    = "roles/logging.logWriter"
-  member  = "serviceAccount:${google_service_account.vm_reader.email}"
+  member  = "serviceAccount:${var.vm_reader_email}"
 }

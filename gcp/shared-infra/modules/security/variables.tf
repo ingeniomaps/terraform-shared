@@ -47,6 +47,13 @@ variable "organization_id" {
 variable "allowed_domains" {
   description = "Dominios permitidos para miembros IAM"
   type        = list(string)
+
+  validation {
+    condition = alltrue([
+      for domain in var.allowed_domains : can(regex("^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$", domain))
+    ])
+    error_message = "Todos los dominios en allowed_domains deben tener formato válido (ej: example.com)"
+  }
 }
 
 variable "admin_groups" {
@@ -75,4 +82,22 @@ variable "create_admin_sa" {
   description = "Controla si se crean las Service Accounts de administración y workload para GKE"
   type        = bool
   default     = false
+}
+
+variable "enable_group_iam" {
+  description = "Habilitar asignación de roles IAM a grupos de Google Workspace (requiere que los grupos existan)"
+  type        = bool
+  default     = false
+}
+
+variable "enable_org_policies" {
+  description = "Habilitar Organization Policies (requiere que orgpolicy.googleapis.com esté habilitado y configurado)"
+  type        = bool
+  default     = false
+}
+
+variable "log_bucket_suffix" {
+  description = "Sufijo opcional para personalizar los nombres de los buckets de logging. Se agrega después del nombre del ambiente (ej: '-custom' resultaría en 'iam-audit-logs-dev-custom'). Si está vacío, no se agrega sufijo."
+  type        = string
+  default     = ""
 }

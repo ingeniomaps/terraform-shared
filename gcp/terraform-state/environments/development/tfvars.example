@@ -1,0 +1,4 @@
+bucket_prefix = "terraform-state"
+project_id    = ""
+region        = "us-central1"
+

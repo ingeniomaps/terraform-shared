@@ -1,19 +1,41 @@
 terraform {
   required_version = ">= 1.14.2"
 
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = ">= 7.0"
+    }
+    time = {
+      source  = "hashicorp/time"
+      version = ">= 0.9.1"
+    }
+  }
+
   backend "gcs" {
-    bucket      = "roax-terraform-state-stg"
-    prefix      = "dev/shared/terraform"
+    bucket = "workspace-terraform-state-dev"
+    prefix = "shared/terraform"
   }
 }
 
 provider "google" {
   project = var.project_id
   region  = var.region
+  # Si credentials_file está definido, usar ruta relativa desde la raíz del proyecto
+  # path.root apunta al directorio del módulo, así que usamos ../../../ para llegar a la raíz
+  credentials = var.credentials_file != null ? file("${path.root}/../../../${var.credentials_file}") : null
+}
+
+# Validación: enable_public_http y enable_restricted_http son mutuamente excluyentes
+check "http_access_exclusivity" {
+  assert {
+    condition     = !(var.enable_public_http && var.enable_restricted_http)
+    error_message = "enable_public_http y enable_restricted_http no pueden ser true al mismo tiempo"
+  }
 }
 
 module "security" {
-  source   = "../../modules/security"
+  source = "../../modules/security"
 
   project_id = var.project_id
   workspace  = var.workspace
@@ -33,6 +55,9 @@ module "security" {
   alert_notification_channels = var.alert_notification_channels
 
   break_glass_max_session_duration = var.break_glass_max_session_duration
+  enable_group_iam                 = var.enable_group_iam
+  enable_org_policies              = var.enable_org_policies
+  log_bucket_suffix                = var.log_bucket_suffix
 }
 
 module "artifact_registry" {
@@ -45,10 +70,9 @@ module "artifact_registry" {
   enable_cleanup_policies = false
 
   labels = {
-    environment = "shared"
+    environment = var.env
     managed_by  = "terraform"
     workspace   = var.workspace
-    environment = var.env
   }
 
   readers = compact([
@@ -78,13 +102,14 @@ module "network" {
   gke_services_cidr = var.gke_services_cidr
 
   # firewall
-  vm_service_account_email    = module.security.vm_reader_email
-  enable_public_http          = var.enable_public_http
-  enable_restricted_http      = var.enable_restricted_http
-  corporate_ip_ranges         = var.corporate_ip_ranges
-  gke_master_cidr             = var.gke_master_cidr
+  vm_service_account_email = module.security.vm_reader_email
+  enable_public_http       = var.enable_public_http
+  enable_restricted_http   = var.enable_restricted_http
+  corporate_ip_ranges      = var.corporate_ip_ranges
+  gke_master_cidr          = var.gke_master_cidr
 
   # vpc_peering
-  peer_project_id = var.peer_project_id
-  peer_vpc_name   = var.peer_vpc_name
+  enable_vpc_peering = var.enable_vpc_peering
+  peer_project_id    = var.peer_project_id
+  peer_vpc_name      = var.peer_vpc_name
 }

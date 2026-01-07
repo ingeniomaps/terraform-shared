@@ -1,47 +1,79 @@
-project_id  = ""   # ID del proyecto en Google Cloud
-workspace   = ""                   # Nombre del workspace de Terraform
-region      = "us-central1"            # Región principal donde se crean los recursos
-env         = "dev"                    # Ambiente lógico (dev, stg, prod)
+# ============================================================================
+# CONFIGURACIÓN DEL PROYECTO
+# ============================================================================
+project_id  = ""
+workspace   = ""
+region      = "us-central1"
+env         = "dev"
 
-registry_name     = "docker-images-dev"      # Nombre del Artifact Registry
-enable_dev_reader = true                     # Habilita una Service Account de solo lectura para developers
+# Opcional: Ruta al archivo JSON de credenciales (relativa desde la raíz del proyecto)
+# Si no se especifica, se usa GOOGLE_APPLICATION_CREDENTIALS o gcloud auth
+# credentials_file = "keys/account_service_dev.json"
 
-# Habilita VPC Service Controls para proteger recursos administrados
-enable_vpc_service_controls = false
+# ============================================================================
+# ARTIFACT REGISTRY
+# ============================================================================
+registry_name     = "docker-images-dev"
+enable_dev_reader = true
 
-# Duración máxima de la sesión (en segundos) para la cuenta break-glass
+# ============================================================================
+# SEGURIDAD
+# ============================================================================
+enable_vpc_service_controls      = false
 break_glass_max_session_duration = 7200
+organization_id                   = ""
 
-# ID de la organización de Google Cloud
-organization_id = ""
-
-# Rango CIDR de la subnet para máquinas virtuales tradicionales
-vm_subnet_cidr = "10.0.0.0/24"
-
-# Permite acceso HTTP/HTTPS
-enable_public_http = true
-
-# Habilita acceso HTTP/HTTPS restringido (IAP, allowlists, etc.)
+# ============================================================================
+# RED Y CONECTIVIDAD
+# ============================================================================
+vm_subnet_cidr        = "10.0.0.0/24"
+enable_public_http    = true
 enable_restricted_http = false
 
-# Habilita la creación de recursos relacionados con GKE
-enable_gke = false
+# Requerido si enable_restricted_http = true
+# corporate_ip_ranges = ["203.0.113.0/24", "198.51.100.0/24"]
 
-# Habilita VPC Peering con otras redes
-enable_vpc_peering = false
+enable_vpc_peering    = false
 
-# Grupos administrativos por rol
+# Requerido si enable_vpc_peering = true
+# peer_project_id = "proyecto-peer-id"
+# peer_vpc_name   = "vpc-peer-name"
+
+# ============================================================================
+# GKE (KUBERNETES)
+# ============================================================================
+enable_gke        = false
+gke_subnet_cidr   = "10.0.10.0/24"
+gke_pods_cidr     = "10.1.0.0/16"
+gke_services_cidr = "10.2.0.0/16"
+gke_master_cidr   = "172.16.0.0/28"
+
+# ============================================================================
+# IAM Y GRUPOS
+# ============================================================================
 admin_groups = {
-  network_admins  = "network-admins@miempresa.com"   # Administración de red
-  network_viewers = "developers@miempresa.com"       # Lectura de red
-  security_admins = "security-admins@miempresa.com"  # Seguridad e IAM
-  auditors        = "auditors@miempresa.com"         # Auditoría
+  network_admins  = "network-admins@miempresa.com"
+  network_viewers = "developers@miempresa.com"
+  security_admins = "security-admins@miempresa.com"
+  auditors        = "auditors@miempresa.com"
 }
 
-# Dominios permitidos para miembros IAM
 allowed_domains = [
   "miempresa.com"
 ]
 
-# Canales de notificación para alertas
+# ============================================================================
+# ALERTAS Y MONITOREO
+# ============================================================================
 alert_notification_channels = []
+
+# ============================================================================
+# OPCIONES DE SEGURIDAD
+# ============================================================================
+# Habilitar asignación de roles IAM a grupos de Google Workspace
+# Requiere que los grupos existan en Google Workspace
+# enable_group_iam = false
+
+# Habilitar Organization Policies
+# Requiere que orgpolicy.googleapis.com esté habilitado y configurado
+# enable_org_policies = false
