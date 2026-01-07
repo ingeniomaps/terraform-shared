@@ -78,6 +78,10 @@ resource "google_container_cluster" "gke_cluster" {
     }
   }
 
+  # Deletion protection
+  # IMPORTANTE: Debe ser false para poder destruir el cluster
+  deletion_protection = var.deletion_protection
+
   # Labels
   resource_labels = merge(
     {

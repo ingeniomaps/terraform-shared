@@ -217,3 +217,9 @@ variable "maintenance_window_day" {
     error_message = "maintenance_window_day debe ser uno de: SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY"
   }
 }
+
+variable "deletion_protection" {
+  description = "Habilitar protección contra eliminación del cluster. IMPORTANTE: Debe ser false para poder destruir el cluster."
+  type        = bool
+  default     = true
+}
