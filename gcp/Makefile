@@ -3,7 +3,7 @@
       plan apply \
       deploy-dev deploy-qa deploy-stg deploy-prod \
       output-dev output-qa output-stg output-prod \
-      recover-global \
+      recover-global apply-state-environments \
       test test-verbose test-format test-validate test-lint test-security
 
 # Variables
@@ -199,5 +199,8 @@ check-versions: ## Verificar versiones más recientes de Terraform y providers
 
 recover-global: ## Recuperar estado del módulo global desde GCP (requiere .env)
 	@$(SCRIPT_DIR)/recover-global-state.sh
+
+apply-state-environments: ## Aplicar terraform apply en todos los terraform-state/environments (verifica que global existe)
+	@$(SCRIPT_DIR)/apply-state-environments.sh
 
 .DEFAULT_GOAL := help
