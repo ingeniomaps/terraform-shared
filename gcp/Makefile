@@ -135,6 +135,8 @@ clean: ## Limpiar archivos temporales de Terraform
 	@find . -type f -name "*.tfstate" -delete 2>/dev/null || true
 	@find . -type f -name "*.tfstate.backup" -delete 2>/dev/null || true
 	@find . -type f -name "*.tfplan" -delete 2>/dev/null || true
+	@find . -type f -name "plan.json" -delete 2>/dev/null || true
+	@find . -type f -name "tfplan" -delete 2>/dev/null || true
 	@echo "✓ Limpieza completada"
 
 init: ## Inicializar Terraform en todos los directorios (requiere backend)
