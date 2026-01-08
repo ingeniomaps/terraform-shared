@@ -171,16 +171,25 @@ main() {
 
     # Verificar si el bucket existe
     if ! check_bucket_exists "$BUCKET_NAME" "$PROJECT_ID"; then
-        echo -e "${YELLOW}⚠ El bucket '${BUCKET_NAME}' NO existe en el proyecto '${PROJECT_ID}'${NC}"
+        echo -e "${YELLOW}⚠ El bucket global '${BUCKET_NAME}' NO existe en el proyecto '${PROJECT_ID}'${NC}"
         echo ""
-        echo -e "${CYAN}Posibles causas:${NC}"
-        echo -e "  1. El bucket aún no ha sido creado"
-        echo -e "  2. El nombre del bucket es incorrecto"
-        echo -e "  3. No tienes permisos para acceder al bucket"
-        echo -e "  4. El proyecto ID es incorrecto"
+        echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${RED}⚠️  IMPORTANTE: El bucket global debe ser creado primero${NC}"
+        echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
         echo ""
-        echo -e "${CYAN}Para crear el bucket, ejecuta:${NC}"
-        echo -e "  ${YELLOW}cd ${GLOBAL_DIR} && terraform init && terraform apply${NC}"
+        echo -e "${CYAN}Este script solo puede RECUPERAR el estado si el bucket ya existe.${NC}"
+        echo -e "${CYAN}Si el bucket no existe, debes CREARLO primero.${NC}"
+        echo ""
+        echo -e "${CYAN}Para crear el bucket global, ejecuta:${NC}"
+        echo -e "  ${YELLOW}cd ${GLOBAL_DIR}${NC}"
+        echo -e "  ${YELLOW}terraform init${NC}"
+        echo -e "  ${YELLOW}terraform apply${NC}"
+        echo ""
+        echo -e "${CYAN}Posibles causas si el bucket debería existir:${NC}"
+        echo -e "  1. El nombre del bucket es incorrecto"
+        echo -e "  2. No tienes permisos para acceder al bucket"
+        echo -e "  3. El proyecto ID es incorrecto"
+        echo ""
         exit 1
     fi
 

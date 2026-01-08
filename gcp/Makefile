@@ -3,7 +3,7 @@
       plan apply \
       deploy-dev deploy-qa deploy-stg deploy-prod \
       output-dev output-qa output-stg output-prod \
-      recover-global \
+      recover-global apply-state-environments \
       test test-verbose test-format test-validate test-lint test-security
 
 # Variables
@@ -135,6 +135,8 @@ clean: ## Limpiar archivos temporales de Terraform
 	@find . -type f -name "*.tfstate" -delete 2>/dev/null || true
 	@find . -type f -name "*.tfstate.backup" -delete 2>/dev/null || true
 	@find . -type f -name "*.tfplan" -delete 2>/dev/null || true
+	@find . -type f -name "plan.json" -delete 2>/dev/null || true
+	@find . -type f -name "tfplan" -delete 2>/dev/null || true
 	@echo "✓ Limpieza completada"
 
 init: ## Inicializar Terraform en todos los directorios (requiere backend)
@@ -199,5 +201,8 @@ check-versions: ## Verificar versiones más recientes de Terraform y providers
 
 recover-global: ## Recuperar estado del módulo global desde GCP (requiere .env)
 	@$(SCRIPT_DIR)/recover-global-state.sh
+
+apply-state-environments: ## Aplicar terraform apply en todos los terraform-state/environments (verifica que global existe)
+	@$(SCRIPT_DIR)/apply-state-environments.sh
 
 .DEFAULT_GOAL := help

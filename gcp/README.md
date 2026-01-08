@@ -498,4 +498,100 @@ Ver [docs/pre-commit.md](docs/pre-commit.md) para más detalles.
 
 ---
 
+## 🔄 Migración de Estado: Buckets de Terraform State
+
+### 📋 Contexto
+
+El módulo `gcs_bucket` fue refactorizado para usar recursos condicionales basados en `prevent_destroy`:
+
+- `bucket_protected[0]`: cuando `prevent_destroy = true` (producción, global)
+- `bucket_unprotected[0]`: cuando `prevent_destroy = false` (staging, development)
+
+Cuando cambias `prevent_destroy` en un bucket existente, Terraform intenta:
+
+1. **Destruir** el recurso antiguo (`bucket`)
+2. **Crear** el recurso nuevo (`bucket_protected[0]` o `bucket_unprotected[0]`)
+
+**⚠️ Problema**: Los buckets de GCS tienen un período de "soft delete" de **7 días**. Si intentas recrear un bucket con el mismo nombre durante este período, la operación fallará.
+
+### ✅ Solución: Migrar el Estado
+
+En lugar de destruir y recrear, migramos el estado del recurso antiguo al nuevo usando `terraform state mv`.
+
+#### Para Staging/Development (prevent_destroy = false)
+
+```bash
+cd terraform-state/environments/staging  # o development
+
+# Verificar el plan antes de migrar
+terraform plan
+
+# Migrar el estado del recurso antiguo al nuevo
+terraform state mv \
+  'module.terraform_state_bucket.google_storage_bucket.bucket' \
+  'module.terraform_state_bucket.google_storage_bucket.bucket_unprotected[0]'
+
+# Verificar que el plan ahora solo muestra cambios de configuración (no destrucción/creación)
+terraform plan
+```
+
+#### Para Production/Global (prevent_destroy = true)
+
+```bash
+cd terraform-state/environments/production  # o global
+
+# Verificar el plan antes de migrar
+terraform plan
+
+# Migrar el estado del recurso antiguo al nuevo
+terraform state mv \
+  'module.terraform_state_bucket.google_storage_bucket.bucket' \
+  'module.terraform_state_bucket.google_storage_bucket.bucket_protected[0]'
+
+# Verificar que el plan ahora solo muestra cambios de configuración (no destrucción/creación)
+terraform plan
+```
+
+### 🔍 Verificación
+
+Después de la migración, verifica:
+
+1. **El bucket físico NO se destruye**:
+
+   ```bash
+   gsutil ls gs://tu-bucket-name
+   # Debe seguir existiendo
+   ```
+
+2. **Terraform reconoce el recurso migrado**:
+
+   ```bash
+   terraform state list | grep bucket
+   # Debe mostrar: module.terraform_state_bucket.google_storage_bucket.bucket_unprotected[0]
+   # (o bucket_protected[0] según corresponda)
+   ```
+
+3. **El plan solo muestra cambios de configuración**:
+   ```bash
+   terraform plan
+   # NO debe mostrar destrucción/creación del bucket
+   # Solo puede mostrar actualizaciones de configuración (retention_policy, lifecycle_rule, etc.)
+   ```
+
+### ⚠️ Advertencias
+
+- **NO ejecutes esto si el bucket no existe**: Primero verifica que el bucket existe en GCS.
+- **NO ejecutes esto si ya aplicaste los cambios**: Solo funciona si el plan muestra destrucción/creación pendiente.
+- **Haz backup del estado**: Considera hacer backup del estado antes de migrar:
+  ```bash
+  terraform state pull > state-backup.json
+  ```
+
+### 📚 Referencias
+
+- [Terraform State mv](https://www.terraform.io/docs/cli/commands/state/mv.html)
+- [GCS Bucket Soft Delete](https://cloud.google.com/storage/docs/soft-delete)
+
+---
+
 **Última actualización**: 2025
