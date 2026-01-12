@@ -61,6 +61,16 @@ output "cloud_router_name" {
   value       = module.network.cloud_router_name
 }
 
+output "network_name" {
+  description = "Nombre de la red (workspace-env)"
+  value       = module.network.network_name
+}
+
+output "network_tags" {
+  description = "Network tags que deben usarse en recursos (incluye allow_iap_ssh y allow_ssh)"
+  value       = module.network.network_tags
+}
+
 # ============================================================================
 # OUTPUTS - Security
 # ============================================================================

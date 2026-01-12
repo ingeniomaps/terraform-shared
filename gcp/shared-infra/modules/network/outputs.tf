@@ -61,9 +61,16 @@ output "cloud_router_name" {
   value       = google_compute_router.router.name
 }
 
+output "network_name" {
+  description = "Nombre de la red (workspace-env)"
+  value       = local.network_name
+}
+
 output "network_tags" {
   description = "Network tags que deben usarse en recursos"
   value = {
-    gke_nodes = var.enable_gke ? "gke-${local.network_name}" : null
+    gke_nodes      = var.enable_gke ? "gke-${local.network_name}" : null
+    allow_iap_ssh  = "${local.network_name}-allow-iap-ssh"
+    allow_ssh      = "${local.network_name}-allow-ssh"
   }
 }
