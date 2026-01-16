@@ -91,7 +91,34 @@ resource "google_compute_firewall" "allow_iap_ssh" {
 
   # Usar tags en lugar de service accounts para mayor flexibilidad
   # Las VMs deben tener el tag "allow-iap-ssh" para permitir SSH vía IAP
-  target_tags = ["allow-iap-ssh"]
+  target_tags = ["${var.network_name}-allow-iap-ssh"]
 
   description = "SSH solo mediante Identity-Aware Proxy (rango IAP: 35.235.240.0/20)"
+}
+
+# ============================================================================
+# FIREWALL: SSH DIRECTO DESDE INTERNET (OPCIONAL, MENOS SEGURO)
+# ============================================================================
+# ⚠️ ADVERTENCIA: SSH directo permite conexiones desde cualquier IP (0.0.0.0/0).
+# Se recomienda usar IAP (allow-iap-ssh) en lugar de SSH directo por seguridad.
+# Esta regla solo se aplica a VMs con el tag "allow-ssh"
+resource "google_compute_firewall" "allow_ssh_direct" {
+  name    = "${var.network_name}-allow-ssh-direct"
+  network = var.vpc_name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+
+  # Usar tags para mayor flexibilidad
+  # Las VMs deben tener el tag "${var.network_name}-allow-ssh" para permitir SSH directo desde Internet
+  target_tags = ["${var.network_name}-allow-ssh"]
+
+  # Prioridad más baja que IAP (IAP tiene prioridad 1000 por defecto)
+  priority = 65534
+
+  description = "SSH directo desde Internet (menos seguro que IAP). Solo para VMs con tag 'allow-ssh'"
 }

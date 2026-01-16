@@ -89,12 +89,44 @@ check_bucket_exists() {
     local project_id=$2
 
     echo -e "${BLUE}Verificando si el bucket existe en GCP...${NC}"
+
+    # Método 1: Intentar con gcloud storage buckets describe
     if gcloud storage buckets describe "gs://${bucket_name}" \
         --project="${project_id}" > /dev/null 2>&1; then
         return 0
-    else
-        return 1
     fi
+
+    # Método 2: Intentar con gcloud storage buckets list (más robusto)
+    if gcloud storage buckets list \
+        --project="${project_id}" \
+        --filter="name:${bucket_name}" \
+        --format="value(name)" 2>/dev/null | grep -q "^${bucket_name}$"; then
+        return 0
+    fi
+
+    # Método 3: Verificar usando terraform state si existe
+    local global_dir="$GLOBAL_DIR"
+    if [ -f "${global_dir}/terraform.tfstate" ]; then
+        if terraform state list -state="${global_dir}/terraform.tfstate" 2>/dev/null | grep -q "module.terraform_state_bucket.google_storage_bucket.bucket_protected"; then
+            echo -e "${YELLOW}⚠ No se pudo verificar con gcloud, pero el estado local indica que el bucket existe${NC}"
+            return 0
+        fi
+    fi
+
+    # Si llegamos aquí, mostrar el error real de gcloud
+    echo -e "${YELLOW}⚠ Error al verificar bucket con gcloud. Verificando con método alternativo...${NC}"
+    local error_output
+    error_output=$(gcloud storage buckets describe "gs://${bucket_name}" \
+        --project="${project_id}" 2>&1)
+    local exit_code=$?
+
+    # Si el error es de autenticación, sugerir solución
+    if echo "$error_output" | grep -q "auth\|login\|credentials"; then
+        echo -e "${YELLOW}⚠ Problema de autenticación con gcloud${NC}"
+        echo -e "${CYAN}Ejecuta: gcloud auth login${NC}"
+    fi
+
+    return 1
 }
 
 # Función para importar el recurso
@@ -169,7 +201,32 @@ main() {
         exit 1
     fi
 
-    # Verificar si el bucket existe
+    # Verificar primero si terraform ya tiene el estado (método más confiable)
+    local state_exists=false
+    if [ -f "${GLOBAL_DIR}/terraform.tfstate" ]; then
+        if terraform state list -state="${GLOBAL_DIR}/terraform.tfstate" 2>/dev/null | grep -q "module.terraform_state_bucket.google_storage_bucket.bucket_protected"; then
+            echo -e "${GREEN}✓ Estado de Terraform encontrado localmente${NC}"
+            echo -e "${CYAN}El bucket ya está en el estado de Terraform.${NC}"
+            echo ""
+            echo -e "${CYAN}Si necesitas verificar el estado actual, ejecuta:${NC}"
+            echo -e "  ${YELLOW}cd ${GLOBAL_DIR} && terraform refresh${NC}"
+            echo ""
+            exit 0
+        fi
+    fi
+
+    # Si terraform tiene backend configurado, intentar refrescar el estado
+    if [ -f "${GLOBAL_DIR}/.terraform/terraform.tfstate" ] || [ -f "${GLOBAL_DIR}/terraform.tfstate.backup" ]; then
+        echo -e "${BLUE}Intentando refrescar estado desde backend...${NC}"
+        if (cd "$GLOBAL_DIR" && terraform init > /dev/null 2>&1 && terraform state list 2>/dev/null | grep -q "module.terraform_state_bucket.google_storage_bucket.bucket_protected"); then
+            echo -e "${GREEN}✓ Estado encontrado en backend de Terraform${NC}"
+            echo -e "${CYAN}El bucket ya está gestionado por Terraform.${NC}"
+            echo ""
+            exit 0
+        fi
+    fi
+
+    # Si no hay estado, verificar con gcloud si el bucket existe
     if ! check_bucket_exists "$BUCKET_NAME" "$PROJECT_ID"; then
         echo -e "${YELLOW}⚠ El bucket global '${BUCKET_NAME}' NO existe en el proyecto '${PROJECT_ID}'${NC}"
         echo ""
@@ -189,6 +246,7 @@ main() {
         echo -e "  1. El nombre del bucket es incorrecto"
         echo -e "  2. No tienes permisos para acceder al bucket"
         echo -e "  3. El proyecto ID es incorrecto"
+        echo -e "  4. Problema de autenticación con gcloud (ejecuta: gcloud auth login)"
         echo ""
         exit 1
     fi
