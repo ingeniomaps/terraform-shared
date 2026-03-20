@@ -1,6 +1,6 @@
 REGION=us-central1
 PROJECT=core-plate-443813-d1
-REPO=roax-dev-docker
+REPO=workspace-dev-docker
 KEY_JSON=./gcp/keys/service_account_dev.json
 
 .PHONY: list-images
