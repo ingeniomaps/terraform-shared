@@ -15,10 +15,10 @@ Cada ambiente tiene su propio backend configurado en `main.tf` o `backend.tf`:
 
 ### Terraform State Buckets
 
-- **Development**: `terraform-state/environments/development/`
-- **QA**: `terraform-state/environments/qa/`
-- **Staging**: `terraform-state/environments/staging/`
-- **Production**: `terraform-state/environments/production/`
+- **Development**: `bootstrap/global`
+- **QA**: `bootstrap/global`
+- **Staging**: `bootstrap/global`
+- **Production**: `bootstrap/global`
 
 ## 🔧 Configuración Típica
 
@@ -39,10 +39,10 @@ terraform {
 
 ### Crear Buckets si no Existen
 
-Si los buckets no existen, créalos usando el módulo `terraform-state/global`:
+Si los buckets no existen, créalos usando el módulo `bootstrap/global`:
 
 ```bash
-cd terraform-state/global
+cd bootstrap/global
 terraform init
 terraform plan
 terraform apply
@@ -90,7 +90,7 @@ Para ver qué backends están configurados en tu proyecto:
 
 ```bash
 # Buscar configuraciones de backend
-grep -r "backend \"gcs\"" shared-infra/environments/ terraform-state/environments/
+grep -r "backend \"gcs\"" shared-infra/environments/ bootstrap/global/
 ```
 
 Esto mostrará todos los backends configurados con sus buckets y prefijos específicos.

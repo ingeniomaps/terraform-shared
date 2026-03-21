@@ -91,9 +91,9 @@ Si se encuentran versiones más recientes:
 3. **Actualizar versiones en todos los archivos**
 
    - `shared-infra/environments/development/main.tf`
-   - `terraform-state/environments/production/main.tf`
-   - `terraform-state/environments/staging/main.tf`
-   - `terraform-state/global/main.tf`
+   - `bootstrap/global`
+   - `bootstrap/global`
+   - `bootstrap/global/main.tf`
 
 4. **Documentar cambios**
    - Actualizar este archivo con las nuevas versiones

@@ -10,9 +10,9 @@
 
 ### Terraform State Buckets
 
-- **`terraform-state/environments/staging/`** - Bucket de estado para staging
-- **`terraform-state/environments/production/`** - Bucket de estado para producción
-- **`terraform-state/global/`** - Bucket de estado global
+- **`bootstrap/global`** - Bucket de estado para staging
+- **`bootstrap/global`** - Bucket de estado para producción
+- **`bootstrap/global/`** - Bucket de estado global
 
 ## Crear Entornos Adicionales
 
@@ -104,7 +104,7 @@ shared-infra/environments/
 
 - **Development ≠ Staging**: Staging debe ser similar a producción para validar cambios
 - **Flujo típico**: Development → Staging → Production
-- Los entornos en `terraform-state/environments/` son solo para gestionar los buckets de estado
+- Los entornos en `bootstrap/global` son solo para gestionar los buckets de estado
 - Los entornos en `shared-infra/environments/` son para la infraestructura compartida real
 - Puedes empezar con solo `development/` y agregar otros cuando los necesites
 

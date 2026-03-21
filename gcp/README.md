@@ -46,7 +46,7 @@ Este proyecto proporciona:
 │       ├── network/               # Módulo de red (VPC, subnets, firewall)
 │       ├── security/              # Módulo de seguridad (IAM, Service Accounts, logging)
 │       └── artifact_registry/     # Módulo de Artifact Registry
-└── terraform-state/               # Gestión del estado remoto
+└── bootstrap/               # Gestión del estado remoto
     ├── environments/
     │   ├── production/            # Bucket de estado para producción
     │   └── staging/               # Bucket de estado para staging
@@ -110,13 +110,13 @@ Sigue las instrucciones en [docs/credentials.md](docs/credentials.md) para obten
 Antes de usar la infraestructura compartida, necesitas crear los buckets de estado. Ver [docs/backends.md](docs/backends.md) para detalles completos.
 
 ```bash
-cd terraform-state/global
+cd bootstrap/global
 terraform init
 terraform plan
 terraform apply
 ```
 
-Repite para `terraform-state/environments/production` y `terraform-state/environments/staging` si es necesario.
+Repite para `bootstrap/global` y `bootstrap/global` si es necesario.
 
 ### 4. Configurar Variables
 
@@ -521,7 +521,7 @@ En lugar de destruir y recrear, migramos el estado del recurso antiguo al nuevo 
 #### Para Staging/Development (prevent_destroy = false)
 
 ```bash
-cd terraform-state/environments/staging  # o development
+cd bootstrap/global  # o development
 
 # Verificar el plan antes de migrar
 terraform plan
@@ -538,7 +538,7 @@ terraform plan
 #### Para Production/Global (prevent_destroy = true)
 
 ```bash
-cd terraform-state/environments/production  # o global
+cd bootstrap/global  # o global
 
 # Verificar el plan antes de migrar
 terraform plan

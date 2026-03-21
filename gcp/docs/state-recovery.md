@@ -20,7 +20,7 @@ Un backend es la configuración que le dice a Terraform dónde almacenar el esta
 **Ejemplo:**
 
 ```bash
-cd terraform-state/environments/staging
+cd bootstrap/global
 
 # Si perdiste el .tfstate local, simplemente ejecuta:
 terraform init
@@ -37,10 +37,10 @@ terraform init
 | `shared-infra/environments/qa`             | ✅ Sí               | ✅ Automática |
 | `shared-infra/environments/staging`        | ✅ Sí               | ✅ Automática |
 | `shared-infra/environments/production`     | ✅ Sí               | ✅ Automática |
-| `terraform-state/environments/development` | ✅ Sí               | ✅ Automática |
-| `terraform-state/environments/qa`          | ✅ Sí               | ✅ Automática |
-| `terraform-state/environments/staging`     | ✅ Sí               | ✅ Automática |
-| `terraform-state/environments/production`  | ✅ Sí               | ✅ Automática |
+| `bootstrap/global` | ✅ Sí               | ✅ Automática |
+| `bootstrap/global`          | ✅ Sí               | ✅ Automática |
+| `bootstrap/global`     | ✅ Sí               | ✅ Automática |
+| `bootstrap/global`  | ✅ Sí               | ✅ Automática |
 
 **Nota**: Los buckets y prefijos específicos están configurados en el `main.tf` o `backend.tf` de cada módulo. Revisa esos archivos para ver la configuración exacta.
 
@@ -52,7 +52,7 @@ terraform init
 
 ### El Problema
 
-El módulo `terraform-state/global` es especial:
+El módulo `bootstrap/global` es especial:
 
 - ❌ **NO tiene backend configurado** (porque crea el bucket que otros usan)
 - ❌ Si pierdes el `.tfstate` local, **NO se recupera automáticamente**
@@ -83,7 +83,7 @@ Este comando:
 Si prefieres hacerlo manualmente:
 
 ```bash
-cd terraform-state/global
+cd bootstrap/global
 
 # 1. Verificar que el bucket existe (reemplaza BUCKET-NAME con el nombre real)
 gcloud storage buckets describe gs://BUCKET-NAME \
@@ -141,7 +141,7 @@ terraform plan
 ```bash
 # Escenario: Perdiste el .tfstate local de global
 
-cd terraform-state/global
+cd bootstrap/global
 
 # ❌ terraform init NO recupera el estado (no hay backend)
 terraform init  # Esto solo inicializa, no descarga estado
@@ -151,7 +151,7 @@ cd ../..
 make recover-global
 
 # O manualmente (reemplaza BUCKET-NAME con el nombre real):
-cd terraform-state/global
+cd bootstrap/global
 terraform init -backend=false
 terraform import \
   'module.terraform_state_bucket.google_storage_bucket.bucket_protected[0]' \
@@ -173,7 +173,7 @@ Crea un bucket manualmente en GCP para el estado de `global`:
 gsutil mb -p TU-PROYECTO-ID -l us-central1 gs://TU-PROYECTO-terraform-state-global
 ```
 
-Luego configura el backend en `terraform-state/global/backend.tf`:
+Luego configura el backend en `bootstrap/global/backend.tf`:
 
 ```hcl
 terraform {
