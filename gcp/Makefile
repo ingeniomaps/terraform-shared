@@ -3,20 +3,16 @@
       plan apply \
       deploy-dev deploy-qa deploy-stg deploy-prod \
       output-dev output-qa output-stg output-prod \
-      recover-global apply-state-environments \
+      recover-global  \
       test test-verbose test-format test-validate test-lint test-security
 
 # Variables
 SCRIPT_DIR := scripts
-TERRAFORM_DIRS := shared-infra/environments/development \
+TERRAFORM_DIRS := shared-infra/environments/dev \
                   shared-infra/environments/qa \
-                  shared-infra/environments/staging \
-                  shared-infra/environments/production \
-                  terraform-state/environments/development \
-                  terraform-state/environments/qa \
-                  terraform-state/environments/production \
-                  terraform-state/environments/staging \
-                  terraform-state/global
+                  shared-infra/environments/stg \
+                  shared-infra/environments/prod \
+                  bootstrap/global
 
 help: ## Mostrar esta ayuda
 	@echo "Comandos disponibles:"
@@ -102,7 +98,6 @@ test-lint: ## Ejecutar solo test de linting (requiere tflint)
 		exit 1; \
 	fi
 	@echo "Ejecutando tflint..."
-	@for dir in shared-infra/environments/* terraform-state/environments/* terraform-state/global; do \
 		if [ -d "$$dir" ] && [ -f "$$dir/main.tf" ]; then \
 			echo "Linting $$dir..."; \
 			(cd "$$dir" && tflint --init >/dev/null 2>&1 && tflint --format compact) || exit 1; \
@@ -163,17 +158,17 @@ apply: ## Apply interactivo: selecciona un directorio de TERRAFORM_DIRS
 # Outputs
 # ============================================================================
 
-output-dev: ## Mostrar outputs de shared-infra/development
-	@cd shared-infra/environments/development && terraform output
+output-dev: ## Mostrar outputs de shared-infra/dev
+	@cd shared-infra/environments/dev && terraform output
 
 output-qa: ## Mostrar outputs de shared-infra/qa
 	@cd shared-infra/environments/qa && terraform output
 
-output-stg: ## Mostrar outputs de shared-infra/staging
-	@cd shared-infra/environments/staging && terraform output
+output-stg: ## Mostrar outputs de shared-infra/stg
+	@cd shared-infra/environments/stg && terraform output
 
-output-prod: ## Mostrar outputs de shared-infra/production
-	@cd shared-infra/environments/production && terraform output
+output-prod: ## Mostrar outputs de shared-infra/prod
+	@cd shared-infra/environments/prod && terraform output
 
 # ============================================================================
 # Despliegue de Ambientes
@@ -202,7 +197,65 @@ check-versions: ## Verificar versiones más recientes de Terraform y providers
 recover-global: ## Recuperar estado del módulo global desde GCP (requiere .env)
 	@$(SCRIPT_DIR)/recover-global-state.sh
 
-apply-state-environments: ## Aplicar terraform apply en todos los terraform-state/environments (verifica que global existe)
-	@$(SCRIPT_DIR)/apply-state-environments.sh
+# ============================================================================
+# Costos (Infracost)
+# ============================================================================
+
+COST_ENV ?= dev
+
+cost: ## Costo de un ambiente desplegado (COST_ENV=dev|qa|stg|prod)
+	@if ! command -v infracost >/dev/null 2>&1; then \
+		echo "infracost no instalado. Instala: https://www.infracost.io/docs/"; exit 1; \
+	fi
+	@echo "Estimando costos de shared-infra/$(COST_ENV)..."
+	@cd shared-infra/environments/$(COST_ENV) && \
+		terraform plan -out=tfplan.binary > /dev/null 2>&1 && \
+		terraform show -json tfplan.binary > plan.json 2>/dev/null && \
+		infracost breakdown --path plan.json --format table && \
+		rm -f tfplan.binary plan.json
+
+cost-all: ## Costo total de TODA la infraestructura (todos los ambientes)
+	@if ! command -v infracost >/dev/null 2>&1; then \
+		echo "infracost no instalado. Instala: https://www.infracost.io/docs/"; exit 1; \
+	fi
+	@echo "Estimando costos de toda la infraestructura..."
+	@echo ""
+	@TOTAL_FILE=$$(mktemp); \
+	for env in dev qa stg prod; do \
+		DIR="shared-infra/environments/$$env"; \
+		if [ -d "$$DIR" ] && [ -f "$$DIR/terraform.tfvars" ]; then \
+			echo "=== $$env ===" ; \
+			cd "$$DIR" && \
+			terraform plan -out=tfplan.binary > /dev/null 2>&1 && \
+			terraform show -json tfplan.binary > plan.json 2>/dev/null && \
+			infracost breakdown --path plan.json --format json 2>/dev/null > cost.json && \
+			MONTHLY=$$(cat cost.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('totalMonthlyCost','0'))" 2>/dev/null || echo "0") && \
+			echo "  $$MONTHLY USD/mes" && \
+			echo "$$MONTHLY" >> "$$TOTAL_FILE" && \
+			rm -f tfplan.binary plan.json cost.json && \
+			cd ../../.. ; \
+		fi; \
+	done; \
+	echo "" && \
+	echo "===================================" && \
+	TOTAL=$$(python3 -c "lines=open('$$TOTAL_FILE').readlines(); print(f'{sum(float(l.strip()) for l in lines if l.strip()):.2f}')") && \
+	echo "  TOTAL: $$TOTAL USD/mes" && \
+	echo "===================================" && \
+	rm -f "$$TOTAL_FILE"
+
+cost-estimate: ## Estimación rápida sin terraform plan (usa directorio)
+	@if ! command -v infracost >/dev/null 2>&1; then \
+		echo "infracost no instalado. Instala: https://www.infracost.io/docs/"; exit 1; \
+	fi
+	@echo "Estimación rápida de costos (todos los ambientes)..."
+	@echo ""
+	@for env in dev qa stg prod; do \
+		DIR="shared-infra/environments/$$env"; \
+		if [ -d "$$DIR" ] && [ -f "$$DIR/terraform.tfvars" ]; then \
+			echo "=== $$env ===" ; \
+			infracost breakdown --path "$$DIR" --format table 2>&1 | tail -5; \
+			echo ""; \
+		fi; \
+	done
 
 .DEFAULT_GOAL := help

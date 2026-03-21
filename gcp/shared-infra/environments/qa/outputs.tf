@@ -100,10 +100,10 @@ output "break_glass_email" {
 # ============================================================================
 output "repository_name" {
   description = "Nombre completo del repositorio"
-  value       = module.artifact_registry.repository_name
+  value       = length(module.artifact_registry) > 0 ? module.artifact_registry[0].repository_name : null
 }
 
 output "repository_url" {
   description = "URL completa del repositorio para Docker pull/push"
-  value       = module.artifact_registry.repository_url
+  value       = length(module.artifact_registry) > 0 ? module.artifact_registry[0].repository_url : null
 }

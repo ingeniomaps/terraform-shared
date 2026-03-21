@@ -15,7 +15,7 @@ readonly NC='\033[0m'
 
 # Archivo .env
 readonly ENV_FILE=".env"
-readonly GLOBAL_DIR="terraform-state/global"
+readonly GLOBAL_DIR="bootstrap/global"
 
 # Función para mostrar ayuda
 show_help() {

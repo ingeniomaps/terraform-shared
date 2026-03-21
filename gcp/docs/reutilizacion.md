@@ -75,7 +75,7 @@ Nombres de recursos que deberías personalizar:
 | Variable        | Descripción                    | Archivo                                           | Ejemplo                         |
 | --------------- | ------------------------------ | ------------------------------------------------- | ------------------------------- |
 | `registry_name` | Nombre del Artifact Registry   | `shared-infra/environments/*/terraform.tfvars`    | `"docker-images-dev"`           |
-| `bucket_prefix` | Prefijo para buckets de estado | `terraform-state/environments/*/terraform.tfvars` | `"mi-proyecto-terraform-state"` |
+| `bucket_prefix` | Prefijo para buckets de estado | `bootstrap/global` | `"mi-proyecto-terraform-state"` |
 
 ---
 
@@ -127,7 +127,7 @@ registry_name = "docker-images-dev"           # ← Cambiar
 
 ### 2. Terraform State Buckets
 
-#### `terraform-state/environments/<env>/main.tf`
+#### `bootstrap/global`
 
 **Modificar: Nombre del bucket**
 
@@ -139,7 +139,7 @@ module "terraform_state_bucket" {
 }
 ```
 
-#### `terraform-state/environments/<env>/terraform.tfvars`
+#### `bootstrap/global`
 
 **Modificar: Variables del bucket**
 
@@ -150,7 +150,7 @@ region       = "us-central1"                    # ← Cambiar si necesario
 env          = "stg"                            # ← Cambiar según ambiente
 ```
 
-#### `terraform-state/environments/<env>/backend.tf`
+#### `bootstrap/global`
 
 **Modificar: Backend configuration (si aplica)**
 
@@ -165,7 +165,7 @@ terraform {
 
 ### 3. Global State Bucket
 
-#### `terraform-state/global/main.tf`
+#### `bootstrap/global/main.tf`
 
 **Modificar: Nombre del bucket global**
 
@@ -177,7 +177,7 @@ module "terraform_state_bucket" {
 }
 ```
 
-#### `terraform-state/global/terraform.tfvars`
+#### `bootstrap/global/terraform.tfvars`
 
 **Modificar: Variables del bucket global**
 
@@ -196,8 +196,8 @@ region       = "us-central1"                    # ← Cambiar si necesario
 Antes de usar la infraestructura compartida, crea los buckets de estado:
 
 ```bash
-# 1. Configurar variables en terraform-state/global/terraform.tfvars
-cd terraform-state/global
+# 1. Configurar variables en bootstrap/global/terraform.tfvars
+cd bootstrap/global
 # Editar terraform.tfvars con tus valores
 
 # 2. Crear bucket global
@@ -298,7 +298,7 @@ registry_name = "analytics-docker-images-dev"
 enable_dev_reader = true
 ```
 
-#### `terraform-state/environments/staging/terraform.tfvars`
+#### `bootstrap/global`
 
 ```hcl
 project_id   = "analytics-terraform-987654"
@@ -307,7 +307,7 @@ region       = "us-central1"
 env          = "stg"
 ```
 
-#### `terraform-state/environments/staging/backend.tf`
+#### `bootstrap/global`
 
 ```hcl
 terraform {
@@ -328,7 +328,7 @@ Antes de desplegar, verifica:
 
 - [ ] Buckets de estado creados (global, staging, production)
 - [ ] Backend configurado en `shared-infra/environments/*/main.tf`
-- [ ] Backend configurado en `terraform-state/environments/*/backend.tf` (si aplica)
+- [ ] Backend configurado en `bootstrap/global` (si aplica)
 
 ### Variables de Contexto
 
@@ -409,7 +409,7 @@ prefix = "${env}/shared/terraform"
 
 **Problema**: `Error: Failed to get existing workspaces: storage: bucket doesn't exist`
 
-**Solución**: Crea el bucket primero usando `terraform-state/global` o `terraform-state/environments/*`
+**Solución**: Crea el bucket primero usando `bootstrap/global` o `bootstrap/global`
 
 ### Error: Permisos insuficientes
 
@@ -586,14 +586,14 @@ El script `setup-project.sh` modifica:
 
 - ✅ `shared-infra/environments/development/main.tf` (backend bucket)
 - ✅ `shared-infra/environments/development/terraform.tfvars` (variables)
-- ✅ `terraform-state/environments/staging/main.tf` (bucket name)
-- ✅ `terraform-state/environments/staging/terraform.tfvars` (variables)
-- ✅ `terraform-state/environments/staging/backend.tf` (backend bucket)
-- ✅ `terraform-state/environments/production/main.tf` (bucket name)
-- ✅ `terraform-state/environments/production/terraform.tfvars` (variables)
-- ✅ `terraform-state/environments/production/backend.tf` (backend bucket)
-- ✅ `terraform-state/global/main.tf` (bucket name)
-- ✅ `terraform-state/global/terraform.tfvars` (variables)
+- ✅ `bootstrap/global` (bucket name)
+- ✅ `bootstrap/global` (variables)
+- ✅ `bootstrap/global` (backend bucket)
+- ✅ `bootstrap/global` (bucket name)
+- ✅ `bootstrap/global` (variables)
+- ✅ `bootstrap/global` (backend bucket)
+- ✅ `bootstrap/global/main.tf` (bucket name)
+- ✅ `bootstrap/global/terraform.tfvars` (variables)
 
 ### Opciones del Script
 

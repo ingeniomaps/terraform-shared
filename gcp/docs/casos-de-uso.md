@@ -497,7 +497,7 @@ peer_project_id    = "shared-services-123456"
 peer_vpc_name      = "shared-vpc"
 ```
 
-**Configuración de Buckets (terraform-state/environments/production/terraform.tfvars)**:
+**Configuración de Buckets (bootstrap/global/terraform.tfvars)**:
 
 ```hcl
 prevent_destroy       = true

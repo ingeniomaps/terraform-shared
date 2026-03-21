@@ -26,10 +26,10 @@ Configura el proyecto Terraform para un nuevo workspace/proyecto.
 Lee variables del archivo .env y reemplaza valores en:
   - shared-infra/environments/*/main.tf (backend buckets)
   - shared-infra/environments/*/terraform.tfvars (generado desde tfvars.example si no existe)
-  - terraform-state/environments/*/main.tf
-  - terraform-state/environments/*/terraform.tfvars (generado desde tfvars.example si no existe)
-  - terraform-state/environments/*/backend.tf
-  - terraform-state/global/terraform.tfvars (generado desde tfvars.example si no existe)
+  - bootstrap/global/main.tf
+  - bootstrap/global/terraform.tfvars (generado desde tfvars.example si no existe)
+  - bootstrap/global/backend.tf
+  - bootstrap/global/terraform.tfvars (generado desde tfvars.example si no existe)
 
 Opciones:
   -h, --help          Mostrar esta ayuda
@@ -383,7 +383,7 @@ process_directory() {
         fi
     fi
 
-    # Procesar backend.tf (para terraform-state/environments/*)
+    # Procesar backend.tf (para bootstrap/global)
     local backend_tf="$dir/backend.tf"
     if [ -f "$backend_tf" ]; then
         # Para terraform-state, el bucket puede ser el mismo para todos o tener sufijo
@@ -477,17 +477,17 @@ main() {
     done
 
     # Terraform state buckets - procesar todos los ambientes
-    for env_dir in terraform-state/environments/*; do
+    for env_dir in bootstrap/global; do
         if [ -d "$env_dir" ]; then
             process_directory "$env_dir" "$dry_run" "$verbose"
         fi
     done
 
     # Procesar global
-    process_directory "terraform-state/global" "$dry_run" "$verbose"
+    process_directory "bootstrap/global" "$dry_run" "$verbose"
 
     # Procesar bucket_prefix y bucket_name en terraform-state
-    for dir in terraform-state/environments/* terraform-state/global; do
+    for dir in bootstrap/global bootstrap/global; do
         if [ -d "$dir" ]; then
             local tfvars="$dir/terraform.tfvars"
             if [ -f "$tfvars" ]; then
@@ -497,7 +497,7 @@ main() {
                         "bucket_prefix = \"${BUCKET_PREFIX}\"" "$dry_run"
                 fi
 
-                # bucket_name (para terraform-state/global)
+                # bucket_name (para bootstrap/global)
                 if grep -q "^bucket_name" "$tfvars" 2>/dev/null; then
                     replace_in_file "$tfvars" '^bucket_name\s*=\s*"[^"]*"' \
                         "bucket_name = \"${BUCKET_PREFIX}\"" "$dry_run"
