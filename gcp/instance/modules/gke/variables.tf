@@ -183,9 +183,9 @@ variable "enable_horizontal_pod_autoscaling" {
 }
 
 variable "enable_network_policy" {
-  description = "Habilitar Network Policy"
+  description = "Habilitar Network Policy para restringir comunicación entre pods. Recomendado: true en producción."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "maintenance_window_start_time" {

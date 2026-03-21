@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 set -x  # Debug: mostrar comandos ejecutados
 
 # Log para debugging
