@@ -69,8 +69,8 @@ output "network_name" {
 output "network_tags" {
   description = "Network tags que deben usarse en recursos"
   value = {
-    gke_nodes      = var.enable_gke ? "gke-${local.network_name}" : null
-    allow_iap_ssh  = "${local.network_name}-allow-iap-ssh"
-    allow_ssh      = "${local.network_name}-allow-ssh"
+    gke_nodes     = var.enable_gke ? "gke-${local.network_name}" : null
+    allow_iap_ssh = "${local.network_name}-allow-iap-ssh"
+    allow_ssh     = "${local.network_name}-allow-ssh"
   }
 }

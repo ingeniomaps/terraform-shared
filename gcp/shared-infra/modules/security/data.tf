@@ -1,5 +1,5 @@
 locals {
-  account_name = "${var.workspace}-${var.env}-account"
+  account_name = "${var.workspace}-${var.env}-sa"
 
   common_labels = {
     environment = var.env
