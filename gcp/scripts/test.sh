@@ -103,11 +103,7 @@ test_validate() {
         "shared-infra/environments/qa"
         "shared-infra/environments/staging"
         "shared-infra/environments/production"
-        "terraform-state/global"
-        "terraform-state/environments/development"
-        "terraform-state/environments/qa"
-        "terraform-state/environments/staging"
-        "terraform-state/environments/production"
+        "bootstrap/global"
     )
 
     local has_errors=false

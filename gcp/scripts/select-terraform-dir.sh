@@ -17,11 +17,7 @@ readonly TERRAFORM_DIRS=(
     "shared-infra/environments/qa"
     "shared-infra/environments/staging"
     "shared-infra/environments/production"
-    "terraform-state/environments/development"
-    "terraform-state/environments/qa"
-    "terraform-state/environments/production"
-    "terraform-state/environments/staging"
-    "terraform-state/global"
+    "bootstrap/global"
 )
 
 # Función para mostrar el menú

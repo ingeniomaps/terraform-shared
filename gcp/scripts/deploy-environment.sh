@@ -45,9 +45,9 @@ case "$ENV" in
 esac
 
 # Directorios
-readonly STATE_DIR="terraform-state/environments/${ENV_DIR}"
+readonly STATE_DIR="bootstrap/global"
 readonly SHARED_DIR="shared-infra/environments/${ENV_DIR}"
-readonly GLOBAL_DIR="terraform-state/global"
+readonly GLOBAL_DIR="bootstrap/global"
 
 # Función para verificar si existe terraform.tfvars
 check_tfvars() {
