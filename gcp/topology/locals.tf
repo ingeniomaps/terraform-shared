@@ -49,19 +49,9 @@ locals {
   # --------------------------------------------------------------------------
 
   service_catalog_base = {
-    # ------------------------------------------------------------------
-    # Keycloak SSO Platform
-    # ------------------------------------------------------------------
-    keycloak = {
-      compose_file   = "docker/compose.yaml"
-      env_file_name  = ".env"
-      launch_command = "make deploy-simple"
-      image_name     = "keycloak"
-    }
+    # Agregar servicios del proyecto aquí o via var.service_overrides.
+    # Cada entry define cómo se despliega un servicio (compose_file, env, imagen).
 
-    # ------------------------------------------------------------------
-    # Hypixo Platform Services
-    # ------------------------------------------------------------------
     gateway = {
       compose_file   = "docker/docker-compose.image.yml"
       env_file_name  = ".env"

@@ -158,7 +158,7 @@ variable "artifact_registry_url" {
     URL del Artifact Registry donde viven las imágenes Docker.
     Formato: REGION-docker.pkg.dev/PROJECT_ID/REPO_NAME
 
-    Ejemplo: us-central1-docker.pkg.dev/core-plate-443813-d1/docker-repo
+    Ejemplo: us-central1-docker.pkg.dev/PROJECT_ID/docker-repo
   EOT
 
   type    = string
