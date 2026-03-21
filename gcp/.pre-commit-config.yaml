@@ -49,7 +49,7 @@ repos:
   # Hook para verificar que no hay archivos de estado
   - repo: local
     hooks:
-      - id: check-terraform-state
+      - id: check-bootstrap
         name: Verificar archivos de estado
         entry: bash -c 'if git diff --cached --name-only | grep -E "\.tfstate|\.tfstate\."; then
           echo "Error: No se pueden commitear archivos de estado de Terraform."
