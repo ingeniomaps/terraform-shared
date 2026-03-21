@@ -18,5 +18,11 @@ variable "bucket_name" {
 variable "region" {
   description = "Región de Google Cloud donde se crearán los recursos, por ejemplo, 'us-central1'."
   type        = string
-  default     = "us-central1" # Valor por defecto (puedes cambiarlo a la región que prefieras)
+  default     = "us-central1"
+}
+
+variable "registry_name" {
+  description = "Nombre del repositorio en Artifact Registry. Null = no crear."
+  type        = string
+  default     = null
 }

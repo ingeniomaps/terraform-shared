@@ -1,0 +1,10 @@
+# Global — Crea bucket de state + artifact registry
+# Se ejecuta una sola vez antes de todo lo demás.
+
+bucket_name   = "my-project-terraform-state"
+project_id    = ""
+region        = "us-central1"
+
+# Artifact Registry — repositorio Docker único para todos los ambientes
+# Todas las imágenes van aquí diferenciadas por tag (my-service:abc1234, my-service:v1.2.0)
+registry_name = "my-registry"

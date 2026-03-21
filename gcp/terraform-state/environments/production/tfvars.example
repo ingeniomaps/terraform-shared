@@ -1,4 +1,0 @@
-bucket_prefix   = ""
-project_id      = ""
-region          = "us-central1"
-env             = "prod"
