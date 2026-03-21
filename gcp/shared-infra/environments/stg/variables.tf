@@ -7,7 +7,7 @@ variable "project_id" {
 }
 
 variable "credentials_file" {
-  description = "Ruta al archivo JSON de credenciales de Service Account (opcional). Si no se especifica, se usa GOOGLE_APPLICATION_CREDENTIALS o gcloud auth. Ruta relativa desde la raíz del proyecto o absoluta."
+  description = "Ruta al archivo JSON de credenciales de Service Account (opcional). Ruta relativa desde la raíz del proyecto (ej: 'keys/account_service_{env}.json'). Si no se especifica, se usa GOOGLE_APPLICATION_CREDENTIALS o gcloud auth."
   type        = string
   default     = null
   sensitive   = true
@@ -23,8 +23,8 @@ variable "env" {
   description = "Ambiente (dev, stg, prod)"
   type        = string
   validation {
-    condition     = contains(["dev", "stg", "pre", "prod"], var.env)
-    error_message = "El ambiente debe ser dev, stg o prod"
+    condition     = contains(["dev", "qa", "stg", "pre", "prod"], var.env)
+    error_message = "El ambiente debe ser dev, qa, stg, pre o prod."
   }
 }
 
@@ -37,8 +37,9 @@ variable "workspace" {
 # Security
 # #########################################################
 variable "registry_name" {
-  description = "Nombre del Artifact Registry"
+  description = "Nombre del Artifact Registry. Null = no crear (se crea en bootstrap/global)."
   type        = string
+  default     = null
 }
 
 variable "enable_dev_reader" {
@@ -98,19 +99,19 @@ variable "vm_subnet_cidr" {
 }
 
 variable "enable_public_http" {
-  description = "Habilitar acceso HTTP/HTTPS público (para load balancers). Mutuamente excluyente con enable_restricted_http"
+  description = "Habilitar acceso HTTP/HTTPS público directo a VMs. En producción usar Load Balancer y desactivar esta regla."
   type        = bool
   default     = true
 }
 
 variable "enable_restricted_http" {
-  description = "Habilitar acceso HTTP/HTTPS solo desde IPs corporativas. Mutuamente excluyente con enable_public_http"
+  description = "Habilitar acceso HTTP/HTTPS solo desde IPs corporativas. Mutuamente excluyente con enable_public_http."
   type        = bool
   default     = false
 }
 
 variable "corporate_ip_ranges" {
-  description = "Rangos IP corporativos (requerido si enable_restricted_http = true)"
+  description = "Rangos IP corporativos permitidos (requerido si enable_restricted_http = true). NUNCA usar 0.0.0.0/0 en producción."
   type        = list(string)
   default     = []
 
@@ -119,7 +120,12 @@ variable "corporate_ip_ranges" {
       var.enable_restricted_http == false ||
       (var.enable_restricted_http == true && length(var.corporate_ip_ranges) > 0)
     )
-    error_message = "corporate_ip_ranges es requerido y no puede estar vacío cuando enable_restricted_http = true"
+    error_message = "corporate_ip_ranges es requerido y no puede estar vacío cuando enable_restricted_http = true."
+  }
+
+  validation {
+    condition     = !contains(var.corporate_ip_ranges, "0.0.0.0/0")
+    error_message = "corporate_ip_ranges no puede contener 0.0.0.0/0 — esto anula el propósito de restricted_http. Usa IPs reales de oficina/VPN/CI."
   }
 }
 
@@ -198,8 +204,23 @@ variable "gke_master_cidr" {
   }
 }
 
+# #########################################################
+# Security Options
+# #########################################################
+variable "enable_group_iam" {
+  description = "Habilitar asignación de roles IAM a grupos de Google Workspace (requiere que los grupos existan)"
+  type        = bool
+  default     = false
+}
+
+variable "enable_org_policies" {
+  description = "Habilitar Organization Policies (requiere que orgpolicy.googleapis.com esté habilitado y configurado)"
+  type        = bool
+  default     = false
+}
+
 variable "log_bucket_suffix" {
-  description = "Sufijo opcional para personalizar los nombres de los buckets de logging. Se agrega después del nombre del ambiente (ej: '-custom' resultaría en 'iam-audit-logs-stg-custom'). Si está vacío, no se agrega sufijo."
+  description = "Sufijo opcional para personalizar los nombres de los buckets de logging. Se agrega después del nombre del ambiente (ej: '-custom' resultaría en 'iam-audit-logs-{env}-custom'). Si está vacío, no se agrega sufijo."
   type        = string
   default     = ""
 }

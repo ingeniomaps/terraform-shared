@@ -6,25 +6,55 @@ terraform {
       source  = "hashicorp/google"
       version = ">= 7.0"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = ">= 0.9.1"
+    }
   }
 
   backend "gcs" {
-    bucket = "workspace-terraform-state-prod"
-    prefix = "shared/terraform"
+    bucket = "workspace-terraform-state"
+    prefix = "shared/dev"
   }
 }
 
 provider "google" {
-  project     = var.project_id
-  region      = var.region
+  project = var.project_id
+  region  = var.region
+  # Si credentials_file está definido, usar ruta relativa desde la raíz del proyecto
+  # path.root apunta al directorio del módulo, así que usamos ../../../ para llegar a la raíz
   credentials = var.credentials_file != null ? file("${path.root}/../../../${var.credentials_file}") : null
 }
 
-# Validación: enable_public_http y enable_restricted_http son mutuamente excluyentes
+# ==============================================================================
+# Validaciones de seguridad
+# ==============================================================================
+
 check "http_access_exclusivity" {
   assert {
     condition     = !(var.enable_public_http && var.enable_restricted_http)
-    error_message = "enable_public_http y enable_restricted_http no pueden ser true al mismo tiempo"
+    error_message = "enable_public_http y enable_restricted_http no pueden ser true al mismo tiempo."
+  }
+}
+
+check "production_no_public_http" {
+  assert {
+    condition     = var.env != "prod" || var.enable_public_http == false
+    error_message = "Producción no debe tener enable_public_http = true. Usar Load Balancer o enable_restricted_http."
+  }
+}
+
+check "production_requires_restricted_or_lb" {
+  assert {
+    condition     = var.env != "prod" || var.enable_restricted_http == true || var.enable_public_http == false
+    error_message = "Producción debe tener enable_restricted_http = true o acceso vía Load Balancer."
+  }
+}
+
+check "production_requires_vpc_service_controls" {
+  assert {
+    condition     = var.env != "prod" || var.enable_vpc_service_controls == true
+    error_message = "Producción debe tener enable_vpc_service_controls = true."
   }
 }
 
@@ -49,11 +79,14 @@ module "security" {
   alert_notification_channels = var.alert_notification_channels
 
   break_glass_max_session_duration = var.break_glass_max_session_duration
+  enable_group_iam                 = var.enable_group_iam
+  enable_org_policies              = var.enable_org_policies
   log_bucket_suffix                = var.log_bucket_suffix
 }
 
 module "artifact_registry" {
   source = "../../modules/artifact_registry"
+  count  = var.registry_name != null && var.registry_name != "" ? 1 : 0
 
   region        = var.region
   repository_id = var.registry_name

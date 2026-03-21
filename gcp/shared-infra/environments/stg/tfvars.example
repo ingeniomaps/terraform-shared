@@ -4,22 +4,20 @@
 project_id  = ""
 workspace   = ""
 region      = "us-central1"
-env         = "prod"
+env         = "stg"
 
 # Opcional: Ruta al archivo JSON de credenciales (relativa desde la raíz del proyecto)
 # Si no se especifica, se usa GOOGLE_APPLICATION_CREDENTIALS o gcloud auth
-# credentials_file = "keys/account_service_prod.json"
+# credentials_file = "keys/account_service_stg.json"
 
 # ============================================================================
 # ARTIFACT REGISTRY
 # ============================================================================
-registry_name     = "docker-images"
-enable_dev_reader = false
 
 # ============================================================================
 # SEGURIDAD
 # ============================================================================
-enable_vpc_service_controls      = true
+enable_vpc_service_controls      = false
 break_glass_max_session_duration = 3600
 organization_id                   = ""
 
@@ -79,6 +77,6 @@ alert_notification_channels = []
 # enable_org_policies = false
 
 # Sufijo opcional para personalizar los nombres de los buckets de logging
-# Se agrega después del nombre del ambiente (ej: '-custom' resultaría en 'iam-audit-logs-prod-custom')
+# Se agrega después del nombre del ambiente (ej: '-custom' resultaría en 'iam-audit-logs-stg-custom')
 # Si está vacío, no se agrega sufijo
 # log_bucket_suffix = ""

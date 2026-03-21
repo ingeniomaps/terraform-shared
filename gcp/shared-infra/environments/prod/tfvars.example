@@ -4,34 +4,32 @@
 project_id  = ""
 workspace   = ""
 region      = "us-central1"
-env         = "dev"
+env         = "prod"
 
 # Opcional: Ruta al archivo JSON de credenciales (relativa desde la raíz del proyecto)
 # Si no se especifica, se usa GOOGLE_APPLICATION_CREDENTIALS o gcloud auth
-# credentials_file = "keys/account_service_dev.json"
+# credentials_file = "keys/account_service_prod.json"
 
 # ============================================================================
 # ARTIFACT REGISTRY
 # ============================================================================
-registry_name     = "docker-images-dev"
-enable_dev_reader = true
 
 # ============================================================================
 # SEGURIDAD
 # ============================================================================
-enable_vpc_service_controls      = false
-break_glass_max_session_duration = 7200
+enable_vpc_service_controls      = true
+break_glass_max_session_duration = 3600
 organization_id                   = ""
 
 # ============================================================================
 # RED Y CONECTIVIDAD
 # ============================================================================
-vm_subnet_cidr        = "10.0.0.0/24"
-enable_public_http    = true
-enable_restricted_http = false
+vm_subnet_cidr         = "10.0.0.0/24"
+enable_public_http     = false    # Producción: usar Load Balancer, NO acceso directo
+enable_restricted_http = true     # Solo IPs corporativas
 
-# Requerido si enable_restricted_http = true
-# corporate_ip_ranges = ["203.0.113.0/24", "198.51.100.0/24"]
+# Requerido: IPs autorizadas para acceso HTTP/HTTPS
+corporate_ip_ranges = ["203.0.113.0/24"]  # CAMBIAR: poner IPs reales de oficina/VPN/CI (ejemplo RFC 5737)
 
 enable_vpc_peering    = false
 
@@ -79,6 +77,6 @@ alert_notification_channels = []
 # enable_org_policies = false
 
 # Sufijo opcional para personalizar los nombres de los buckets de logging
-# Se agrega después del nombre del ambiente (ej: '-custom' resultaría en 'iam-audit-logs-dev-custom')
+# Se agrega después del nombre del ambiente (ej: '-custom' resultaría en 'iam-audit-logs-prod-custom')
 # Si está vacío, no se agrega sufijo
 # log_bucket_suffix = ""
