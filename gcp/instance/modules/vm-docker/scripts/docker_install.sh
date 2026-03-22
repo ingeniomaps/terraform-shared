@@ -31,6 +31,24 @@ else
     usermod -aG docker ubuntu || true
   fi
 
+  # Permitir que cualquier usuario se agregue al grupo docker
+  echo "%users ALL=(root) NOPASSWD: /usr/sbin/usermod -aG docker *" \
+    > /etc/sudoers.d/docker-group
+  chmod 440 /etc/sudoers.d/docker-group
+
+  # Agregar usuarios de OS Login al grupo docker automaticamente
+  cat > /etc/profile.d/docker-group.sh << 'PROFILE'
+if groups 2>/dev/null | grep -qv docker; then
+  if getent group docker >/dev/null 2>&1; then
+    sudo usermod -aG docker "$(whoami)" 2>/dev/null || true
+    if ! groups | grep -q docker; then
+      exec sg docker -c "$SHELL --login"
+    fi
+  fi
+fi
+PROFILE
+  chmod 644 /etc/profile.d/docker-group.sh
+
   systemctl enable docker
   systemctl start docker
   sleep 5
