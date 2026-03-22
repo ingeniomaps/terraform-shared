@@ -20,13 +20,14 @@ locals {
   # De lo contrario, se trata como contenido directo
   processed_microservices = [
     for service in var.microservices : {
-      name     = service.name
-      repo_url = service.repo_url
-      branch   = service.branch
+      name           = service.name
+      repo_url       = service.repo_url
+      branch         = service.branch
+      image_url      = service.image_url
+      launch_command = service.launch_command
+      compose_file   = service.compose_file
       env_file = (
-        # Detectar si es una ruta: contiene "/" o empieza con "./" o "../"
         (can(regex("^[./]", service.env_file)) || can(regex("/", service.env_file))) &&
-        # Verificar que el archivo existe (ruta relativa desde el directorio donde está terraform.tfvars)
         fileexists("${path.root}/${service.env_file}")
       ) ? file("${path.root}/${service.env_file}") : service.env_file
     }
@@ -43,6 +44,13 @@ locals {
     "#!/bin/bash",
     "set -euo pipefail",
     "exec > >(tee /var/log/startup-script.log) 2>&1",
+    "",
+    "# Variables de colores (definidas una sola vez, no readonly)",
+    "export GREEN='\\033[0;32m'",
+    "export RED='\\033[0;31m'",
+    "export YELLOW='\\033[1;33m'",
+    "export BLUE='\\033[0;34m'",
+    "export NC='\\033[0m'",
     "",
     local.docker_install_script,
     local.certbot_install_script,
