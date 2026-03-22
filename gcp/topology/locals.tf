@@ -41,66 +41,13 @@ locals {
   )
 
   # --------------------------------------------------------------------------
-  # Catálogo de servicios — Definición única de todos los servicios
+  # Catálogo de servicios — definido por el proyecto consumidor
   # --------------------------------------------------------------------------
-  # Cada servicio define su configuración base para despliegue con imagen.
-  # compose_file: ruta al docker-compose dentro del repo clonado.
-  # Los overrides de var.service_overrides se aplican encima.
+  # var.service_catalog viene del proyecto (no hardcodeado aquí).
+  # var.service_overrides permite cambiar campos sin tocar el catálogo.
   # --------------------------------------------------------------------------
 
-  service_catalog_base = {
-    # Agregar servicios del proyecto aquí o via var.service_overrides.
-    # Cada entry define cómo se despliega un servicio (compose_file, env, imagen).
-
-    gateway = {
-      compose_file   = "docker/docker-compose.image.yml"
-      env_file_name  = ".env"
-      launch_command = "bash scripts/deploy-image.sh"
-      image_name     = "gateway"
-    }
-    backend-auth = {
-      compose_file   = "docker/docker-compose.image.yml"
-      env_file_name  = ".env"
-      launch_command = ""
-      image_name     = "backend-auth"
-    }
-    backend-platform = {
-      compose_file   = "docker/docker-compose.image.yml"
-      env_file_name  = ".env"
-      launch_command = ""
-      image_name     = "backend-platform"
-    }
-    backend-processes = {
-      compose_file   = "docker/docker-compose.image.yml"
-      env_file_name  = ".env"
-      launch_command = ""
-      image_name     = "backend-processes"
-    }
-    frontend-auth = {
-      compose_file   = "docker/docker-compose.image.yml"
-      env_file_name  = ".env.local"
-      launch_command = ""
-      image_name     = "frontend-auth"
-    }
-    frontend-platform = {
-      compose_file   = "docker/docker-compose.image.yml"
-      env_file_name  = ".env.local"
-      launch_command = ""
-      image_name     = "frontend-platform"
-    }
-    admin = {
-      compose_file   = "docker/docker-compose.image.yml"
-      env_file_name  = ".env"
-      launch_command = ""
-      image_name     = "admin"
-    }
-    alerts-service = {
-      compose_file   = "docker/docker-compose.image.yml"
-      env_file_name  = ".env"
-      launch_command = "bash scripts/deploy-image.sh"
-      image_name     = "alerts-service"
-    }
-  }
+  service_catalog_base = var.service_catalog
 
   # URL de imagen por servicio: registry/image:tag
   # Prioridad tag: service_overrides > default_image_tag
