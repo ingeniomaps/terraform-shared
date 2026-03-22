@@ -9,7 +9,7 @@
 resource "google_logging_project_bucket_config" "iam_audit_logs" {
   project        = var.project_id
   location       = "global"
-  bucket_id      = "iam-audit-logs-${var.env}${var.log_bucket_suffix}"
+  bucket_id      = "iam-audit-logs-${var.registry_name}-${var.env}${var.log_bucket_suffix}"
   retention_days = var.is_production ? 365 : 90
 
   lifecycle {
@@ -29,7 +29,7 @@ resource "google_logging_project_bucket_config" "iam_audit_logs" {
 resource "google_logging_project_bucket_config" "security_alerts" {
   project        = var.project_id
   location       = "global"
-  bucket_id      = "security-alerts-${var.env}${var.log_bucket_suffix}"
+  bucket_id      = "security-alerts-${var.registry_name}-${var.env}${var.log_bucket_suffix}"
   retention_days = var.is_production ? 365 : 90
 
   lifecycle {
@@ -50,7 +50,7 @@ resource "google_logging_project_bucket_config" "security_alerts" {
 resource "google_logging_project_bucket_config" "network_logs" {
   project        = var.project_id
   location       = "global"
-  bucket_id      = "network-logs-${var.env}${var.log_bucket_suffix}"
+  bucket_id      = "network-logs-${var.registry_name}-${var.env}${var.log_bucket_suffix}"
   retention_days = var.is_production ? 180 : 60
 
   lifecycle {
