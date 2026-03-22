@@ -171,15 +171,38 @@ variable "default_image_tag" {
   default     = "latest"
 }
 
+variable "service_catalog" {
+  description = <<-EOT
+    Catálogo de servicios del proyecto. Cada entry define cómo se despliega un servicio.
+    Se pasa desde el proyecto consumidor — terraform-shared no tiene servicios hardcodeados.
+
+    Ejemplo:
+    service_catalog = {
+      "keycloak" = {
+        compose_file   = "docker/compose.yaml"
+        env_file_name  = ".env"
+        launch_command = ""
+        image_name     = "keycloak"
+      }
+    }
+  EOT
+
+  type = map(object({
+    compose_file   = string
+    env_file_name  = string
+    launch_command = string
+    image_name     = string
+  }))
+  default = {}
+}
+
 variable "service_overrides" {
   description = <<-EOT
     Overrides por servicio. Permite cambiar branch, launch_command, image_tag, etc.
-    sin modificar el catálogo base. Solo se especifican los campos a sobreescribir.
 
     Ejemplo:
     service_overrides = {
       "gateway" = { image_tag = "v2.0.0" }
-      "backend-platform" = { launch_command = "npm run start:debug" }
     }
   EOT
 
@@ -217,4 +240,10 @@ variable "schedule" {
   default = {
     enabled = false
   }
+}
+
+variable "metadata_startup_script" {
+  description = "Script de startup adicional que se ejecuta después de Docker install y microservices deploy."
+  type        = string
+  default     = ""
 }

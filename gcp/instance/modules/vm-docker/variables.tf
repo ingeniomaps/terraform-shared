@@ -149,12 +149,15 @@ variable "deployment_scripts_destination" {
 }
 
 variable "microservices" {
-  description = "Lista de microservicios a desplegar (repositorios GitHub)"
+  description = "Lista de microservicios a desplegar"
   type = list(object({
-    name     = string
-    repo_url = string
-    branch   = string
-    env_file = string # Contenido del archivo .env o ruta relativa a un archivo .env (ej: "envs/local-deps.env")
+    name           = string
+    repo_url       = string
+    branch         = string
+    env_file       = string # Contenido .env o ruta relativa
+    image_url      = optional(string, "")
+    launch_command = optional(string, "")
+    compose_file   = optional(string, "")
   }))
   default = []
 }
@@ -164,7 +167,7 @@ variable "environment" {
   type        = string
   default     = "dev"
   validation {
-    condition     = contains(["dev", "stg", "prod"], var.environment)
-    error_message = "environment debe ser dev, stg o prod"
+    condition     = contains(["dev", "qa", "stg", "prod"], var.environment)
+    error_message = "environment debe ser dev, qa, stg o prod"
   }
 }

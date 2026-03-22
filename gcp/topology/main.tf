@@ -70,8 +70,8 @@ resource "local_file" "ssh_public_key" {
 module "vm" {
   for_each = var.topology
 
-  # Módulo vm-docker existente (mismo que ya usan en producción)
-  source = "git::https://github.com/ingeniomaps/terraform-machine.git//gcp/modules/vm-docker?ref=main"
+  # Módulo vm-docker local
+  source = "../instance/modules/vm-docker"
 
   project_id             = var.project_id
   region                 = var.region
@@ -90,8 +90,9 @@ module "vm" {
   tags                   = local.tags_combined
   labels                 = merge(var.labels, { vm_group = each.key, environment = var.environment })
   ssh_keys               = local.ssh_keys_combined
-  environment            = var.environment
-  microservices          = local.vm_microservices[each.key]
+  environment              = var.environment
+  microservices            = local.vm_microservices[each.key]
+  metadata_startup_script  = var.metadata_startup_script
 }
 
 # ==============================================================================
