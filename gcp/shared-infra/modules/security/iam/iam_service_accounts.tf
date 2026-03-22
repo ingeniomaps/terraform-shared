@@ -69,3 +69,17 @@ resource "google_project_iam_member" "vm_log_writer" {
   role    = "roles/logging.logWriter"
   member  = "serviceAccount:${var.vm_reader_email}"
 }
+
+# Permite que las VMs hagan pull de imágenes desde Artifact Registry
+resource "google_project_iam_member" "vm_artifact_reader" {
+  project = var.project_id
+  role    = "roles/artifactregistry.reader"
+  member  = "serviceAccount:${var.vm_reader_email}"
+}
+
+# Permite que el pipeline CI/CD haga push de imágenes a Artifact Registry
+resource "google_project_iam_member" "ci_cd_artifact_writer" {
+  project = var.project_id
+  role    = "roles/artifactregistry.writer"
+  member  = "serviceAccount:${var.ci_cd_writer_email}"
+}
