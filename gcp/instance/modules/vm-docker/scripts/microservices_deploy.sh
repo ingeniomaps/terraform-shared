@@ -10,23 +10,21 @@ echo "Desplegando: ${service.name}"
 echo "========================================"
 
 PROJECT="${service.name}"
-mkdir -p "/home/ubuntu/$PROJECT"
-cd "/home/ubuntu/$PROJECT"
 
-# Escribir .env antes del clone (para que exista si el clone falla)
-cat > .env <<'ENVEOF'
+# Guardar .env en temporal (antes del clone para no ensuciar el directorio)
+cat > "/tmp/$${PROJECT}.env" <<'ENVEOF'
 ${service.env_file}
 ENVEOF
 
 # Clonar repo (obtiene compose files, scripts, configs)
 cd /home/ubuntu
-git clone ${service.repo_url} -b ${service.branch} --depth=1 "$PROJECT" 2>/dev/null || true
+rm -rf "$PROJECT"
+git clone ${service.repo_url} -b ${service.branch} --depth=1 "$PROJECT"
 cd "/home/ubuntu/$PROJECT"
 
-# Re-escribir .env después del clone (el repo puede traer un .env-template)
-cat > .env <<'ENVEOF'
-${service.env_file}
-ENVEOF
+# Copiar .env al directorio del proyecto
+cp "/tmp/$${PROJECT}.env" .env
+rm -f "/tmp/$${PROJECT}.env"
 
 %{ if service.image_url != "" ~}
 # Autenticar con Artifact Registry y descargar imagen
