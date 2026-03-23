@@ -77,6 +77,26 @@ resource "google_project_iam_member" "vm_artifact_reader" {
   member  = "serviceAccount:${var.vm_reader_email}"
 }
 
+# Custom role con permisos mínimos para encender/apagar VMs
+# Usado por Cloud Scheduler para gestión automática de ciclo de vida de VMs
+resource "google_project_iam_custom_role" "vm_start_stop" {
+  project     = var.project_id
+  role_id     = "vmStartStop"
+  title       = "VM Start/Stop"
+  description = "Permite encender y apagar instancias de Compute Engine (usado por Cloud Scheduler)"
+  permissions = [
+    "compute.instances.start",
+    "compute.instances.stop",
+  ]
+}
+
+# Asigna el custom role a la SA de VMs para que Cloud Scheduler pueda operar
+resource "google_project_iam_member" "vm_start_stop" {
+  project = var.project_id
+  role    = google_project_iam_custom_role.vm_start_stop.id
+  member  = "serviceAccount:${var.vm_reader_email}"
+}
+
 # Permite que el pipeline CI/CD haga push de imágenes a Artifact Registry
 resource "google_project_iam_member" "ci_cd_artifact_writer" {
   project = var.project_id
