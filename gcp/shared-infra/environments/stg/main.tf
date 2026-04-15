@@ -76,6 +76,8 @@ module "security" {
   create_admin_sa             = false
   enable_dev_reader           = var.enable_dev_reader
   enable_vpc_service_controls = var.enable_vpc_service_controls
+  create_vm_start_stop_role   = var.create_vm_start_stop_role
+  create_audit_configs        = var.create_audit_configs
 
   alert_notification_channels = var.alert_notification_channels
 
@@ -85,7 +87,7 @@ module "security" {
 
 module "artifact_registry" {
   source = "../../modules/artifact_registry"
-  count  = var.registry_name != null && var.registry_name != "" ? 1 : 0
+  count  = var.create_artifact_registry && var.registry_name != null && var.registry_name != "" ? 1 : 0
 
   region        = var.region
   repository_id = var.registry_name
@@ -117,6 +119,9 @@ module "network" {
   workspace  = var.workspace
   region     = var.region
   env        = var.env
+
+  # project-level
+  enable_oslogin_metadata = var.enable_oslogin_metadata
 
   # subnet
   vm_subnet_cidr    = var.vm_subnet_cidr

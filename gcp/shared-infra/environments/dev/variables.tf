@@ -224,3 +224,27 @@ variable "log_bucket_suffix" {
   type        = string
   default     = ""
 }
+
+# #########################################################
+# Recursos project-level (gestionados por bootstrap)
+# #########################################################
+# Estos defaults son true para retrocompatibilidad con dev (que ya los tiene en su state).
+# Cuando se migre el state a bootstrap, cambiar a false en terraform.tfvars.
+
+variable "create_vm_start_stop_role" {
+  description = "Crear el custom role vmStartStop. Desactivar si se gestiona desde bootstrap."
+  type        = bool
+  default     = true
+}
+
+variable "create_audit_configs" {
+  description = "Crear audit configs de proyecto. Desactivar si se gestiona desde bootstrap."
+  type        = bool
+  default     = true
+}
+
+variable "enable_oslogin_metadata" {
+  description = "Crear google_compute_project_metadata para OS Login. Desactivar si se gestiona desde bootstrap."
+  type        = bool
+  default     = true
+}

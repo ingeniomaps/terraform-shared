@@ -57,3 +57,15 @@ variable "enable_group_iam" {
   type        = bool
   default     = true
 }
+
+variable "create_vm_start_stop_role" {
+  description = "Crear el custom role vmStartStop. Desactivar si se gestiona desde bootstrap."
+  type        = bool
+  default     = false
+}
+
+variable "create_audit_configs" {
+  description = "Crear audit configs de proyecto. Desactivar si se gestiona desde bootstrap."
+  type        = bool
+  default     = false
+}

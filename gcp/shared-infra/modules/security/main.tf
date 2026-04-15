@@ -25,6 +25,8 @@ module "iam" {
   break_glass_email                = google_service_account.break_glass.email
   break_glass_max_session_duration = var.break_glass_max_session_duration
   enable_group_iam                 = var.enable_group_iam
+  create_vm_start_stop_role        = var.create_vm_start_stop_role
+  create_audit_configs             = var.create_audit_configs
 }
 
 # ============================================================================

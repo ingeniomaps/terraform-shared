@@ -49,3 +49,74 @@ resource "google_artifact_registry_repository" "docker" {
     scope      = "global"
   }
 }
+
+# ==============================================================================
+# Recursos project-level — singleton compartidos entre todos los ambientes
+# ==============================================================================
+# Estos recursos son de proyecto, no de ambiente. Se gestionan aquí para que
+# ningún ambiente pueda crearlos o destruirlos accidentalmente.
+
+# OS Login — habilita autenticación centralizada para SSH en todas las VMs
+resource "google_compute_project_metadata" "enable_oslogin" {
+  project = var.project_id
+  metadata = {
+    enable-oslogin = "TRUE"
+  }
+}
+
+# Custom role: permisos mínimos para encender/apagar VMs (Cloud Scheduler)
+resource "google_project_iam_custom_role" "vm_start_stop" {
+  project     = var.project_id
+  role_id     = "vmStartStop"
+  title       = "VM Start/Stop"
+  description = "Permite encender y apagar instancias de Compute Engine (usado por Cloud Scheduler)"
+  permissions = [
+    "compute.instances.start",
+    "compute.instances.stop",
+  ]
+}
+
+# ==============================================================================
+# Audit Logging — configura qué operaciones se registran por servicio GCP
+# ==============================================================================
+
+resource "google_project_iam_audit_config" "network_audit" {
+  project = var.project_id
+  service = "compute.googleapis.com"
+
+  audit_log_config { log_type = "ADMIN_READ" }
+  audit_log_config { log_type = "DATA_READ" }
+  audit_log_config { log_type = "DATA_WRITE" }
+}
+
+resource "google_project_iam_audit_config" "iam_audit" {
+  project = var.project_id
+  service = "iam.googleapis.com"
+
+  audit_log_config { log_type = "ADMIN_READ" }
+  audit_log_config { log_type = "DATA_WRITE" }
+}
+
+resource "google_project_iam_audit_config" "container_audit" {
+  project = var.project_id
+  service = "container.googleapis.com"
+
+  audit_log_config { log_type = "ADMIN_READ" }
+  audit_log_config { log_type = "DATA_WRITE" }
+}
+
+resource "google_project_iam_audit_config" "artifact_registry_audit" {
+  project = var.project_id
+  service = "artifactregistry.googleapis.com"
+
+  audit_log_config { log_type = "ADMIN_READ" }
+  audit_log_config { log_type = "DATA_WRITE" }
+}
+
+resource "google_project_iam_audit_config" "storage_audit" {
+  project = var.project_id
+  service = "storage.googleapis.com"
+
+  audit_log_config { log_type = "ADMIN_READ" }
+  audit_log_config { log_type = "DATA_WRITE" }
+}
