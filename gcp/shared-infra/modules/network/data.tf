@@ -22,7 +22,15 @@ check "http_access_exclusivity" {
 # ============================================================================
 # PROJECT METADATA: OS LOGIN
 # ============================================================================
+# Gestionado por bootstrap/global. Solo crear si enable_oslogin_metadata = true
+# (para retrocompatibilidad con ambientes que aún no migraron a bootstrap).
+moved {
+  from = google_compute_project_metadata.enable_oslogin
+  to   = google_compute_project_metadata.enable_oslogin[0]
+}
+
 resource "google_compute_project_metadata" "enable_oslogin" {
+  count = var.enable_oslogin_metadata ? 1 : 0
   metadata = {
     enable-oslogin = "TRUE"
   }

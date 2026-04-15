@@ -1,12 +1,35 @@
 # ============================================================================
 # AUDIT LOGGING CONFIGURATION
 #
-# Configura qué tipos de operaciones se registran para cada servicio de GCP
-# Esto permite auditar cambios y accesos en el proyecto.
+# Configura qué tipos de operaciones se registran para cada servicio de GCP.
+# Gestionado por bootstrap/global. Solo crear si create_audit_configs = true
+# (para retrocompatibilidad con ambientes que aún no migraron a bootstrap).
 # ============================================================================
 
-# Network Audit: registra todas las acciones sobre recursos de Compute Engine
+# Migración: audit configs pasaron de sin count a count
+moved {
+  from = google_project_iam_audit_config.network_audit
+  to   = google_project_iam_audit_config.network_audit[0]
+}
+moved {
+  from = google_project_iam_audit_config.iam_audit
+  to   = google_project_iam_audit_config.iam_audit[0]
+}
+moved {
+  from = google_project_iam_audit_config.container_audit
+  to   = google_project_iam_audit_config.container_audit[0]
+}
+moved {
+  from = google_project_iam_audit_config.artifact_registry_audit
+  to   = google_project_iam_audit_config.artifact_registry_audit[0]
+}
+moved {
+  from = google_project_iam_audit_config.storage_audit
+  to   = google_project_iam_audit_config.storage_audit[0]
+}
+
 resource "google_project_iam_audit_config" "network_audit" {
+  count   = var.create_audit_configs ? 1 : 0
   project = var.project_id
   service = "compute.googleapis.com"
 
@@ -15,8 +38,8 @@ resource "google_project_iam_audit_config" "network_audit" {
   audit_log_config { log_type = "DATA_WRITE" }
 }
 
-# IAM Audit: registra cambios en políticas IAM y accesos administrativos
 resource "google_project_iam_audit_config" "iam_audit" {
+  count   = var.create_audit_configs ? 1 : 0
   project = var.project_id
   service = "iam.googleapis.com"
 
@@ -24,8 +47,8 @@ resource "google_project_iam_audit_config" "iam_audit" {
   audit_log_config { log_type = "DATA_WRITE" }
 }
 
-# Container Audit: registra acciones en Google Kubernetes Engine (GKE)
 resource "google_project_iam_audit_config" "container_audit" {
+  count   = var.create_audit_configs ? 1 : 0
   project = var.project_id
   service = "container.googleapis.com"
 
@@ -33,8 +56,8 @@ resource "google_project_iam_audit_config" "container_audit" {
   audit_log_config { log_type = "DATA_WRITE" }
 }
 
-# Artifact Registry Audit: registra acciones en repositorios de artefactos
 resource "google_project_iam_audit_config" "artifact_registry_audit" {
+  count   = var.create_audit_configs ? 1 : 0
   project = var.project_id
   service = "artifactregistry.googleapis.com"
 
@@ -42,8 +65,8 @@ resource "google_project_iam_audit_config" "artifact_registry_audit" {
   audit_log_config { log_type = "DATA_WRITE" }
 }
 
-# Storage Audit: registra accesos y cambios en Google Cloud Storage
 resource "google_project_iam_audit_config" "storage_audit" {
+  count   = var.create_audit_configs ? 1 : 0
   project = var.project_id
   service = "storage.googleapis.com"
 

@@ -77,9 +77,19 @@ resource "google_project_iam_member" "vm_artifact_reader" {
   member  = "serviceAccount:${var.vm_reader_email}"
 }
 
+# Migración: el custom role pasó de sin count a count (retrocompatibilidad)
+moved {
+  from = google_project_iam_custom_role.vm_start_stop
+  to   = google_project_iam_custom_role.vm_start_stop[0]
+}
+
 # Custom role con permisos mínimos para encender/apagar VMs
 # Usado por Cloud Scheduler para gestión automática de ciclo de vida de VMs
+# Compartido entre ambientes — se crea solo si var.create_vm_start_stop_role = true
+# El primer ambiente que lo despliega (generalmente dev) lo crea.
+# Los demás ambientes lo referencian con create_vm_start_stop_role = false.
 resource "google_project_iam_custom_role" "vm_start_stop" {
+  count       = var.create_vm_start_stop_role ? 1 : 0
   project     = var.project_id
   role_id     = "vmStartStop"
   title       = "VM Start/Stop"
@@ -93,7 +103,7 @@ resource "google_project_iam_custom_role" "vm_start_stop" {
 # Asigna el custom role a la SA de VMs para que Cloud Scheduler pueda operar
 resource "google_project_iam_member" "vm_start_stop" {
   project = var.project_id
-  role    = google_project_iam_custom_role.vm_start_stop.id
+  role    = "projects/${var.project_id}/roles/vmStartStop"
   member  = "serviceAccount:${var.vm_reader_email}"
 }
 

@@ -104,6 +104,12 @@ variable "peer_vpc_name" {
 # ============================================================================
 # VARIABLES PARA GKE
 # ============================================================================
+variable "enable_oslogin_metadata" {
+  description = "Crear google_compute_project_metadata para OS Login. Desactivar si se gestiona desde bootstrap."
+  type        = bool
+  default     = false
+}
+
 variable "enable_gke" {
   description = "Habilitar subnet y firewall rules para GKE"
   type        = bool

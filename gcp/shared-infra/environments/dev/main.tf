@@ -82,6 +82,8 @@ module "security" {
   enable_group_iam                 = var.enable_group_iam
   enable_org_policies              = var.enable_org_policies
   log_bucket_suffix                = var.log_bucket_suffix
+  create_vm_start_stop_role        = var.create_vm_start_stop_role
+  create_audit_configs             = var.create_audit_configs
 }
 
 module "artifact_registry" {
@@ -118,6 +120,9 @@ module "network" {
   workspace  = var.workspace
   region     = var.region
   env        = var.env
+
+  # project-level
+  enable_oslogin_metadata = var.enable_oslogin_metadata
 
   # subnet
   vm_subnet_cidr    = var.vm_subnet_cidr
