@@ -224,3 +224,27 @@ variable "log_bucket_suffix" {
   type        = string
   default     = ""
 }
+
+variable "create_vm_start_stop_role" {
+  description = "Crear el custom role vmStartStop. Desactivar si se gestiona desde bootstrap."
+  type        = bool
+  default     = false
+}
+
+variable "create_audit_configs" {
+  description = "Crear audit configs de proyecto. Desactivar si se gestiona desde bootstrap."
+  type        = bool
+  default     = false
+}
+
+variable "enable_oslogin_metadata" {
+  description = "Crear google_compute_project_metadata para OS Login. Desactivar si se gestiona desde bootstrap."
+  type        = bool
+  default     = false
+}
+
+variable "create_artifact_registry" {
+  description = "Crear el Artifact Registry. Desactivar si se gestiona desde bootstrap."
+  type        = bool
+  default     = false
+}
