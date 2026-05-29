@@ -188,6 +188,18 @@ variable "enable_network_policy" {
   default     = true
 }
 
+variable "enable_shielded_nodes" {
+  description = "Shielded Nodes (Secure Boot + integrity monitoring) en el cluster y los nodos. Recomendado: true."
+  type        = bool
+  default     = true
+}
+
+variable "enable_binary_authorization" {
+  description = "Binary Authorization (exige imágenes atestiguadas). Requiere policy/attestor configurado o bloquea todos los deploys → default false."
+  type        = bool
+  default     = false
+}
+
 variable "maintenance_window_start_time" {
   description = "Inicio de la ventana de mantenimiento (formato: HH:MM, ej: 02:00)"
   type        = string

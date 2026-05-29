@@ -41,6 +41,12 @@ resource "google_container_node_pool" "default_pool" {
       mode = "GKE_METADATA"
     }
 
+    # Shielded VM: Secure Boot + integrity monitoring en los nodos
+    shielded_instance_config {
+      enable_secure_boot          = true
+      enable_integrity_monitoring = true
+    }
+
     # Labels
     labels = merge(
       {
