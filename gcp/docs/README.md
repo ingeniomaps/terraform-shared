@@ -4,6 +4,12 @@ Esta carpeta contiene la documentación técnica del proyecto Terraform GCP.
 
 ## Índice
 
+- [**seguridad-pendientes.md**](seguridad-pendientes.md) - Backlog de seguridad
+
+  - Hardening ya aplicado y pendientes que requieren decisión/datos del equipo
+  - Postura de prod (org-policies/VPC-SC), egress, alertas, supply chain, CI gate
+  - Notas de migración de estado para consumidores ya aplicados
+
 - [**credentials.md**](credentials.md) - Gestión de credenciales de GCP
 
   - Cómo obtener credenciales (Service Account, Secret Manager, gcloud)
