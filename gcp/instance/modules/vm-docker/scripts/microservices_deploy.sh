@@ -11,10 +11,17 @@ echo "========================================"
 
 PROJECT="${service.name}"
 
-# Guardar .env en temporal (antes del clone para no ensuciar el directorio)
+# Obtener .env en temporal (antes del clone para no ensuciar el directorio).
+# Si el servicio define secret_id, se baja de Secret Manager en runtime (la VM SA
+# necesita roles/secretmanager.secretAccessor sobre el secreto) — NO se embebe en
+# la metadata. Si no, se usa el contenido embebido (comportamiento por defecto).
+%{ if service.secret_id != "" ~}
+gcloud secrets versions access latest --secret="${service.secret_id}" > "/tmp/$${PROJECT}.env"
+%{ else ~}
 cat > "/tmp/$${PROJECT}.env" <<'ENVEOF'
 ${service.env_file}
 ENVEOF
+%{ endif ~}
 
 # Clonar repo (obtiene compose files, scripts, configs)
 cd /home/ubuntu

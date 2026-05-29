@@ -158,6 +158,7 @@ variable "microservices" {
     image_url      = optional(string, "")
     launch_command = optional(string, "")
     compose_file   = optional(string, "")
+    secret_id      = optional(string, "") # Si se setea, el .env se baja de Secret Manager (no se embebe)
   }))
   default = []
 }

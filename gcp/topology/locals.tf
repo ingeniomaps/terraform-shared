@@ -59,6 +59,7 @@ locals {
       compose_file   = lookup(lookup(var.service_overrides, name, {}), "compose_file", base.compose_file)
       env_file_name  = lookup(lookup(var.service_overrides, name, {}), "env_file_name", base.env_file_name)
       launch_command = lookup(lookup(var.service_overrides, name, {}), "launch_command", base.launch_command)
+      secret_id      = lookup(lookup(var.service_overrides, name, {}), "secret_id", base.secret_id)
     }
   }
 

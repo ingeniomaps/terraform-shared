@@ -59,6 +59,18 @@ variable "enable_vpc_peering" {
   default     = false
 }
 
+variable "enable_direct_ssh" {
+  description = "Crear la regla de SSH directo desde Internet (opt-in; menos seguro que IAP). Default: usar IAP."
+  type        = bool
+  default     = false
+}
+
+variable "ssh_direct_source_ranges" {
+  description = "Rangos de origen para el SSH directo (requerido si enable_direct_ssh=true). NUNCA 0.0.0.0/0."
+  type        = list(string)
+  default     = []
+}
+
 variable "corporate_ip_ranges" {
   description = "Rangos IP corporativos (requerido si enable_restricted_http = true)"
   type        = list(string)

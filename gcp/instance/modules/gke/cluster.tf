@@ -65,6 +65,19 @@ resource "google_container_cluster" "gke_cluster" {
     workload_pool = var.workload_identity_pool != "" ? var.workload_identity_pool : "${var.project_id}.svc.id.goog"
   }
 
+  # Shielded Nodes: Secure Boot + integrity monitoring a nivel cluster
+  enable_shielded_nodes = var.enable_shielded_nodes
+
+  # Binary Authorization (opt-in): exige imágenes atestiguadas. Requiere una
+  # policy configurada o bloquea TODOS los deploys → default off; prenderlo
+  # junto con la policy/attestor.
+  dynamic "binary_authorization" {
+    for_each = var.enable_binary_authorization ? [1] : []
+    content {
+      evaluation_mode = "PROJECT_SINGLETON_POLICY_ENFORCE"
+    }
+  }
+
   # Maintenance window
   # GKE requiere al menos 4 horas de ventana disponible dentro de 48 horas
   # Usamos una ventana diaria que se repite cada día para cumplir con este requisito

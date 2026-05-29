@@ -26,3 +26,20 @@ variable "registry_name" {
   description = "Nombre del Artifact Registry"
   type        = string
 }
+
+variable "gke_workload_namespace" {
+  description = "Namespace de la KSA vinculada por Workload Identity. NUNCA 'default' (cualquier pod sin KSA explícita lo heredaría)."
+  type        = string
+  default     = "workloads"
+}
+
+variable "gke_workload_ksa" {
+  description = "Nombre de la KSA vinculada por Workload Identity. NUNCA 'default'."
+  type        = string
+  default     = "gke-workload"
+
+  validation {
+    condition     = !(var.gke_workload_namespace == "default" && var.gke_workload_ksa == "default")
+    error_message = "No usar default/default para Workload Identity — usar un namespace/KSA dedicados."
+  }
+}

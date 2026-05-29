@@ -192,6 +192,10 @@ variable "service_catalog" {
     env_file_name  = string
     launch_command = string
     image_name     = string
+    # Opcional: si se setea, el .env se baja de Secret Manager en runtime en vez
+    # de embeberse en la metadata de la VM. La VM SA necesita secretAccessor sobre
+    # el secreto. Vacío = comportamiento actual (.env embebido).
+    secret_id = optional(string, "")
   }))
   default = {}
 }

@@ -33,28 +33,8 @@ variable "enable_dev_reader" {
   default     = false
 }
 
-variable "enable_vpc_service_controls" {
-  description = "Habilita VPC Service Controls (recomendado para prod)"
-  type        = bool
-  default     = false
-}
-
-variable "organization_id" {
-  description = "ID de la organización de GCP"
-  type        = string
-}
-
-variable "allowed_domains" {
-  description = "Dominios permitidos para miembros IAM"
-  type        = list(string)
-
-  validation {
-    condition = alltrue([
-      for domain in var.allowed_domains : can(regex("^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$", domain))
-    ])
-    error_message = "Todos los dominios en allowed_domains deben tener formato válido (ej: example.com)"
-  }
-}
+# organization_id, allowed_domains, enable_vpc_service_controls y enable_org_policies
+# se movieron a shared-infra/security-global/ (org/project-singleton, state propio).
 
 variable "admin_groups" {
   description = "Grupos de administradores por rol"
@@ -98,12 +78,6 @@ variable "create_vm_start_stop_role" {
 
 variable "create_audit_configs" {
   description = "Crear audit configs de proyecto. Desactivar si se gestiona desde bootstrap."
-  type        = bool
-  default     = false
-}
-
-variable "enable_org_policies" {
-  description = "Habilitar Organization Policies (requiere que orgpolicy.googleapis.com esté habilitado y configurado)"
   type        = bool
   default     = false
 }

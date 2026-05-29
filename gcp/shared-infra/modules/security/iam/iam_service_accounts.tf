@@ -40,21 +40,16 @@ resource "google_project_iam_member" "ci_cd_os_admin_login" {
   member  = "serviceAccount:${var.ci_cd_writer_email}"
 }
 
-# Permite que el pipeline de CI/CD use instancias de Compute Engine
-# (incluye compute.instances.use necesario para SSH)
-resource "google_project_iam_member" "ci_cd_instance_user" {
-  project = var.project_id
-  role    = "roles/compute.instanceAdmin.v1"
-  member  = "serviceAccount:${var.ci_cd_writer_email}"
-}
-
-# Permite que el pipeline de CI/CD actúe como service accounts
-# (necesario cuando la VM tiene una service account adjunta)
-resource "google_project_iam_member" "ci_cd_service_account_user" {
-  project = var.project_id
-  role    = "roles/iam.serviceAccountUser"
-  member  = "serviceAccount:${var.ci_cd_writer_email}"
-}
+# Least-privilege: el CI deploya a VMs EXISTENTES por IAP + OS Login (forzado en
+# bootstrap) y pushea imágenes a Artifact Registry. Para eso alcanzan los roles de
+# arriba (iap.tunnelResourceAccessor + compute.viewer + os(Admin)Login + logWriter
+# + artifactregistry.writer). Se quitaron a propósito:
+#   - roles/compute.instanceAdmin.v1  → crear/borrar/modificar VMs y leer su
+#     metadata (donde pueden vivir secretos). No hace falta para SSH con OS Login.
+#   - roles/iam.serviceAccountUser    → "actuar como" otra SA; solo se necesita al
+#     CREAR una VM con SA adjunta (eso es provisión = Terraform, no el CI de deploy).
+# Si el CI necesita encender/apagar VMs, asignarle el custom role vmStartStop (no
+# instanceAdmin). Si provisiona VMs, usar una SA de infra separada, no esta.
 
 # Permite que las VMs o workloads asociados publiquen métricas personalizadas
 resource "google_project_iam_member" "vm_metric_writer" {

@@ -1,0 +1,15 @@
+# PLANTILLA — copiar a terraform.tfvars y ajustar. Singleton del proyecto:
+# org-policies + VPC Service Controls. make init && make plan && make apply.
+
+project_id = "YOUR_GCP_PROJECT_ID"
+workspace  = "my-workspace"
+region     = "us-central1"
+env        = "prod" # identidad para el nombre del perímetro (es singleton del proyecto)
+
+organization_id = "YOUR_ORG_ID"
+allowed_domains = ["example.com"]
+
+# Prender cuando esté listo (orgpolicy API / Access Context Manager).
+enable_org_policies         = false
+enable_vpc_service_controls = false
+enforce_prod_hardening      = false

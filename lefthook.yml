@@ -1,0 +1,8 @@
+# Git hooks via Lefthook (https://github.com/evilmartians/lefthook)
+# Install: go install github.com/evilmartians/lefthook@latest
+# Then: lefthook install
+
+commit-msg:
+  commands:
+    conventional:
+      run: bash scripts/commit-msg.sh {1}
