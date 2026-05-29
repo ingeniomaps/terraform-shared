@@ -68,3 +68,20 @@ variable "gke_master_cidr" {
   type        = string
   default     = ""
 }
+
+variable "enable_direct_ssh" {
+  description = "Crear la regla de SSH directo desde Internet (opt-in; menos seguro que IAP). Default: usar IAP."
+  type        = bool
+  default     = false
+}
+
+variable "ssh_direct_source_ranges" {
+  description = "Rangos de origen para el SSH directo (requerido si enable_direct_ssh=true). NUNCA 0.0.0.0/0."
+  type        = list(string)
+  default     = []
+
+  validation {
+    condition     = !contains(var.ssh_direct_source_ranges, "0.0.0.0/0")
+    error_message = "ssh_direct_source_ranges no puede contener 0.0.0.0/0 — usar IPs de oficina/VPN/bastion, o IAP."
+  }
+}

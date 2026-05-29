@@ -16,4 +16,6 @@ module "firewall" {
   gke_pods_cidr            = var.gke_pods_cidr
   gke_services_cidr        = var.gke_services_cidr
   gke_master_cidr          = var.gke_master_cidr
+  enable_direct_ssh        = var.enable_direct_ssh
+  ssh_direct_source_ranges = var.ssh_direct_source_ranges
 }
