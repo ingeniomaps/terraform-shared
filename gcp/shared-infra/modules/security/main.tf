@@ -45,22 +45,11 @@ module "logging" {
 }
 
 # ============================================================================
-# MÓDULO SECURITY
+# Org Policies + VPC Service Controls → movidos a shared-infra/security-global/
+# Son recursos PROJECT/ORG-singleton (las org-policies son project-scoped: con
+# project_id compartido entre entornos, crearlas por-entorno = 4 states peleando
+# por el mismo recurso). Viven en su propio state, se aplican una sola vez.
 # ============================================================================
-module "security" {
-  source = "./security"
-
-  project_id                  = var.project_id
-  organization_id             = var.organization_id
-  allowed_domains             = var.allowed_domains
-  enable_vpc_service_controls = var.enable_vpc_service_controls
-  account_name                = local.account_name
-  workspace                   = var.workspace
-  env                         = var.env
-  project_number              = data.google_project.current.number
-  is_production               = local.is_production
-  enable_org_policies         = var.enable_org_policies
-}
 
 # ============================================================================
 # MÓDULO GKE

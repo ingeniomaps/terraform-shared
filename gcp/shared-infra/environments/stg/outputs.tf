@@ -94,16 +94,3 @@ output "break_glass_email" {
   value       = module.security.break_glass_email
   sensitive   = true
 }
-
-# ============================================================================
-# OUTPUTS - Artifact Registry
-# ============================================================================
-output "repository_name" {
-  description = "Nombre completo del repositorio"
-  value       = length(module.artifact_registry) > 0 ? module.artifact_registry[0].repository_name : null
-}
-
-output "repository_url" {
-  description = "URL completa del repositorio para Docker pull/push"
-  value       = length(module.artifact_registry) > 0 ? module.artifact_registry[0].repository_url : null
-}

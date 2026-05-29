@@ -48,22 +48,6 @@ variable "enable_dev_reader" {
   default     = false
 }
 
-variable "enable_vpc_service_controls" {
-  description = "Habilita VPC Service Controls (recomendado para prod)"
-  type        = bool
-  default     = false
-}
-
-variable "organization_id" {
-  description = "ID de la organización de GCP"
-  type        = string
-}
-
-variable "allowed_domains" {
-  description = "Dominios permitidos para miembros IAM"
-  type        = list(string)
-}
-
 variable "admin_groups" {
   description = "Grupos de administradores por rol"
   type = object({
@@ -213,12 +197,6 @@ variable "enable_group_iam" {
   default     = false
 }
 
-variable "enable_org_policies" {
-  description = "Habilitar Organization Policies (requiere que orgpolicy.googleapis.com esté habilitado y configurado)"
-  type        = bool
-  default     = false
-}
-
 variable "log_bucket_suffix" {
   description = "Sufijo opcional para personalizar los nombres de los buckets de logging. Se agrega después del nombre del ambiente (ej: '-custom' resultaría en 'iam-audit-logs-{env}-custom'). Si está vacío, no se agrega sufijo."
   type        = string
@@ -243,8 +221,8 @@ variable "enable_oslogin_metadata" {
   default     = false
 }
 
-variable "create_artifact_registry" {
-  description = "Crear el Artifact Registry. Desactivar si se gestiona desde bootstrap."
+variable "enforce_prod_hardening" {
+  description = "Exigir endurecimiento en prod (sin HTTP publico, VPC-SC). false en el prod transicional (mono); true cuando prod pase a LB + VPC-SC."
   type        = bool
-  default     = false
+  default     = true
 }

@@ -1,44 +1,36 @@
+# PLANTILLA — copiar a terraform.tfvars y ajustar (ver Makefile: make init/plan/apply)
 # ============================================================================
-# CONFIGURACIÓN DEL PROYECTO
+# CONFIGURACION DEL PROYECTO - DEV
 # ============================================================================
-project_id  = ""
-workspace   = ""
-region      = "us-central1"
-env         = "stg"
+project_id = "YOUR_GCP_PROJECT_ID"
+workspace  = "my-workspace"
+region     = "us-central1"
+env        = "dev"
 
-# Opcional: Ruta al archivo JSON de credenciales (relativa desde la raíz del proyecto)
-# Si no se especifica, se usa GOOGLE_APPLICATION_CREDENTIALS o gcloud auth
-# credentials_file = "keys/account_service_stg.json"
+# Opcional: ruta al JSON de credenciales (relativa a la raiz del proyecto).
+# Si no se especifica, se usa GOOGLE_APPLICATION_CREDENTIALS o gcloud auth.
+# credentials_file = "keys/account_service_dev.json"
 
 # ============================================================================
 # ARTIFACT REGISTRY
 # ============================================================================
+registry_name            = "my-registry"
+enable_dev_reader        = true
 
 # ============================================================================
 # SEGURIDAD
 # ============================================================================
-enable_vpc_service_controls      = false
-break_glass_max_session_duration = 3600
-organization_id                   = ""
-
+break_glass_max_session_duration = 7200
 # ============================================================================
 # RED Y CONECTIVIDAD
 # ============================================================================
 vm_subnet_cidr         = "10.0.0.0/24"
 enable_public_http     = true
 enable_restricted_http = false
-
-# Requerido si enable_restricted_http = true
-# corporate_ip_ranges = ["203.0.113.0/24", "198.51.100.0/24"]
-
-enable_vpc_peering    = false
-
-# Requerido si enable_vpc_peering = true
-# peer_project_id = "proyecto-peer-id"
-# peer_vpc_name   = "vpc-peer-name"
+enable_vpc_peering     = false
 
 # ============================================================================
-# GKE (KUBERNETES)
+# GKE (KUBERNETES) - deshabilitado; true cuando se migre a GKE
 # ============================================================================
 enable_gke        = false
 gke_subnet_cidr   = "10.0.10.0/24"
@@ -47,18 +39,15 @@ gke_services_cidr = "10.2.0.0/16"
 gke_master_cidr   = "172.16.0.0/28"
 
 # ============================================================================
-# IAM Y GRUPOS
+# IAM Y GRUPOS  (VERIFICAR contra el Workspace real del proyecto consumidor antes de aplicar)
 # ============================================================================
 admin_groups = {
-  network_admins  = "network-admins@miempresa.com"
-  network_viewers = "developers@miempresa.com"
-  security_admins = "security-admins@miempresa.com"
-  auditors        = "auditors@miempresa.com"
+  network_admins  = "network-admins@example.com"
+  network_viewers = "developers@example.com"
+  security_admins = "security-admins@example.com"
+  auditors        = "auditors@example.com"
 }
 
-allowed_domains = [
-  "miempresa.com"
-]
 
 # ============================================================================
 # ALERTAS Y MONITOREO
@@ -66,17 +55,8 @@ allowed_domains = [
 alert_notification_channels = []
 
 # ============================================================================
-# OPCIONES DE SEGURIDAD
+# RECURSOS PROJECT-LEVEL - gestionados por bootstrap/global
 # ============================================================================
-# Habilitar asignación de roles IAM a grupos de Google Workspace
-# Requiere que los grupos existan en Google Workspace
-# enable_group_iam = false
-
-# Habilitar Organization Policies
-# Requiere que orgpolicy.googleapis.com esté habilitado y configurado
-# enable_org_policies = false
-
-# Sufijo opcional para personalizar los nombres de los buckets de logging
-# Se agrega después del nombre del ambiente (ej: '-custom' resultaría en 'iam-audit-logs-stg-custom')
-# Si está vacío, no se agrega sufijo
-# log_bucket_suffix = ""
+create_vm_start_stop_role = false
+create_audit_configs      = false
+enable_oslogin_metadata   = false
