@@ -1,11 +1,11 @@
 # PLANTILLA — copiar a terraform.tfvars y ajustar (ver Makefile: make init/plan/apply)
 # ============================================================================
-# CONFIGURACION DEL PROYECTO - DEV
+# CONFIGURACION DEL PROYECTO - PROD
 # ============================================================================
 project_id = "YOUR_GCP_PROJECT_ID"
 workspace  = "my-workspace"
 region     = "us-central1"
-env        = "dev"
+env        = "prod"
 
 # Opcional: ruta al JSON de credenciales (relativa a la raiz del proyecto).
 # Si no se especifica, se usa GOOGLE_APPLICATION_CREDENTIALS o gcloud auth.
