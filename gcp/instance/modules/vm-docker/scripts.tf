@@ -26,6 +26,7 @@ locals {
       image_url      = service.image_url
       launch_command = service.launch_command
       compose_file   = service.compose_file
+      secret_id      = service.secret_id
       env_file = (
         (can(regex("^[./]", service.env_file)) || can(regex("/", service.env_file))) &&
         fileexists("${path.root}/${service.env_file}")
