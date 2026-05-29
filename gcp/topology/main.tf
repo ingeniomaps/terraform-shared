@@ -73,26 +73,26 @@ module "vm" {
   # Módulo vm-docker local
   source = "../instance/modules/vm-docker"
 
-  project_id             = var.project_id
-  region                 = var.region
-  zone                   = var.zone
-  instance_name          = "${each.key}-${var.environment}"
-  machine_type           = each.value.machine_type
-  boot_disk_size         = each.value.boot_disk_size
-  boot_disk_type         = each.value.boot_disk_type
-  enable_public_ip       = each.value.enable_public_ip
-  static_public_ip       = each.value.static_public_ip
-  install_docker_compose = true
-  install_certbot        = each.value.install_certbot
-  use_ubuntu_image       = true
-  vm_subnet_name         = local.vm_subnet_name
-  service_account_email  = local.service_account_email
-  tags                   = local.tags_combined
-  labels                 = merge(var.labels, { vm_group = each.key, environment = var.environment })
-  ssh_keys               = local.ssh_keys_combined
-  environment              = var.environment
-  microservices            = local.vm_microservices[each.key]
-  metadata_startup_script  = var.metadata_startup_script
+  project_id              = var.project_id
+  region                  = var.region
+  zone                    = var.zone
+  instance_name           = "${each.key}-${var.environment}"
+  machine_type            = each.value.machine_type
+  boot_disk_size          = each.value.boot_disk_size
+  boot_disk_type          = each.value.boot_disk_type
+  enable_public_ip        = each.value.enable_public_ip
+  static_public_ip        = each.value.static_public_ip
+  install_docker_compose  = true
+  install_certbot         = each.value.install_certbot
+  use_ubuntu_image        = true
+  vm_subnet_name          = local.vm_subnet_name
+  service_account_email   = local.service_account_email
+  tags                    = local.tags_combined
+  labels                  = merge(var.labels, { vm_group = each.key, environment = var.environment })
+  ssh_keys                = local.ssh_keys_combined
+  environment             = var.environment
+  microservices           = local.vm_microservices[each.key]
+  metadata_startup_script = var.metadata_startup_script
 }
 
 # ==============================================================================
