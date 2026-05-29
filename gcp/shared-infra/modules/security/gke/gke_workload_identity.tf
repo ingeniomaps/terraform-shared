@@ -15,7 +15,7 @@ resource "google_service_account_iam_member" "workload_identity_binding" {
   count              = var.create_admin_sa ? 1 : 0
   service_account_id = google_service_account.gke_workload[0].name
   role               = "roles/iam.workloadIdentityUser"
-  member             = "serviceAccount:${var.project_id}.svc.id.goog[default/default]"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[${var.gke_workload_namespace}/${var.gke_workload_ksa}]"
 }
 
 # Permiso para que la Service Account lea del Artifact Registry
