@@ -42,6 +42,12 @@ resource "google_compute_firewall" "allow_http_https_public" {
     ports    = ["80", "443"]
   }
 
+  # HTTP/3 (QUIC) viaja sobre UDP/443. Sin esto los clientes caen con gracia a h2/TCP.
+  allow {
+    protocol = "udp"
+    ports    = ["443"]
+  }
+
   source_ranges = ["0.0.0.0/0"]
 
   target_service_accounts = [
