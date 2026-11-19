@@ -9,4 +9,3 @@ while true; do
     docker restart $(docker ps -q --filter ancestor=${image_full_path}) || true
   fi
 done &
-
