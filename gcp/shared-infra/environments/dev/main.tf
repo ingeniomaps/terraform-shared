@@ -109,6 +109,16 @@ resource "google_artifact_registry_repository_iam_member" "ar_writers" {
   member     = "serviceAccount:${each.value}"
 }
 
+# Entornos creados antes del split tienen el registry en su estado como
+# module.artifact_registry: se suelta sin borrarlo, ahora es de bootstrap/global.
+removed {
+  from = module.artifact_registry
+
+  lifecycle {
+    destroy = false
+  }
+}
+
 module "network" {
   source = "../../modules/network"
 
