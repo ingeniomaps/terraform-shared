@@ -24,6 +24,7 @@ Esta carpeta contiene la documentación técnica del proyecto Terraform GCP.
   - Migración de estado
 
 - [**versions.md**](versions.md) - Gestión de versiones
+- [**module-sources.md**](module-sources.md) - De dónde salen los módulos y cómo se fijan
 
   - Versiones actuales de Terraform y providers
   - Verificación automática con `make check-versions`

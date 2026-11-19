@@ -6,3 +6,9 @@ commit-msg:
   commands:
     conventional:
       run: bash scripts/commit-msg.sh {1}
+
+pre-commit:
+  commands:
+    module-sources:
+      glob: "*.tf"
+      run: bash gcp/scripts/check-module-sources.sh

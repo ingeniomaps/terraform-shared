@@ -46,6 +46,17 @@ repos:
         pass_filenames: true
         stages: [commit]
 
+  # Hook para fijar de dónde salen los módulos (ver scripts/check-module-sources.sh)
+  - repo: local
+    hooks:
+      - id: check-module-sources
+        name: Verificar source de módulos
+        entry: gcp/scripts/check-module-sources.sh
+        language: system
+        pass_filenames: false
+        files: '\.tf(\.json)?$'
+        stages: [commit]
+
   # Hook para verificar que no hay archivos de estado
   - repo: local
     hooks:
