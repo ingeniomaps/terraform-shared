@@ -115,7 +115,7 @@ variable "install_docker_compose" {
 variable "docker_compose_version" {
   description = "Versión de Docker Compose a instalar"
   type        = string
-  default     = "v2.33.0"
+  default     = "v5.8.0"
 }
 
 variable "install_certbot" {
@@ -186,5 +186,28 @@ variable "environment" {
   validation {
     condition     = contains(["dev", "qa", "stg", "prod"], var.environment)
     error_message = "environment debe ser dev, qa, stg o prod"
+  }
+}
+
+variable "git_token_secret_id" {
+  description = <<-EOT
+    Secreto de Secret Manager con el token de GitHub para clonar los repos de
+    `microservices`. La VM lo lee en cada clone/pull con un helper de credenciales
+    de git, así `repo_url` va sin credenciales. La SA de la VM necesita
+    roles/secretmanager.secretAccessor sobre el secreto. Vacío = sin helper.
+  EOT
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = can(regex("^([A-Za-z0-9_/-]+)?$", var.git_token_secret_id))
+    error_message = "git_token_secret_id: sólo nombre del secreto o projects/<p>/secrets/<s>."
+  }
+
+  validation {
+    condition = var.git_token_secret_id == "" || alltrue([
+      for s in var.microservices : !can(regex("://[^/]*@", s.repo_url))
+    ])
+    error_message = "Con git_token_secret_id, los repo_url van sin credenciales (https://github.com/<org>/<repo>)."
   }
 }

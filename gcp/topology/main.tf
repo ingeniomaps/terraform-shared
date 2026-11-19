@@ -11,19 +11,19 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 7.0"
+      version = ">= 7.0, < 9.0"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = ">= 4.0"
+      version = ">= 4.0, < 5.0"
     }
     local = {
       source  = "hashicorp/local"
-      version = ">= 2.0"
+      version = ">= 2.0, < 3.0"
     }
     null = {
       source  = "hashicorp/null"
-      version = ">= 3.0"
+      version = ">= 3.0, < 4.0"
     }
   }
 }
@@ -85,6 +85,7 @@ module "vm" {
   install_docker_compose  = true
   install_certbot         = each.value.install_certbot
   enable_hot_update       = each.value.enable_hot_update
+  git_token_secret_id     = var.git_token_secret_id
   use_ubuntu_image        = true
   vm_subnet_name          = local.vm_subnet_name
   service_account_email   = local.service_account_email

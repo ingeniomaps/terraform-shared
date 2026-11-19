@@ -9,8 +9,12 @@
 
 ### Google Provider
 
-- **Versión actual**: `>= 7.0`
-- **Estado**: ✅ Versión reciente y estable
+- **Roots** (`bootstrap/global`, `shared-infra/environments/*`, `shared-infra/security-global`): `~> 8.12`
+- **Módulos** (`instance/modules/*`, `topology`): `>= 7.0, < 9.0`
+- **Estado**: ✅ 8.12 validado en todos los roots y módulos
+
+Siempre con techo de major: `.terraform.lock.hcl` no se versiona, así que sin techo un
+`terraform init` nuevo baja el próximo major sin que nadie lo haya probado.
 
 ## Verificación Periódica
 
@@ -64,7 +68,7 @@ Versión más reciente del provider Google: 7.14.1
 
 ### Recomendaciones
 
-- ✅ Las versiones actuales (`>= 1.14.2` y `>= 7.0`) son recientes y estables
+- ✅ Terraform `>= 1.14.2`; provider Google con techo de major (ver arriba)
 - ⚠️ Verificar periódicamente (cada 3-6 meses) si hay versiones más recientes
 - ⚠️ Antes de actualizar, revisar:
   - [Changelog de Terraform](https://github.com/hashicorp/terraform/blob/main/CHANGELOG.md)
@@ -101,6 +105,6 @@ Si se encuentran versiones más recientes:
 
 ## Notas
 
-- Las versiones con `>=` permiten actualizaciones menores y parches automáticamente
-- Para mayor control, se puede usar `~>` para permitir solo parches
-- Ejemplo: `~> 1.14.2` permite `1.14.x` pero no `1.15.x`
+- `~> 8.12` permite `8.x` (desde 8.12) pero no `9.0`
+- `~> 1.14.2` permite `1.14.x` pero no `1.15.x`
+- Subir de major es un cambio deliberado: probar con `terraform plan` y luego mover el techo

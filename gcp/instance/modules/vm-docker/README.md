@@ -30,13 +30,14 @@ El módulo `vm-docker` extiende `vm-base` y agrega:
 | `static_public_ip`               | `string`       | Nombre para IP pública estática     | `null`                         | ❌        |
 | `use_ubuntu_image`               | `bool`         | Usar imagen Ubuntu                  | `false`                        | ❌        |
 | `install_docker_compose`         | `bool`         | Instalar Docker Compose             | `true`                         | ❌        |
-| `docker_compose_version`         | `string`       | Versión de Docker Compose           | `"v2.33.0"`                    | ❌        |
+| `docker_compose_version`         | `string`       | Versión de Docker Compose           | `"v5.8.0"`                     | ❌        |
 | `install_certbot`                | `bool`         | Instalar Certbot                    | `false`                        | ❌        |
 | `metadata_startup_script`        | `string`       | Script de inicio personalizado      | `""`                           | ❌        |
 | `deployment_scripts`             | `string`       | Ruta local a scripts de despliegue  | `""`                           | ❌        |
 | `deployment_scripts_destination` | `string`       | Directorio destino en VM            | `"/home/ubuntu/configuration"` | ❌        |
 | `microservices`                  | `list(object)` | Lista de microservicios a desplegar | `[]`                           | ❌        |
 | `enable_hot_update`              | `bool`         | Despliega servicios nuevos sin reiniciar la VM | `false`             | ❌        |
+| `git_token_secret_id`            | `string`       | Secreto con el token de GitHub para clonar | `""`                  | ❌        |
 | `environment`                    | `string`       | Ambiente de despliegue              | `"dev"`                        | ❌        |
 
 ### Estructura de `microservices`
@@ -70,6 +71,25 @@ actualizarlos se usa `/opt/scripts/helper_update_services.sh` (`update-one`, `up
 
 Con el flag apagado (default) el startup script es el mismo de siempre y no se publica
 `microservices_json`.
+
+### Token de git desde Secret Manager (`git_token_secret_id`)
+
+Para repos privados, el token **no va en `repo_url`**: una URL `https://<token>@github.com/...`
+queda en texto plano en la metadata de la VM (legible con `compute.instances.get` y desde
+cualquier contenedor vía el servidor de metadata), en el state y en `.git/config`.
+
+Con `git_token_secret_id` la VM instala un helper de credenciales de git
+(`/usr/local/bin/git-credential-secret-manager`) que lee el token de Secret Manager en cada
+`clone`/`pull` contra `github.com`. Los `repo_url` van sin credenciales (el módulo lo valida).
+
+```bash
+printf '%s' "$TOKEN" | gcloud secrets create github-deploy-token --data-file=-
+gcloud secrets add-iam-policy-binding github-deploy-token \
+  --member="serviceAccount:<SA de la VM>" --role=roles/secretmanager.secretAccessor
+```
+
+Token de mínimo alcance: PAT fine-grained de sólo lectura (`Contents: read`) sobre los repos
+que se clonan. Con la variable vacía (default) el startup script no cambia.
 
 ## 📤 Outputs
 

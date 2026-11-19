@@ -138,9 +138,28 @@ variable "topology" {
 # ------------------------------------------------------------------------------
 
 variable "github_repo_base_url" {
-  description = "URL base de repos con autenticación. Ej: https://user:token@github.com/org"
+  description = <<-EOT
+    URL base de los repos. Con git_token_secret_id va sin credenciales:
+    https://github.com/org. Sin él (modo heredado) lleva el token en la URL,
+    que termina en texto plano en la metadata de la VM y en el state.
+  EOT
   type        = string
   sensitive   = true
+}
+
+variable "git_token_secret_id" {
+  description = <<-EOT
+    Secreto de Secret Manager con el token de GitHub. La VM lo lee al clonar
+    con un helper de credenciales de git (ver vm-docker). La SA de las VMs
+    necesita roles/secretmanager.secretAccessor sobre el secreto.
+  EOT
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.git_token_secret_id == "" || !can(regex("://[^/]*@", var.github_repo_base_url))
+    error_message = "Con git_token_secret_id, github_repo_base_url va sin credenciales: https://github.com/<org>."
+  }
 }
 
 variable "default_branch" {

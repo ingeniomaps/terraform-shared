@@ -19,6 +19,7 @@ del equipo** (no se puede resolver desde el código sin esos inputs).
 | GKE Shielded Nodes (Secure Boot + integrity) on; Binary Authorization opt-in | `instance/modules/gke/{cluster,node_pool}.tf` |
 | Workload Identity: ya no `[default/default]`, parametrizado + validación | `modules/security/gke/gke_workload_identity.tf` |
 | Secret Manager opt-in para secretos de microservicios (no embeber `.env` en metadata) | `instance/modules/vm-docker/` (`secret_id` opcional) |
+| Token de git desde Secret Manager con helper de credenciales (no en `repo_url`) | `instance/modules/vm-docker/` y `topology/` (`git_token_secret_id` opcional) |
 | Split del god-module: org-policies + VPC-SC a state propio | `shared-infra/security-global/` |
 | `ci_cd_writer` least-privilege (sin `instanceAdmin.v1` ni `serviceAccountUser`) | `modules/security/iam/iam_service_accounts.tf` |
 
