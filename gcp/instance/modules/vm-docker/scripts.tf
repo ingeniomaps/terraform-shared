@@ -35,6 +35,12 @@ locals {
     }
   ]
 
+  # Antes del deploy: los clones de abajo ya usan el helper.
+  git_credential_script = var.git_token_secret_id != "" ? trimspace(templatefile(
+    "${path.module}/scripts/git_credential.sh",
+    { git_token_secret_id = var.git_token_secret_id }
+  )) : ""
+
   microservices_deploy_script = length(var.microservices) > 0 ? trimspace(templatefile(
     "${path.module}/scripts/microservices_deploy.sh",
     {
@@ -125,6 +131,7 @@ locals {
     "",
     local.docker_install_script,
     local.certbot_install_script,
+    local.git_credential_script,
     local.microservices_deploy_script,
     local.hot_update_script
   ]))
