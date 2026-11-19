@@ -123,14 +123,29 @@ extract_terraform_version() {
     fi
 }
 
-# Función para extraer versión del provider de un archivo Terraform
+# Función para extraer la restricción del provider Google (ej. "~> 8.12" o ">= 7.0, < 9.0")
 extract_provider_version() {
     local file=$1
     if [ -f "$file" ] && [ -r "$file" ]; then
         grep -A 2 'source.*=.*"hashicorp/google"' "$file" 2>/dev/null | \
-            grep -oE 'version\s*=\s*">=\s*([0-9]+\.[0-9]+\.[0-9]+)' | \
-            grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || echo ""
+            grep -oE 'version\s*=\s*"[^"]+"' | sed -E 's/.*"([^"]+)"/\1/' | head -1 || echo ""
     fi
+}
+
+# Indica si la restricción admite el major de la última versión (mira "< N" y "~> M.x").
+constraint_allows_major() {
+    local constraint=$1 latest_major=$2 cap
+    cap=$(grep -oE '<\s*[0-9]+' <<<"$constraint" | grep -oE '[0-9]+' | head -1)
+    if [ -n "$cap" ]; then
+        [ "$latest_major" -lt "$cap" ]
+        return
+    fi
+    cap=$(grep -oE '~>\s*[0-9]+\.[0-9]+' <<<"$constraint" | grep -oE '^~>\s*[0-9]+' | grep -oE '[0-9]+')
+    if [ -n "$cap" ]; then
+        [ "$latest_major" -le "$cap" ]
+        return
+    fi
+    return 0
 }
 
 # Función principal
@@ -204,9 +219,8 @@ main() {
         if [ -n "$provider_version" ]; then
             google_provider_versions_found="${google_provider_versions_found}${provider_version}\n"
 
-            # Comparar versiones (simple: solo mostrar si hay diferencia)
-            if [ "$provider_version" != "$LATEST_GOOGLE_PROVIDER" ]; then
-                local update_msg="${file} (Google Provider: ${provider_version} -> ${LATEST_GOOGLE_PROVIDER})"
+            if ! constraint_allows_major "$provider_version" "${LATEST_GOOGLE_PROVIDER%%.*}"; then
+                local update_msg="${file} (Google Provider: \"${provider_version}\" no admite ${LATEST_GOOGLE_PROVIDER})"
                 files_to_update="${files_to_update}${update_msg}\n"
             fi
         fi
@@ -235,7 +249,7 @@ main() {
         unique_provider_versions=$(echo -e "$google_provider_versions_found" | sort -u | head -5)
         echo -e "${YELLOW}Versiones del provider Google en el proyecto:${NC}"
         echo -e "$unique_provider_versions" | while IFS= read -r version; do
-            [ -n "$version" ] && echo "  - >= $version"
+            [ -n "$version" ] && echo "  - $version"
         done
         echo ""
     fi

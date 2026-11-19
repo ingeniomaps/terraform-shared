@@ -122,13 +122,14 @@ variable "topology" {
   EOT
 
   type = map(object({
-    machine_type     = string
-    boot_disk_size   = optional(number, 30)
-    boot_disk_type   = optional(string, "pd-standard")
-    enable_public_ip = optional(bool, true)
-    static_public_ip = optional(string, null)
-    install_certbot  = optional(bool, false)
-    services         = list(string)
+    machine_type      = string
+    boot_disk_size    = optional(number, 30)
+    boot_disk_type    = optional(string, "pd-standard")
+    enable_public_ip  = optional(bool, true)
+    static_public_ip  = optional(string, null)
+    install_certbot   = optional(bool, false)
+    enable_hot_update = optional(bool, false) # ver vm-docker: despliega servicios nuevos sin reiniciar
+    services          = list(string)
   }))
 }
 
@@ -137,9 +138,28 @@ variable "topology" {
 # ------------------------------------------------------------------------------
 
 variable "github_repo_base_url" {
-  description = "URL base de repos con autenticación. Ej: https://user:token@github.com/org"
+  description = <<-EOT
+    URL base de los repos. Con git_token_secret_id va sin credenciales:
+    https://github.com/org. Sin él (modo heredado) lleva el token en la URL,
+    que termina en texto plano en la metadata de la VM y en el state.
+  EOT
   type        = string
   sensitive   = true
+}
+
+variable "git_token_secret_id" {
+  description = <<-EOT
+    Secreto de Secret Manager con el token de GitHub. La VM lo lee al clonar
+    con un helper de credenciales de git (ver vm-docker). La SA de las VMs
+    necesita roles/secretmanager.secretAccessor sobre el secreto.
+  EOT
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.git_token_secret_id == "" || !can(regex("://[^/]*@", var.github_repo_base_url))
+    error_message = "Con git_token_secret_id, github_repo_base_url va sin credenciales: https://github.com/<org>."
+  }
 }
 
 variable "default_branch" {

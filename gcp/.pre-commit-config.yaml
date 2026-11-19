@@ -1,11 +1,12 @@
 # Pre-commit hooks para Terraform
-# Instalación: pip install pre-commit && pre-commit install
-# Uso: pre-commit run --all-files
+# Instalación: pipx install pre-commit && pre-commit install -c gcp/.pre-commit-config.yaml
+# Uso: pre-commit run -c gcp/.pre-commit-config.yaml --all-files  (desde la raíz del repo)
+# Requiere terraform y tflint en el PATH.
 
 repos:
   # Hook para detectar archivos sensibles
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
         exclude: '\.md$'
@@ -17,7 +18,6 @@ repos:
         args: ['--maxkb=1000']
       - id: check-merge-conflict
       - id: detect-private-key
-        args: ['--allow-ssh-keys']
       - id: no-commit-to-branch
         args: ['--branch', 'main', '--branch', 'master']
 
@@ -26,55 +26,45 @@ repos:
     hooks:
       - id: prevent-sensitive-files
         name: Prevenir archivos sensibles
-        entry: bash -c 'for file in "$@"; do
-          if [[ "$file" =~ \.(tfstate|tfstate\.|tfplan|plan\.json|\.json)$ ]] && [[ ! "$file" =~ \.(example|tfvars\.example)$ ]]; then
-            echo "Error: No se pueden commitear archivos sensibles: $file"
-            echo "Estos archivos están en .gitignore y no deben estar en el repositorio."
-            exit 1
-          fi
-          if [[ "$file" =~ /(terraform\.tfvars|\.env)$ ]] && [[ ! "$file" =~ \.(example|tfvars\.example|tfvars\.dev|tfvars\.qa|tfvars\.stg|tfvars\.prod)$ ]]; then
-            echo "Error: No se pueden commitear archivos de configuración sensibles: $file"
-            echo "Usa archivos .example o .tfvars.* por ambiente."
-            exit 1
-          fi
-          if [[ "$file" =~ /keys/ ]] || [[ "$file" =~ \.(pem|key)$ ]]; then
-            echo "Error: No se pueden commitear credenciales: $file"
-            exit 1
-          fi
-        done' --
+        entry: gcp/scripts/prevent-sensitive-files.sh
         language: system
         pass_filenames: true
-        stages: [commit]
+        stages: [pre-commit]
+
+  # Hook para fijar de dónde salen los módulos (ver scripts/check-module-sources.sh)
+  - repo: local
+    hooks:
+      - id: check-module-sources
+        name: Verificar source de módulos
+        entry: gcp/scripts/check-module-sources.sh
+        language: system
+        pass_filenames: false
+        files: '\.tf(\.json)?$'
+        stages: [pre-commit]
 
   # Hook para verificar que no hay archivos de estado
   - repo: local
     hooks:
       - id: check-bootstrap
         name: Verificar archivos de estado
-        entry: bash -c 'if git diff --cached --name-only | grep -E "\.tfstate|\.tfstate\."; then
-          echo "Error: No se pueden commitear archivos de estado de Terraform."
-          echo "Los archivos .tfstate deben estar solo en el backend remoto (GCS)."
-          exit 1
-        fi' --
+        entry: gcp/scripts/check-no-tfstate.sh
+        pass_filenames: false
         language: system
-        stages: [commit]
+        stages: [pre-commit]
 
   # Hook para formato de Terraform
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.86.0
+    rev: v1.109.5
     hooks:
       - id: terraform_fmt
-        args: ['-recursive']
       - id: terraform_validate
-        args: ['-no-color']
+        args: ['--args=-no-color']
       - id: terraform_tflint
         args: ['--args=--only=terraform_deprecated_interpolation']
-      - id: terraform_docs
-        args: ['--hook-config=--path-to-file=README.md', '--hook-config=--add-to-existing-file=true', '--hook-config=--create-file-if-not-exist=true']
 
   # Hook para detectar secretos
   - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.4.0
+    rev: v1.5.0
     hooks:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']

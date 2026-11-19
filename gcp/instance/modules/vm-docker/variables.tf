@@ -115,7 +115,7 @@ variable "install_docker_compose" {
 variable "docker_compose_version" {
   description = "Versión de Docker Compose a instalar"
   type        = string
-  default     = "v2.33.0"
+  default     = "v5.8.0"
 }
 
 variable "install_certbot" {
@@ -158,9 +158,25 @@ variable "microservices" {
     image_url      = optional(string, "")
     launch_command = optional(string, "")
     compose_file   = optional(string, "")
-    secret_id      = optional(string, "") # Si se setea, el .env se baja de Secret Manager (no se embebe)
+    secret_id      = optional(string, "")     # Si se setea, el .env se baja de Secret Manager (no se embebe)
+    env_file_name  = optional(string, ".env") # Nombre del archivo env en el repo (ej: ".env.local")
   }))
   default = []
+
+  validation {
+    condition     = alltrue([for s in var.microservices : can(regex("^[A-Za-z0-9._-]+$", s.env_file_name))])
+    error_message = "env_file_name debe ser un nombre de archivo simple (letras, números, '.', '_' o '-'), sin rutas."
+  }
+}
+
+variable "enable_hot_update" {
+  description = <<-EOT
+    Instala en la VM un timer systemd que vigila la metadata `microservices_json`
+    y despliega los microservicios nuevos sin reiniciar la VM. Los que ya existen
+    no se tocan: para actualizarlos se usa /opt/scripts/helper_update_services.sh.
+  EOT
+  type        = bool
+  default     = false
 }
 
 variable "environment" {
@@ -170,5 +186,28 @@ variable "environment" {
   validation {
     condition     = contains(["dev", "qa", "stg", "prod"], var.environment)
     error_message = "environment debe ser dev, qa, stg o prod"
+  }
+}
+
+variable "git_token_secret_id" {
+  description = <<-EOT
+    Secreto de Secret Manager con el token de GitHub para clonar los repos de
+    `microservices`. La VM lo lee en cada clone/pull con un helper de credenciales
+    de git, así `repo_url` va sin credenciales. La SA de la VM necesita
+    roles/secretmanager.secretAccessor sobre el secreto. Vacío = sin helper.
+  EOT
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = can(regex("^([A-Za-z0-9_/-]+)?$", var.git_token_secret_id))
+    error_message = "git_token_secret_id: sólo nombre del secreto o projects/<p>/secrets/<s>."
+  }
+
+  validation {
+    condition = var.git_token_secret_id == "" || alltrue([
+      for s in var.microservices : !can(regex("://[^/]*@", s.repo_url))
+    ])
+    error_message = "Con git_token_secret_id, los repo_url van sin credenciales (https://github.com/<org>/<repo>)."
   }
 }

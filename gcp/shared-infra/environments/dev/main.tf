@@ -4,11 +4,11 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 7.0"
+      version = "~> 8.12"
     }
     time = {
       source  = "hashicorp/time"
-      version = ">= 0.9.1"
+      version = "~> 0.14"
     }
   }
 
@@ -107,6 +107,16 @@ resource "google_artifact_registry_repository_iam_member" "ar_writers" {
   repository = var.registry_name
   role       = "roles/artifactregistry.writer"
   member     = "serviceAccount:${each.value}"
+}
+
+# Entornos creados antes del split tienen el registry en su estado como
+# module.artifact_registry: se suelta sin borrarlo, ahora es de bootstrap/global.
+removed {
+  from = module.artifact_registry
+
+  lifecycle {
+    destroy = false
+  }
 }
 
 module "network" {

@@ -1,4 +1,4 @@
-.PHONY: help check-versions fmt fmt-check validate clean init lint \
+.PHONY: help check-versions fmt fmt-check validate check-sources clean init lint \
       setup setup-dry-run setup-verbose \
       plan apply \
       deploy-dev deploy-qa deploy-stg deploy-prod \
@@ -70,7 +70,10 @@ validate: ## Validar sintaxis de Terraform (requiere terraform init y setup)
 		fi \
 	done
 
-lint: fmt-check validate ## Ejecutar todas las verificaciones de linting
+check-sources: ## Verificar que los source de módulos estén fijados (ver scripts/check-module-sources.sh)
+	@$(SCRIPT_DIR)/check-module-sources.sh
+
+lint: fmt-check check-sources validate ## Ejecutar todas las verificaciones de linting
 	@echo "✓ Linting completado"
 
 # ============================================================================
