@@ -30,7 +30,7 @@ El módulo `vm-docker` extiende `vm-base` y agrega:
 | `static_public_ip`               | `string`       | Nombre para IP pública estática     | `null`                         | ❌        |
 | `use_ubuntu_image`               | `bool`         | Usar imagen Ubuntu                  | `false`                        | ❌        |
 | `install_docker_compose`         | `bool`         | Instalar Docker Compose             | `true`                         | ❌        |
-| `docker_compose_version`         | `string`       | Versión de Docker Compose           | `"v2.33.0"`                    | ❌        |
+| `docker_compose_version`         | `string`       | Versión de Docker Compose           | `"v5.8.0"`                     | ❌        |
 | `install_certbot`                | `bool`         | Instalar Certbot                    | `false`                        | ❌        |
 | `metadata_startup_script`        | `string`       | Script de inicio personalizado      | `""`                           | ❌        |
 | `deployment_scripts`             | `string`       | Ruta local a scripts de despliegue  | `""`                           | ❌        |

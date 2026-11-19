@@ -115,7 +115,7 @@ variable "install_docker_compose" {
 variable "docker_compose_version" {
   description = "Versión de Docker Compose a instalar"
   type        = string
-  default     = "v2.33.0"
+  default     = "v5.8.0"
 }
 
 variable "install_certbot" {
