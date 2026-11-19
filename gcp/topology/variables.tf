@@ -122,13 +122,14 @@ variable "topology" {
   EOT
 
   type = map(object({
-    machine_type     = string
-    boot_disk_size   = optional(number, 30)
-    boot_disk_type   = optional(string, "pd-standard")
-    enable_public_ip = optional(bool, true)
-    static_public_ip = optional(string, null)
-    install_certbot  = optional(bool, false)
-    services         = list(string)
+    machine_type      = string
+    boot_disk_size    = optional(number, 30)
+    boot_disk_type    = optional(string, "pd-standard")
+    enable_public_ip  = optional(bool, true)
+    static_public_ip  = optional(string, null)
+    install_certbot   = optional(bool, false)
+    enable_hot_update = optional(bool, false) # ver vm-docker: despliega servicios nuevos sin reiniciar
+    services          = list(string)
   }))
 }
 

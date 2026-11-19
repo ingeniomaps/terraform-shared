@@ -30,7 +30,7 @@ git clone ${service.repo_url} -b ${service.branch} --depth=1 "$PROJECT"
 cd "/home/ubuntu/$PROJECT"
 
 # Copiar .env al directorio del proyecto
-cp "/tmp/$${PROJECT}.env" .env
+cp "/tmp/$${PROJECT}.env" ${service.env_file_name}
 rm -f "/tmp/$${PROJECT}.env"
 
 %{ if service.image_url != "" ~}
@@ -44,7 +44,7 @@ docker pull "${service.image_url}" || {
 %{ endif ~}
 
 # Crear red Docker si no existe
-set -a && source .env && set +a
+set -a && source ${service.env_file_name} && set +a
 docker network create --subnet=192.160.0.0/16 "$${NETWORK_NAME:-cubiko}" 2>/dev/null || true
 
 # Levantar servicio: launch_command > installer.sh > docker-compose
@@ -56,7 +56,7 @@ if [ -f "installer.sh" ]; then
   bash installer.sh
 %{ if service.compose_file != "" ~}
 elif [ -f "${service.compose_file}" ]; then
-  docker compose --env-file .env -f "${service.compose_file}" up -d
+  docker compose --env-file ${service.env_file_name} -f "${service.compose_file}" up -d
 %{ endif ~}
 elif [ -f "docker-compose.yml" ] || [ -f "docker-compose.yaml" ]; then
   docker compose up -d 2>/dev/null || docker-compose up -d
