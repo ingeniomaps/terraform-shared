@@ -78,6 +78,8 @@ locals {
         local.service_catalog[svc_name],
         {
           env_file = "envs/${svc_name}.env"
+          # vm-docker antes ignoraba env_file_name del catálogo; se fija para no cambiar VMs vivas.
+          env_file_name = ".env"
         }
       )
     ]

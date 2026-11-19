@@ -1,0 +1,23 @@
+name: module-sources
+
+# Falla si un módulo cambia de dónde sale (ver gcp/scripts/check-module-sources.sh).
+# Para que bloquee el merge, marcar el job "check" como requerido en la protección de develop y main.
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          persist-credentials: false
+      - name: Verificar source de módulos
+        run: bash gcp/scripts/check-module-sources.sh

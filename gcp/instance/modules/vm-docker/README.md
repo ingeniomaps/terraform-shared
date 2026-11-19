@@ -36,6 +36,7 @@ El módulo `vm-docker` extiende `vm-base` y agrega:
 | `deployment_scripts`             | `string`       | Ruta local a scripts de despliegue  | `""`                           | ❌        |
 | `deployment_scripts_destination` | `string`       | Directorio destino en VM            | `"/home/ubuntu/configuration"` | ❌        |
 | `microservices`                  | `list(object)` | Lista de microservicios a desplegar | `[]`                           | ❌        |
+| `enable_hot_update`              | `bool`         | Despliega servicios nuevos sin reiniciar la VM | `false`             | ❌        |
 | `environment`                    | `string`       | Ambiente de despliegue              | `"dev"`                        | ❌        |
 
 ### Estructura de `microservices`
@@ -47,9 +48,28 @@ microservices = [
     repo_url = "https://github.com/user/api.git"
     branch   = "main"
     env_file = "envs/api.env"  # Ruta relativa o contenido del archivo .env
+
+    # Opcionales
+    env_file_name  = ".env"              # Nombre del archivo en el repo (ej: ".env.local"); sin rutas
+    secret_id      = ""                  # Si se setea, el .env se baja de Secret Manager y no viaja en la metadata
+    image_url      = ""                  # Imagen a descargar de Artifact Registry antes de levantar
+    compose_file   = ""                  # Compose a usar si no hay installer.sh
+    launch_command = ""                  # Gana sobre installer.sh y compose
   }
 ]
 ```
+
+### Actualización en caliente (`enable_hot_update`)
+
+Con `enable_hot_update = true` la VM instala un timer systemd (`watch-metadata.timer`, cada 1 min)
+que lee la metadata `microservices_json`. Al cambiar la lista de `microservices` y hacer `apply`,
+los servicios **nuevos** se despliegan sin reiniciar la VM. Los que ya existen no se tocan; para
+actualizarlos se usa `/opt/scripts/helper_update_services.sh` (`update-one`, `update-all`,
+`redeploy`, `status`, `logs`). Diagnóstico: `/opt/scripts/diagnose_update.sh` y
+`/var/log/watch-metadata.log`.
+
+Con el flag apagado (default) el startup script es el mismo de siempre y no se publica
+`microservices_json`.
 
 ## 📤 Outputs
 
@@ -177,6 +197,7 @@ El módulo incluye scripts automáticos:
 - **`docker_install.sh`**: Instala Docker y Docker Compose
 - **`certbot_install.sh`**: Instala Certbot (si está habilitado)
 - **`microservices_deploy.sh`**: Despliega microservicios desde repositorios Git
+- **`watch_metadata.sh`**, **`update_microservices.sh`**, **`helper_update_services.sh`**, **`diagnose_update.sh`**: actualización en caliente (solo con `enable_hot_update = true`)
 
 ## ⚠️ Notas Importantes
 

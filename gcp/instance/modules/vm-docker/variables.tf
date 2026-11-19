@@ -158,9 +158,25 @@ variable "microservices" {
     image_url      = optional(string, "")
     launch_command = optional(string, "")
     compose_file   = optional(string, "")
-    secret_id      = optional(string, "") # Si se setea, el .env se baja de Secret Manager (no se embebe)
+    secret_id      = optional(string, "")     # Si se setea, el .env se baja de Secret Manager (no se embebe)
+    env_file_name  = optional(string, ".env") # Nombre del archivo env en el repo (ej: ".env.local")
   }))
   default = []
+
+  validation {
+    condition     = alltrue([for s in var.microservices : can(regex("^[A-Za-z0-9._-]+$", s.env_file_name))])
+    error_message = "env_file_name debe ser un nombre de archivo simple (letras, números, '.', '_' o '-'), sin rutas."
+  }
+}
+
+variable "enable_hot_update" {
+  description = <<-EOT
+    Instala en la VM un timer systemd que vigila la metadata `microservices_json`
+    y despliega los microservicios nuevos sin reiniciar la VM. Los que ya existen
+    no se tocan: para actualizarlos se usa /opt/scripts/helper_update_services.sh.
+  EOT
+  type        = bool
+  default     = false
 }
 
 variable "environment" {
