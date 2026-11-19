@@ -46,10 +46,18 @@ resource "google_project_iam_member" "ci_cd_os_admin_login" {
 # + artifactregistry.writer). Se quitaron a propósito:
 #   - roles/compute.instanceAdmin.v1  → crear/borrar/modificar VMs y leer su
 #     metadata (donde pueden vivir secretos). No hace falta para SSH con OS Login.
-#   - roles/iam.serviceAccountUser    → "actuar como" otra SA; solo se necesita al
-#     CREAR una VM con SA adjunta (eso es provisión = Terraform, no el CI de deploy).
+#   - roles/iam.serviceAccountUser a nivel proyecto → "actuar como" cualquier SA.
+#     OS Login sí lo pide sobre la SA adjunta a la VM: va acotado, abajo.
 # Si el CI necesita encender/apagar VMs, asignarle el custom role vmStartStop (no
 # instanceAdmin). Si provisiona VMs, usar una SA de infra separada, no esta.
+
+# OS Login exige serviceAccountUser sobre la SA de la VM para entrar por SSH:
+# https://cloud.google.com/compute/docs/oslogin/set-up-oslogin
+resource "google_service_account_iam_member" "ci_cd_vm_sa_user" {
+  service_account_id = "projects/${var.project_id}/serviceAccounts/${var.vm_reader_email}"
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${var.ci_cd_writer_email}"
+}
 
 # Permite que las VMs o workloads asociados publiquen métricas personalizadas
 resource "google_project_iam_member" "vm_metric_writer" {
