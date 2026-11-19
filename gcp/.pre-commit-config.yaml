@@ -6,7 +6,7 @@
 repos:
   # Hook para detectar archivos sensibles
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
         exclude: '\.md$'
@@ -54,7 +54,7 @@ repos:
 
   # Hook para formato de Terraform
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.86.0
+    rev: v1.109.5
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
@@ -64,7 +64,7 @@ repos:
 
   # Hook para detectar secretos
   - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.4.0
+    rev: v1.5.0
     hooks:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
